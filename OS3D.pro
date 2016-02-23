@@ -63,6 +63,7 @@ HEADERS  += deftypes.h \
         Model/Algorithm/ITK/algorithmitkconnectedcomponent.h \
         Model/Algorithm/ITK/algorithmitklabelshapekeepnobjects.h \
         Model/Algorithm/ITK/algorithmitkbinarymorphologicalclosing.h \
+        Model/Algorithm/ITK/algorithmitkbinarythinningimagefilter.h \
         Model/Algorithm/Adrien/algorithmconnectedcomponentextraction.h \
         Model/Algorithm/DGtal/algorithmdgtal.h \
         Model/Algorithm/DGtal/algorithmdgtaldistancetransformation.h \
@@ -83,6 +84,7 @@ HEADERS  += deftypes.h \
         View/Algorithm/ITK/algorithmviewitkconnectedcomponent.h \
         View/Algorithm/ITK/algorithmviewitklabelshapekeepnobjects.h \
         View/Algorithm/ITK/algorithmviewitkbinarymorphologicalclosing.h \
+        View/Algorithm/ITK/algorithmviewitkbinarythinningimagefilter.h \
         View/Algorithm/Adrien/algorithmviewconnectedcomponentextraction.h \
         View/Algorithm/DGtal/algorithmviewdgtaldistancetransformation.h \
         View/Customplot/qcustomplot.h \
