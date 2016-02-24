@@ -471,8 +471,8 @@ void MainWindow::openSecondaryWindow()
             windowingWindow.show();
         if (action->text() == ACTION_HISTOGRAM_TEXT)
             histogramWindow.show();
-        if (action->text() == ACTION_SKELETONIZATION_TEXT) {}
-            //skeletonWindow.show();
+        if (action->text() == ACTION_SKELETONIZATION_TEXT)
+            skeletonWindow.compute();
     }
     else
     {
