@@ -17,7 +17,7 @@ class AlgorithmViewITKBinaryThinningImageFilter : public AlgorithmView
 {
 public:
 
-    AlgorithmViewITKBinaryThinningImageFilter(double coordinateTolerance, double directionTolerance, QWidget *parent = 0);
+    AlgorithmViewITKBinaryThinningImageFilter(QWidget *parent = 0);
     ~AlgorithmViewITKBinaryThinningImageFilter();
 
     void updateParametersWithAlgorithm(Algorithm<Image, Image> *algorithm);
@@ -40,12 +40,12 @@ private:
 
 };
 
-AlgorithmViewITKBinaryThinningImageFilter::AlgorithmViewITKBinaryThinningImageFilter(double minValue, double maxValue, QWidget *parent) :
-    AlgorithmView("Squelettisation", parent), buttonCoordinate(this), buttonDirection(this), sliderCoordinate(Qt::Horizontal), sliderDirection(Qt::Horizontal)
+AlgorithmViewITKBinaryThinningImageFilter::AlgorithmViewITKBinaryThinningImageFilter(QWidget *parent) :
+    AlgorithmView("Squelettisation", parent)
 {
     /** TODO : Construction du formulaire **/
     std::cout << "View - Construction formulaire ..." << std::endl;
-
+    /*
     // Création des composants du formulaire
     QLabel *labelCoordinate = new QLabel("Coordinate Tolerance : ");
     buttonCoordinate.setChecked(true);
@@ -82,7 +82,7 @@ AlgorithmViewITKBinaryThinningImageFilter::AlgorithmViewITKBinaryThinningImageFi
     layoutForm->addWidget(labelDirection, 1, 1, 1, 1);
     layoutForm->addWidget(&spinBoxDirection, 1, 2, 1, 1);
     layoutForm->addWidget(&sliderDirection, 1, 3, 1, 1);
-
+    */
     hide();
 }
 
@@ -95,13 +95,13 @@ void AlgorithmViewITKBinaryThinningImageFilter::updateParametersWithAlgorithm(Al
 
     AlgorithmITKBinaryThinningImageFilter<Image, Image> *algorithmSkeleton = (AlgorithmITKBinaryThinningImageFilter<Image, Image> *) algorithm;
 
-    buttonCoordinate.setChecked(true);
+    /*buttonCoordinate.setChecked(true);
     sliderCoordinate.setValue(algorithmSkeleton->getCoordinateTolerance());
     spinBoxCoordinate.setValue(algorithmSkeleton->getCoordinateTolerance());
     buttonDirection.setChecked(false);
     sliderDirection.setValue(algorithmSkeleton->getDirectionTolerance());
     spinBoxDirection.setValue(algorithmSkeleton->getDirectionTolerance());
-}
+*/}
 
 void AlgorithmViewITKBinaryThinningImageFilter::updateAlgorithmParameters(Algorithm<Image, Image> *algorithm)
 {
@@ -110,10 +110,10 @@ void AlgorithmViewITKBinaryThinningImageFilter::updateAlgorithmParameters(Algori
 
     AlgorithmITKBinaryThinningImageFilter<Image, Image> *algorithmSkeleton = (AlgorithmITKBinaryThinningImageFilter<Image, Image> *) algorithm;
 
-    if (buttonCoordinate.isChecked())
+    /*if (buttonCoordinate.isChecked())
         algorithmSkeleton->setCoordinateTolerance(spinBoxCoordinate.value());
     else algorithmSkeleton->setDirectionTolerance(spinBoxDirection.value());
-}
+*/}
 
 QString AlgorithmViewITKBinaryThinningImageFilter::toString()
 {
@@ -121,16 +121,16 @@ QString AlgorithmViewITKBinaryThinningImageFilter::toString()
 
     /** TODO : afficher la vue sous forme d'une chaine de caractères **/
     std::cout << "View - Afficher vue chaine de caracteres ..." << std::endl;
-
+    /*
     result += "\n -> Coordinate Tolerance : " + QString::number(spinBoxCoordinate.value());
     result += "\n -> Direction Tolerance : " + QString::number(spinBoxDirection.value());
-
+    */
     return result;
 }
 
 AlgorithmViewITKBinaryThinningImageFilter * AlgorithmViewITKBinaryThinningImageFilter::copy()
 {
-    AlgorithmViewITKBinaryThinningImageFilter * copy = new AlgorithmViewITKBinaryThinningImageFilter(spinBoxCoordinate.value(), spinBoxDirection.value());
+    AlgorithmViewITKBinaryThinningImageFilter * copy = new AlgorithmViewITKBinaryThinningImageFilter();
 
     std::cout << "View - Copy ..." << std::endl;
 

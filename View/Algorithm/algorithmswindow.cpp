@@ -10,6 +10,7 @@
 #include "../../Model/Algorithm/ITK/algorithmitkbinarythreshold.h"
 #include "../../Model/Algorithm/ITK/algorithmitkdiscretegaussian.h"
 #include "../../Model/Algorithm/ITK/algorithmitkbinarythinningimagefilter.h"
+//#include "../../Model/Algorithm/ITK/algorithmitkbinarythinning3d.h"
 #include "../../Model/Algorithm/Adrien/algorithmconnectedcomponentextraction.h"
 #include "../../Model/Algorithm/DGtal/algorithmdgtaldistancetransformation.h"
 
@@ -17,6 +18,7 @@
 #include "View/Algorithm/ITK/algorithmviewitkbinarythreshold.h"
 #include "View/Algorithm/ITK/algorithmviewitkdiscretegaussian.h"
 #include "View/Algorithm/ITK/algorithmviewitkbinarythinningimagefilter.h"
+//#include "View/Algorithm/ITK/algorithmviewitkbinarythinning3d.h"
 #include "View/Algorithm/Adrien/algorithmviewconnectedcomponentextraction.h"
 #include "View/Algorithm/DGtal/algorithmviewdgtaldistancetransformation.h"
 
@@ -136,6 +138,7 @@ void AlgorithmsWindow::buildAlgorithms()
     Algorithm<Image, Image> *adrienAlgorithm = new AlgorithmConnectedComponentExtraction<Image, Image>();
     Algorithm<Image, Image> *distanceTransformationAlgorithm = new AlgorithmDGtalDistanceTransformation<Image, Image>();
     Algorithm<Image, Image> *skeletonAlgorithm = new AlgorithmITKBinaryThinningImageFilter<Image, Image>();
+    //Algorithm<Image, Image> *skeleton3DAlgorithm = new AlgorithmITKBinaryThinning3D<Image, Image>();
 
     // Initialisation des vues
     AlgorithmView *thresholdView = new AlgorithmViewITKThreshold(image->min(), image->max(), this);
@@ -143,7 +146,8 @@ void AlgorithmsWindow::buildAlgorithms()
     AlgorithmView *gaussianDiscretView = new AlgorithmViewITKDiscreteGaussian(image->Dimension, this);
     AlgorithmView *adrienView = new AlgorithmViewConnectedComponentExtraction(image->min(), image->max(), this);
     AlgorithmView *distanceTransformationView = new AlgorithmViewDGtalDistanceTransformation(this);
-    AlgorithmView *skeletonView = new AlgorithmViewITKBinaryThinningImageFilter(0, 10, this);
+    AlgorithmView *skeletonView = new AlgorithmViewITKBinaryThinningImageFilter(this);
+    //AlgorithmView *skeleton3DView = new AlgorithmViewITKBinaryThinning3D(this);
 
     // Création des paires Algorithm <-> Vue
     std::pair<AlgorithmView*, Algorithm<Image, Image>*> threshold (thresholdView, thresholdAlgorithm);
@@ -152,6 +156,7 @@ void AlgorithmsWindow::buildAlgorithms()
     std::pair<AlgorithmView*, Algorithm<Image, Image>*> adrien (adrienView, adrienAlgorithm);
     std::pair<AlgorithmView*, Algorithm<Image, Image>*> distanceTransformation(distanceTransformationView, distanceTransformationAlgorithm);
     std::pair<AlgorithmView*, Algorithm<Image, Image>*> skeleton(skeletonView, skeletonAlgorithm);
+    //std::pair<AlgorithmView*, Algorithm<Image, Image>*> skeleton3D(skeleton3DView, skeleton3DAlgorithm);
 
     // Ajout des paires à la liste de filtres
     algorithms.insert(threshold);
@@ -160,6 +165,7 @@ void AlgorithmsWindow::buildAlgorithms()
     algorithms.insert(adrien);
     algorithms.insert(distanceTransformation);
     algorithms.insert(skeleton);
+    //algorithms.insert(skeleton3D);
 }
 
 void AlgorithmsWindow::clearLayout(QLayout *layout)
