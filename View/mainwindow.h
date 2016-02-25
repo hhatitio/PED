@@ -15,7 +15,7 @@
 #include "View/opendicomwindow.h"
 #include "View/histogramwindow.h"
 #include "View/windowingwindow.h"
-#include "View/skeletonwindow.h"
+#include "View/skeletonview.h"
 
 #include <QMainWindow>
 #include <QImage>
@@ -92,7 +92,7 @@ private:
     LayersThresholdWindow layersThresholdWindow;
     HistogramWindow histogramWindow;
     WindowingWindow windowingWindow;
-    SkeletonWindow skeletonWindow;
+    SkeletonView skeletonView;
 
     Interval<PixelType> *intervalIntensity;
 

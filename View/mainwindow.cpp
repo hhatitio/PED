@@ -233,6 +233,7 @@ void MainWindow::openImage3D()
     currentImageType = ImageType::Image3D;
     updateImageComponents();
     drawSlice();
+    skeletonView.setFilename(filename);
 }
 
 void MainWindow::saveImage()
@@ -472,7 +473,7 @@ void MainWindow::openSecondaryWindow()
         if (action->text() == ACTION_HISTOGRAM_TEXT)
             histogramWindow.show();
         if (action->text() == ACTION_SKELETONIZATION_TEXT)
-            skeletonWindow.compute();
+            skeletonView.show(image);
     }
     else
     {

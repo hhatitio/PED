@@ -13,7 +13,7 @@ bool CheckVolumePadding(unsigned char **vol,
 
 
 bool pfSkel(
-	char* volFileName, 		     // [in] volume file name
+    char* volFileName, 		     // [in] volume file name
 	int L, int M, int N, 		     // [in] volume size (x, y and z)
 	int distCharges,		     // [in] distance from object 
 	                                     //   boundary where to place the 
