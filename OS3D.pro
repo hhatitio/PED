@@ -46,7 +46,8 @@ SOURCES += main.cpp\
         View/Spanslider/qxtspanslider.cpp \
     View/viewer3d.cpp \
     Model/skeletonmodel.cpp \
-    View/skeletonview.cpp
+    View/skeletonview.cpp \
+    Model/skeletongraph.cpp
 
 HEADERS  += deftypes.h \
 	Model/zoomer.h \
@@ -93,11 +94,11 @@ HEADERS  += deftypes.h \
         View/Spanslider/qxtspanslider.h \
         View/Spanslider/qxtspanslider_p.h \
     View/viewer3d.h \
-    View/skeletonwindow.h \
-    Model/Algorithm/ITK/algorithmitkbinarythinning3d.h \
-    View/Algorithm/ITK/algorithmviewitkbinarythinning3d.h \
+    #Model/Algorithm/ITK/algorithmitkbinarythinning3d.h \
+    #View/Algorithm/ITK/algorithmviewitkbinarythinning3d.h \
     Model/skeletonmodel.h \
-    View/skeletonview.h
+    View/skeletonview.h \
+    Model/skeletongraph.h
 
 # Directives compilateur
 

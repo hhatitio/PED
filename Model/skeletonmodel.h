@@ -11,7 +11,7 @@
 class SkeletonModel {
 public:
     SkeletonModel();
-    void compute(Image *image, QString filename);
+    void compute(Image *image, QString filename, int dc, int fs, int p);
 private:
     Skeleton *skeleton;
 };

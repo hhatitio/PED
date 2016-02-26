@@ -25,7 +25,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), image(0), sliderSlice(Qt::Horizontal),
     imageLayersWindow(this), imageLayersToolsWindow(this), imageLayersViewer3DWindow(this),
-    layersThresholdWindow(this), windowingWindow(this)
+    layersThresholdWindow(this), windowingWindow(this), skeletonView(this)
 {
     buildMenus();
 
@@ -472,11 +472,17 @@ void MainWindow::openSecondaryWindow()
             windowingWindow.show();
         if (action->text() == ACTION_HISTOGRAM_TEXT)
             histogramWindow.show();
-        if (action->text() == ACTION_SKELETONIZATION_TEXT)
-            skeletonView.show(image);
+        if (action->text() == ACTION_SKELETONIZATION_TEXT) {
+            skeletonView.setImage(image);
+            skeletonView.show();
+        }
     }
     else
     {
         QMessageBox::critical(this, "Erreur", "Veuillez ouvrir un dossier DICOM.");
     }
+}
+
+void MainWindow::openSkeletonization() {
+    skeletonView.skeletonization();
 }
