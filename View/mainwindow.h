@@ -76,6 +76,8 @@ public slots:
     // Gestion des fenêtres secondaires
     void openSecondaryWindow();
 
+    void openSkeletonization();
+
 private:
 
     Image *image;

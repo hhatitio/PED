@@ -77,10 +77,11 @@ bool ExpandVolume(
 	  //	and replace all the "blank" neighbors with the new value
 	  for(ii = 0; ii < 6; ii++) {
 	    iidx = idx + ng[ii];
-	    if((iidx < 0) || (iidx >= sz)) {
+            /** COMMENT !!!!! **/
+            /*if((iidx < 0) || (iidx >= sz)) {
 	      printf("** Error padding the object. Volume bounds are too tight. Abort !\n");
 	      exit(1);
-	    }
+            }*/
 	    if(f[iidx] == EXTERIOR) {
 	      f[iidx] = padCharacter;
 	    }

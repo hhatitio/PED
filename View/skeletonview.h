@@ -6,17 +6,28 @@
 
 #include <iostream>
 #include <QString>
+#include <QDialog>
+#include <QLabel>
+#include <QSpinBox>
+#include <QFormLayout>
+#include <QPushButton>
 
-class SkeletonView
+class SkeletonView: public QDialog
 {
+
 public:
-    SkeletonView();
-    void show(Image *image);
+    SkeletonView(QWidget *parent);
+    ~SkeletonView();
+
     void setFilename(QString filename);
+    void setImage(Image *image);
+    void skeletonization();
 
 private:
     SkeletonModel *skeletonModel;
     QString filename;
+    QSpinBox distCharges, fieldStrenght, percHDPts;
+    Image *image;
 };
 
 #endif // SKELETONVIEW

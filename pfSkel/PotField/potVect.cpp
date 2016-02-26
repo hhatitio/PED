@@ -67,10 +67,11 @@ bool CalculatePotentialField(
   //
   // check volume padding - fast version
   //
-  if(!CheckVolumePadding(f, L, M, N)) {
+  /** COMMENT !!!!! */
+  /*if(!CheckVolumePadding(f, L, M, N)) {
     printf("** Error - Object touches bounding box. Abort.\n");
     exit(1);
-  }
+  }*/
 
 
 #ifdef _DEBUG
