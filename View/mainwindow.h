@@ -5,6 +5,7 @@
 
 #include "Model/Algorithm/algorithm.h"
 #include "Model/Layer/imagelayer.h"
+#include "Model/skeletongraph.h"
 
 #include "View/imagescroll.h"
 #include "View/Algorithm/algorithmswindow.h"
@@ -28,6 +29,7 @@
 #define ACTION_WINDOWING_TEXT           "&Fenêtrage"
 #define ACTION_HISTOGRAM_TEXT           "&Histogramme"
 #define ACTION_SKELETONIZATION_TEXT     "&Squelettisation"
+#define ACTION_GRAPH_TEXT               "&Generate Graph"
 
 #define ACTION_EMPTY_IMAGE_LAYER        "&Aucune image calque"
 #define ACTION_LAYER_THRESHOLD_TEXT     "&Calques Seuillage"
@@ -77,6 +79,7 @@ public slots:
     void openSecondaryWindow();
 
     void openSkeletonization();
+    void getGraph();
 
 private:
 
@@ -95,6 +98,7 @@ private:
     HistogramWindow histogramWindow;
     WindowingWindow windowingWindow;
     SkeletonView skeletonView;
+    SkeletonGraph  skeletonGraph;
 
     Interval<PixelType> *intervalIntensity;
 

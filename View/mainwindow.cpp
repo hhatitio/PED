@@ -90,10 +90,12 @@ void MainWindow::buildMenus()
     QAction *actionChangeWindowing = new QAction(ACTION_WINDOWING_TEXT, this);
     QAction *actionHistogram = new QAction(ACTION_HISTOGRAM_TEXT, this);
     QAction *actionSkeletonization = new QAction(ACTION_SKELETONIZATION_TEXT, this);
+    QAction *actionGenerateGraph = new QAction(ACTION_GRAPH_TEXT, this);
     menuTools->addAction(actionChooseAlgorithms);
     menuTools->addAction(actionChangeWindowing);
     menuTools->addAction(actionHistogram);
     menuTools->addAction(actionSkeletonization);
+    menuTools->addAction(actionGenerateGraph);
 
     // Menu Calque
     QMenu *menuToolsLayer = menuBar()->addMenu("&Calques");
@@ -130,7 +132,8 @@ void MainWindow::buildMenus()
     QObject::connect(actionToolsImageLayers, SIGNAL(triggered()), this, SLOT(openSecondaryWindow()));
     QObject::connect(actionManageImageLayers, SIGNAL(triggered()), this, SLOT(openSecondaryWindow()));
     QObject::connect(actionViewer3DImageLayers, SIGNAL(triggered()), this, SLOT(openSecondaryWindow()));
-    QObject::connect(actionSkeletonization, SIGNAL(triggered()), this, SLOT(openSecondaryWindow()));
+    QObject::connect(actionSkeletonization, SIGNAL(triggered()), this, SLOT(openSkeletonization()));
+    QObject::connect(actionGenerateGraph, SIGNAL(triggered()), this, SLOT(getGraph()));
 }
 
 void MainWindow::updateImageComponents()
@@ -485,4 +488,22 @@ void MainWindow::openSecondaryWindow()
 
 void MainWindow::openSkeletonization() {
     skeletonView.skeletonization();
+}
+
+void MainWindow::getGraph(){
+    skeletonGraph.compute();
+    // Mise à jour de l'image et de la fenêtre principale
+    //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
+    //if (filename.isEmpty()) return;
+    // Fermeture de l'image courante
+    if (!closeImage())
+        return;
+    // Suppression des calques
+    removeLayers();
+    // Mise à jour de l'image et de la fenêtre principale
+    image = skeletonGraph.getSkeleton3DIm();
+    currentImageType = ImageType::Image3D;
+    updateImageComponents();
+    drawSlice();
+    //skeletonView.setFilename(filename);
 }
