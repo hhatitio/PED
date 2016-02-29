@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     View/viewer3d.cpp \
     Model/skeletonmodel.cpp \
     View/skeletonview.cpp \
-    Model/skeletongraph.cpp
+    Model/skeletongraph.cpp \
+    View/skeletongraphview.cpp
 
 HEADERS  += deftypes.h \
 	Model/zoomer.h \
@@ -98,7 +99,8 @@ HEADERS  += deftypes.h \
     #View/Algorithm/ITK/algorithmviewitkbinarythinning3d.h \
     Model/skeletonmodel.h \
     View/skeletonview.h \
-    Model/skeletongraph.h
+    Model/skeletongraph.h \
+    View/skeletongraphview.h
 
 # Directives compilateur
 
