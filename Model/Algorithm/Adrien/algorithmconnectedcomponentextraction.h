@@ -145,13 +145,13 @@ void AlgorithmConnectedComponentExtraction<InputImageType, OutputImageType>::exe
     // On garde les 2 plus grosses
     labelShapeKeepAlgorithm1->setBackgroundValue(0);
     labelShapeKeepAlgorithm1->setNumberOfObjects(2);
-    labelShapeKeepAlgorithm1->setAttribute(AlgorithmITKLabelShapeKeepNObjects<Image>::LabelObjectFilterType::NUMBER_OF_PIXELS);
+    //labelShapeKeepAlgorithm1->setAttribute(AlgorithmITKLabelShapeKeepNObjects<Image>::LabelObjectFilterType::NUMBER_OF_PIXELS);
     labelShapeKeepAlgorithm1->executeInPlace(image);
 
     // On supprime la plus grosse
     labelShapeKeepAlgorithm2->setBackgroundValue(0);
     labelShapeKeepAlgorithm2->setNumberOfObjects(1);
-    labelShapeKeepAlgorithm2->setAttribute(AlgorithmITKLabelShapeKeepNObjects<Image>::LabelObjectFilterType::NUMBER_OF_PIXELS);
+    //labelShapeKeepAlgorithm2->setAttribute(AlgorithmITKLabelShapeKeepNObjects<Image>::LabelObjectFilterType::NUMBER_OF_PIXELS);
     labelShapeKeepAlgorithm2->executeInPlace(image);
 
     // Fermeture
@@ -163,6 +163,7 @@ void AlgorithmConnectedComponentExtraction<InputImageType, OutputImageType>::exe
     qDebug() << QString("Nombre de composantes connexes : %1").arg(connectedComponentAlgorithm->getObjectCount());
 }
 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 template <typename InputImageType, typename OutputImageType>
 void AlgorithmConnectedComponentExtraction<InputImageType, OutputImageType>::executeSliceBySliceInPlace(InputImagePointer image)
@@ -192,12 +193,12 @@ AlgorithmConnectedComponentExtraction<InputImageType, OutputImageType>::executeO
 
     labelShapeKeepAlgorithm1->setBackgroundValue(0);
     labelShapeKeepAlgorithm1->setNumberOfObjects(2);
-    labelShapeKeepAlgorithm1->setAttribute(AlgorithmITKLabelShapeKeepNObjects<Image>::LabelObjectFilterType::NUMBER_OF_PIXELS);
+    //labelShapeKeepAlgorithm1->setAttribute(AlgorithmITKLabelShapeKeepNObjects<Image>::LabelObjectFilterType::NUMBER_OF_PIXELS);
     labelShapeKeepAlgorithm1->executeInPlace(result);
 
     labelShapeKeepAlgorithm2->setBackgroundValue(0);
     labelShapeKeepAlgorithm2->setNumberOfObjects(1);
-    labelShapeKeepAlgorithm2->setAttribute(AlgorithmITKLabelShapeKeepNObjects<Image>::LabelObjectFilterType::NUMBER_OF_PIXELS);
+    //labelShapeKeepAlgorithm2->setAttribute(AlgorithmITKLabelShapeKeepNObjects<Image>::LabelObjectFilterType::NUMBER_OF_PIXELS);
     labelShapeKeepAlgorithm2->executeInPlace(result);
 
     binaryMorphologicalClosingAlgorithm->setForegroundValue(120);

@@ -8,7 +8,7 @@ SkeletonGraph::SkeletonGraph() {
 SkeletonGraph::~SkeletonGraph() {}
 
 void SkeletonGraph::compute() {
-    setDataFromFile("/home/johann/ped/cow.skel");
+    setDataFromFile("/Users/andrearuffino/Documents/S9/PED/OS3D/Data/cow.skel");
     generate3DImFromData();
     std::cout << "nb_node : " << computeNbNode() << std::endl;
 }

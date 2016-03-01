@@ -144,6 +144,7 @@ void AlgorithmITKBinaryMorphologicalClosing<InputImageType, OutputImageType>::ex
     filter->Update();
 }
 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 template <typename InputImageType, typename OutputImageType>
 void AlgorithmITKBinaryMorphologicalClosing<InputImageType, OutputImageType>::executeSliceBySliceInPlace(InputImagePointer image)

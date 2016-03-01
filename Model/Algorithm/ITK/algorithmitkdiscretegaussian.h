@@ -94,7 +94,7 @@ void AlgorithmITKDiscreteGaussian<InputImageType, OutputImageType>::setVariance(
 template <typename InputImageType, typename OutputImageType>
 void AlgorithmITKDiscreteGaussian<InputImageType, OutputImageType>::setDimensionality(const int &dimensionality)
 {
-    if (dimensionality > 0 && dimensionality <= Dimension)
+    if (dimensionality > 0 && dimensionality <= ((int)Dimension))
         this->dimensionality = dimensionality;
 }
 

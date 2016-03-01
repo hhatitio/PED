@@ -78,6 +78,7 @@ void AlgorithmDGtalDistanceTransformation<InputImageType, OutputImageType>::exec
     }
 }
 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 template <typename InputImageType, typename OutputImageType>
 void AlgorithmDGtalDistanceTransformation<InputImageType, OutputImageType>::executeSliceBySliceInPlace(InputImagePointer image)

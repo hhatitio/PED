@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
+    QTextCodec::setCodecForLocale(QTextCodec::codecForLocale());
 
     MainWindow w;
     w.show();
