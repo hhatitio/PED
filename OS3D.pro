@@ -48,7 +48,9 @@ SOURCES += main.cpp\
     Model/skeletonmodel.cpp \
     View/skeletonview.cpp \
     Model/skeletongraph.cpp \
-    View/skeletongraphview.cpp
+    View/skeletongraphview.cpp \
+    Model/vertexgraph.cpp \
+    Model/edgegraph.cpp
 
 HEADERS  += deftypes.h \
 	Model/zoomer.h \
@@ -100,7 +102,9 @@ HEADERS  += deftypes.h \
     Model/skeletonmodel.h \
     View/skeletonview.h \
     Model/skeletongraph.h \
-    View/skeletongraphview.h
+    View/skeletongraphview.h \
+    Model/vertexgraph.h \
+    Model/edgegraph.h
 
 # Directives compilateur
 

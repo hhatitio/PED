@@ -95,18 +95,19 @@ void SkeletonGraph::generate3DImFromData() {
 
     extractMinAndMaxFromData(xmin,xmax,ymin,ymax,zmin,zmax);
     int delta = normalize(xmin,xmax,ymin,ymax,zmin,zmax);
-
+    int size = floor((double) delta*1.0);
     int row, col, slice;
-    row = col = slice = delta;
+    row = col = slice = size;
 
     skeletonIm3D = new Image3D<short int>(row,col,slice);
 
-    for(int x = 0; x < delta; x++){
-        for(int y = 0; y < delta; y++){
-            for(int z = 0; z < delta; z++){
-                skeletonIm3D->at(x+(y*delta)+(z*delta*delta)) = 0;
+    for(int x = 0; x < row; x++){
+        for(int y = 0; y < col; y++){
+            for(int z = 0; z < slice; z++){
+                skeletonIm3D->at(x+(y*col)+(z*row*col)) = 0;
                 boolMap.push_back(false);
                 isNodeTab.push_back(false);
+                nodes.push_back(NULL);
             }
         }
     }
@@ -115,17 +116,77 @@ void SkeletonGraph::generate3DImFromData() {
 
     for(int i = 0; i < data.size(); i+= 3){
 
-        int x = floor(data[i]*delta);
-        int y = floor(data[i+1]*delta);
-        int z = floor(data[i+2]*delta);
+        int x = floor(data[i]*row);
+        int y = floor(data[i+1]*col);
+        int z = floor(data[i+2]*slice);
 
-        skeletonIm3D->at(x+(y*delta)+(z*delta*delta)) = 255;
+        skeletonIm3D->at(x+(y*col)+(z*row*slice)) = 255;
 
         std::cout << x <<" "<< y <<" "<< z;
         std::cout << " : " << data[i] <<" "<< data[i+1] <<" "<< data[i+2] << std::endl;
     }
 
     std::cout << "data : " << data.size() << "/" << 372*3 << std::endl;
+}
+
+std::vector<VertexGraph *> SkeletonGraph::getNodeNeighboor(int x, int y, int z){
+    int nb_rows = skeletonImTmp.n_rows;
+    int nb_cols = skeletonImTmp.n_cols;
+    int nb_slices = skeletonImTmp.n_slices;
+    std::vector<VertexGraph *> lnodes;
+    for (int i = -1; i <= 1 ; ++i) {
+        for (int j = -1; j <= 1 ; ++j) {
+            for (int k = -1; k <= 1 ; ++k) {
+                if(i!=0 || j!=0 || k!=0){
+                    int x1 = x+i;
+                    int y1 = y+j;
+                    int z1 = z+k;
+                    if(isNode(x1,y1,z1)){
+                        lnodes.push_back(new VertexGraph(graph,x,y,z));
+                    }
+                    if(skeletonImTmp.at(x1+(y1*nb_cols)+(z1*nb_rows*nb_cols)) == 255){
+                        skeletonImTmp.at(x1+(y1*nb_cols)+(z1*nb_rows*nb_cols)) == 125;
+                        return getNodeNeighboor(x1,y1,z1);
+                    }
+                }
+            }
+        }
+    }
+    return lnodes;
+}
+
+
+void SkeletonGraph::initGraph(){
+      int nb_rows = skeletonIm3D->n_rows;
+      int nb_cols = skeletonIm3D->n_cols;
+      int nb_slices = skeletonIm3D->n_slices;
+      std::cout << "rows : " << nb_rows <<  std::endl;
+      std::cout << "cols : " << nb_cols <<  std::endl;
+      std::cout << "slices : " << nb_slices << std::endl;
+
+      skeletonImTmp.clear();
+      skeletonImTmp.set_size(skeletonIm3D->n_rows,skeletonIm3D->n_cols,skeletonIm3D->n_slices);
+      for(int i = 0; i < skeletonIm3D->size(); i++){
+          skeletonImTmp.at(i) = skeletonIm3D->at(i);
+      }
+
+      for(int i = 0; i < data.size(); i+= 3){
+
+          int x = floor(data[i]*nb_cols);
+          int y = floor(data[i+1]*nb_rows);
+          int z = floor(data[i+2]*nb_slices);
+
+          int pos = x+(y*nb_cols)+(z*nb_rows*nb_cols);
+          if(!boolMap[pos]){
+              if(isNode(x,y,z)){
+                  /*ListGraph::Node u = graph.addNode();
+                  ListGraph::Node v = getNodeNeighboor(x,y,z); isNodeTab[pos] = true;
+                  ListGraph::Edge e = graph.addEdge(u,v);*/
+              }
+              boolMap[pos] = true;
+          }
+     }
+
 }
 
 bool SkeletonGraph::isNode(int x, int y, int z){
@@ -137,7 +198,7 @@ bool SkeletonGraph::isNode(int x, int y, int z){
     for (int i = -1; i <= 1 ; ++i) {
         for (int j = -1; j <= 1 ; ++j) {
             for (int k = -1; k <= 1 ; ++k) {
-                if(i!=0 && j!=0 && k!=0){
+                if(i!=0 || j!=0 || k!=0){
                     int x1 = x+i;
                     int y1 = y+j;
                     int z1 = z+k;
