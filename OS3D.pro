@@ -29,10 +29,10 @@ OBJECTS_DIR = obj
 # Fichiers
 
 SOURCES += main.cpp\
-	Model/zoomer.cpp \
+        Model/zoomer.cpp \
         Model/Layer/imagelayer.cpp \
         Model/Algorithm/algorithmexception.cpp \
-	View/mainwindow.cpp \
+        View/mainwindow.cpp \
         View/imagescroll.cpp \
         View/opendicomwindow.cpp \
         View/histogramwindow.cpp \
@@ -44,23 +44,23 @@ SOURCES += main.cpp\
         View/Algorithm/algorithmswindow.cpp \
         View/Customplot/qcustomplot.cpp \
         View/Spanslider/qxtspanslider.cpp \
-    View/viewer3d.cpp \
-    Model/skeletonmodel.cpp \
-    View/skeletonview.cpp \
-    Model/skeletongraph.cpp \
-    View/skeletongraphview.cpp \
-    Model/vertexgraph.cpp \
-    Model/edgegraph.cpp
+        View/viewer3d.cpp \
+        Model/skeletonmodel.cpp \
+        View/skeletonview.cpp \
+        Model/skeletongraph.cpp \
+        View/skeletongraphview.cpp \
+#       Model/vertexgraph.cpp \
+#       Model/edgegraph.cpp
 
 HEADERS  += deftypes.h \
-	Model/zoomer.h \
-	Model/image3D.h \
-	Model/itktools.h \
+        Model/zoomer.h \
+        Model/image3D.h \
+        Model/itktools.h \
         Model/dgtaltools.h \
-	Model/interval.h \
+        Model/interval.h \
         Model/Layer/imagelayer.h \
         Model/Algorithm/algorithmexception.h \
-	Model/Algorithm/algorithm.h \
+        Model/Algorithm/algorithm.h \
         Model/Algorithm/ITK/algorithmitk.h \
         Model/Algorithm/ITK/algorithmitkdiscretegaussian.h \
         Model/Algorithm/ITK/algorithmitkbinarythreshold.h \
@@ -82,7 +82,7 @@ HEADERS  += deftypes.h \
         View/Layer/imagelayerstoolswindow.h \
         View/Layer/imagelayersviewer3dwindow.h \
         View/Algorithm/algorithmswindow.h \
-	View/Algorithm/algorithmview.h \
+        View/Algorithm/algorithmview.h \
         View/Algorithm/ITK/algorithmviewitkdiscretegaussian.h \
         View/Algorithm/ITK/algorithmviewitkbinarythreshold.h \
         View/Algorithm/ITK/algorithmviewitkthreshold.h \
@@ -96,25 +96,27 @@ HEADERS  += deftypes.h \
         View/Spanslider/qxtglobal.h \
         View/Spanslider/qxtspanslider.h \
         View/Spanslider/qxtspanslider_p.h \
-    View/viewer3d.h \
-    #Model/Algorithm/ITK/algorithmitkbinarythinning3d.h \
-    #View/Algorithm/ITK/algorithmviewitkbinarythinning3d.h \
-    Model/skeletonmodel.h \
-    View/skeletonview.h \
-    Model/skeletongraph.h \
-    View/skeletongraphview.h \
-    Model/vertexgraph.h \
-    Model/edgegraph.h
+        View/viewer3d.h \
+#       Model/Algorithm/ITK/algorithmitkbinarythinning3d.h \
+#       View/Algorithm/ITK/algorithmviewitkbinarythinning3d.h \
+        Model/skeletonmodel.h \
+        View/skeletonview.h \
+        Model/skeletongraph.h \
+        View/skeletongraphview.h \
+#       Model/vertexgraph.h \
+#       Model/edgegraph.h
 
 # Directives compilateur
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7
+LIBS += -stdlib=libc++ -mmacosx-version-min=10.7
 
 # Librairies externes
 
 INCLUDEPATH += /usr/include/ /usr/local/include/
 DEPENDPATH += /usr/local/include
 QMAKE_LIBDIR += /usr/local/lib/
+QMAKE_LFLAGS += -F/usr/local/lib/
 
 # Armadillo
 
@@ -157,14 +159,14 @@ LIBS +=	-litkgdcmjpeg12-$${ITK_NUMBER} \
 		-ldl \
 		-lexpat \
 
-# DGtal
-
-LIBS += -lDGtal
-
 # QGLViewer
 
 DEFINES += WITH_VISU3D_QGLVIEWER
-LIBS += -lQGLViewer -lGLU
+LIBS += -framework QGLViewer
+
+# DGtal
+
+LIBS += -lDGtal
 
 # Lemon
 
