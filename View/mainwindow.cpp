@@ -247,7 +247,7 @@ void MainWindow::openImage3D()
 void MainWindow::openOthersImage3D() /** TODO PUSH **/
 {
     // Mise à jour de l'image et de la fenêtre principale
-    QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.tif *.raw)");
+    QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.tif *.raw *.skel)");
     if (filename.isEmpty()) return;
     // Fermeture de l'image courante
     if (!closeImage())
@@ -257,6 +257,14 @@ void MainWindow::openOthersImage3D() /** TODO PUSH **/
     currentImageType = ImageType::Image3D;
     skeletonModel.setFilename(filename);
     convertImage.setFilename(filename);
+    if (filename.contains(".skel")) {
+        skeletonModel.setDataFromFile();
+        skeletonModel.generate3DImFromData();
+        image = skeletonModel.getSkeleton3DIm();
+        currentImageType = ImageType::Image3D;
+        updateImageComponents();
+        drawSlice();
+    }
 }
 
 void MainWindow::saveImage()
