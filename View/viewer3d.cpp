@@ -1,5 +1,7 @@
 #include "viewer3d.h"
 
+#include <iostream>
+
 void Viewer3D::setImageLayer(const ImageLayer &imageLayer)
 {
     this->imageLayer = imageLayer;

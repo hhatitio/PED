@@ -5,6 +5,8 @@
 
 #include "Model/Algorithm/algorithm.h"
 #include "Model/Layer/imagelayer.h"
+#include "Model/skeletonmodel.h"
+#include "Model/convertimage.h"
 #include "Model/skeletongraph.h"
 
 #include "View/imagescroll.h"
@@ -16,7 +18,7 @@
 #include "View/opendicomwindow.h"
 #include "View/histogramwindow.h"
 #include "View/windowingwindow.h"
-#include "View/skeletonview.h"
+#include "View/convertimageview.h"
 
 #include <QMainWindow>
 #include <QImage>
@@ -29,6 +31,7 @@
 #define ACTION_WINDOWING_TEXT           "&Fenêtrage"
 #define ACTION_HISTOGRAM_TEXT           "&Histogramme"
 #define ACTION_SKELETONIZATION_TEXT     "&Squelettisation"
+#define ACTION_CONVERT_TEXT             "&Convertir (Raw to Vol)" /** TODO PUSH **/
 #define ACTION_GRAPH_TEXT               "&Generate Graph"
 
 #define ACTION_EMPTY_IMAGE_LAYER        "&Aucune image calque"
@@ -60,6 +63,7 @@ public slots:
     void chooseDicom();
     void openDicom(const std::vector<std::string> &serieFileNames);
     void openImage3D();
+    void openOthersImage3D(); /** TODO PUSH **/
     void saveImage();
     bool closeImage();
 
@@ -78,7 +82,8 @@ public slots:
     // Gestion des fenêtres secondaires
     void openSecondaryWindow();
 
-    void openSkeletonization();
+    void skeletonization();
+    void convertImageRawToVol();
     void getGraph();
 
 private:
@@ -97,7 +102,9 @@ private:
     LayersThresholdWindow layersThresholdWindow;
     HistogramWindow histogramWindow;
     WindowingWindow windowingWindow;
-    SkeletonView skeletonView;
+    SkeletonModel skeletonModel;                    /** TODO PUSH **/ /** REMOVE SKELETONVIEW **/
+    ConvertImage convertImage;
+    ConvertImageView convertImageView;
     SkeletonGraph  skeletonGraph;
 
     Interval<PixelType> *intervalIntensity;

@@ -35,7 +35,6 @@ AlgorithmViewDGtalDistanceTransformation::AlgorithmViewDGtalDistanceTransformati
 
 AlgorithmViewDGtalDistanceTransformation::~AlgorithmViewDGtalDistanceTransformation() { }
 
-#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void AlgorithmViewDGtalDistanceTransformation::updateParametersWithAlgorithm(Algorithm<Image, Image> *algorithm) { }
 

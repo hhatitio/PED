@@ -356,7 +356,6 @@ void AlgorithmsWindow::editLogfileAlgorithm()
     listWidgetLogfile.item(indexAlgorithmLogfile)->setText(algorithmView->toString());
 }
 
-#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void AlgorithmsWindow::moveLogfileAlgorithm(const QModelIndex &srcParent, int srcStart, int srcEnd, const QModelIndex &destParent, int destStart)
 {
