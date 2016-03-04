@@ -123,7 +123,7 @@ void SkeletonModel::generate3DImFromData() {
     std::cout << "data : " << data.size() << "/" << 372*3 << std::endl;
 }
 
-Image* SkeletonModel::getSkeleton3DIm(){
-    const Image3D<short int> im = *skeletonIm3D;
+Image3D<short int>* SkeletonModel::getSkeleton3DIm(){
+    Image3D<short int> im = *skeletonIm3D;
     return new Image3D<short int>(im);
 }

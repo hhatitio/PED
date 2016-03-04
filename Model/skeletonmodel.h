@@ -27,7 +27,7 @@ public:
 
     int normalize(double xmin, double xmax, double ymin,
                   double ymax, double zmin, double zmax);
-    Image* getSkeleton3DIm();
+    Image3D<short int>* getSkeleton3DIm();
 
 private:
     QString filename;

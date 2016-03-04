@@ -29,7 +29,12 @@ OBJECTS_DIR = obj
 # Fichiers
 
 SOURCES += main.cpp\
+        Model/skeletonmodel.cpp \
+        Model/skeletongraph.cpp \
+        Model/extendededge.cpp \
+        Model/extendednode.cpp \
         Model/zoomer.cpp \
+        Model/convertimage.cpp \
         Model/Layer/imagelayer.cpp \
         Model/Algorithm/algorithmexception.cpp \
         View/mainwindow.cpp \
@@ -37,6 +42,8 @@ SOURCES += main.cpp\
         View/opendicomwindow.cpp \
         View/histogramwindow.cpp \
         View/windowingwindow.cpp \
+        View/convertimageview.cpp \
+        View/skeletonwindow.cpp \
         View/Layer/imagelayerswindow.cpp \
         View/Layer/layersthresholdwindow.cpp \
         View/Layer/imagelayerstoolswindow.cpp \
@@ -45,12 +52,6 @@ SOURCES += main.cpp\
         View/Customplot/qcustomplot.cpp \
         View/Spanslider/qxtspanslider.cpp \
         View/viewer3d.cpp \
-        Model/skeletonmodel.cpp \
-        View/skeletonview.cpp \
-        Model/skeletongraph.cpp \
-        View/skeletongraphview.cpp \
-#       Model/vertexgraph.cpp \
-#       Model/edgegraph.cpp
 
 HEADERS  += deftypes.h \
         Model/zoomer.h \
@@ -58,6 +59,11 @@ HEADERS  += deftypes.h \
         Model/itktools.h \
         Model/dgtaltools.h \
         Model/interval.h \
+        Model/skeletonmodel.h \
+        Model/skeletongraph.h \
+        Model/extendededge.h \
+        Model/extendednode.h \
+        Model/convertimage.h \
         Model/Layer/imagelayer.h \
         Model/Algorithm/algorithmexception.h \
         Model/Algorithm/algorithm.h \
@@ -77,6 +83,8 @@ HEADERS  += deftypes.h \
         View/opendicomwindow.h \
         View/histogramwindow.h \
         View/windowingwindow.h \
+        View/convertimageview.h \
+        View/skeletonwindow.h \
         View/Layer/imagelayerswindow.h \
         View/Layer/layersthresholdwindow.h \
         View/Layer/imagelayerstoolswindow.h \
@@ -96,15 +104,7 @@ HEADERS  += deftypes.h \
         View/Spanslider/qxtglobal.h \
         View/Spanslider/qxtspanslider.h \
         View/Spanslider/qxtspanslider_p.h \
-        View/viewer3d.h \
-#       Model/Algorithm/ITK/algorithmitkbinarythinning3d.h \
-#       View/Algorithm/ITK/algorithmviewitkbinarythinning3d.h \
-        Model/skeletonmodel.h \
-        View/skeletonview.h \
-        Model/skeletongraph.h \
-        View/skeletongraphview.h \
-#       Model/vertexgraph.h \
-#       Model/edgegraph.h
+        View/viewer3d.h
 
 # Directives compilateur
 
