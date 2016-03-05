@@ -35,6 +35,8 @@ public:
     void initGraph();
     void arcToNeighboors(ExtendedNode n);
     void arcToSingleNeighboor(ExtendedNode n, int n_pos);
+    std::vector<int> getCoordOutOfIndex(int idx);
+    int getIndexOutOfCoord(int i, int j, int k);
 
 private:
     ListGraph graph;

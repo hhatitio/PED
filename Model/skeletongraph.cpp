@@ -266,6 +266,50 @@ bool SkeletonGraph::isNode(int x, int y, int z){
     return ((nb_neighboor >= 3)||(nb_neighboor == 1));
 }
 
+int SkeletonGraph::getIndexOutOfCoord(int i, int j, int k){
+
+
+    // IF Coordinate is out of boundaries associate intensity with -1
+    if(i < 0||i>=skeletonImTmp.n_cols){
+        return -1;
+    }
+    if(j < 0||j>=skeletonImTmp.n_rows){
+        return -1;
+    }
+    if(k < 0||k>=skeletonImTmp.n_slices){
+        return -1;
+    }
+
+    // Formula to calculate IDX out of 3D Dimensional coordinate
+    int sizeLayer = skeletonImTmp.n_cols*skeletonImTmp.n_rows;
+    return (k*sizeLayer)+(j*skeletonImTmp.n_cols)+i;
+}
+
+/*
+ * getCoordOutOfIndex(int idx)
+ * INPUT:
+ * Scalar INDEX of the Voxel to access intensity
+ * in "std::vector<int> data;"
+ * OUTPUT:
+ * 3D Dimensional coordinate of voxel point
+ */
+
+std::vector<int> SkeletonGraph::getCoordOutOfIndex(int idx){
+
+    // Mathematical formulas to calculate 3D Coordinte of voxel
+    int sizeLayer = skeletonImTmp.n_cols*skeletonImTmp.n_rows;
+    int z =(int)idx/sizeLayer;
+    int idx2D = idx-z*sizeLayer;
+    int y =(int) idx2D/skeletonImTmp.n_cols;
+    int x = idx2D%skeletonImTmp.n_cols;
+    // Store the calculated coordinates
+    std::vector<int> coord;
+    coord.push_back(x);
+    coord.push_back(y);
+    coord.push_back(z);
+    return coord;
+}
+
 Image* SkeletonGraph::getSkeleton3DIm(){
     //    const Image3D<short int> im = *skeletonIm3D;
     return new Image3D<short int>(skeletonImTmp);
