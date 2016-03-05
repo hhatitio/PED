@@ -43,7 +43,7 @@ private:
     std::vector<bool> isNodeTab;
     std::unordered_map<int, ExtendedNode> nodes;
     std::unordered_map<int, bool> doesEdgeExist;
-    Image3D<short int> *skeletonIm3D;
+    Image3D<short int> skeletonIm3D;
     Image3D<short int> skeletonImTmp;
 };
 

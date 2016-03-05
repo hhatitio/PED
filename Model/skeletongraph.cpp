@@ -10,8 +10,8 @@ SkeletonGraph::SkeletonGraph() {
 
 SkeletonGraph::SkeletonGraph(Image* im) {
     const Image3D<short int> im_const = *im;
-    skeletonIm3D = new Image3D<short int>(im_const);
-    skeletonImTmp = Image3D<short int>(im_const);
+    skeletonIm3D = Image3D<short int>(im_const);
+    skeletonImTmp = Image3D<short int>(skeletonIm3D);
 }
 
 SkeletonGraph::~SkeletonGraph() {}
@@ -19,6 +19,7 @@ SkeletonGraph::~SkeletonGraph() {}
 void SkeletonGraph::setGraph(Image* im) {
     const Image3D<short int> im_const = *im;
     //skeletonIm3D = new Image3D<short int>(im_const);
+    skeletonIm3D = Image3D<short int>(im_const);
     skeletonImTmp = Image3D<short int>(im_const);
 }
 
@@ -189,7 +190,8 @@ void SkeletonGraph::initGraph(){
     for (auto it = nodes.begin(); it!= nodes.end(); ++it){
         ExtendedNode n = it->second;
         arcToNeighboors(n);
-        //std::cout << "node | " << pos << ":" << n.getId() << std::endl;
+        skeletonImTmp.at(it->first) = 200;
+        std::cout << "node | " << it->first << ":" << n.getId() << std::endl;
     }
 }
 
@@ -215,7 +217,7 @@ void SkeletonGraph::arcToNeighboors(ExtendedNode n0){
                     
                     if(x1 >= 0   && y1 >= 0   && z1 >= 0   &&
                        x1 < nb_x && y1 < nb_y && z1 < nb_z &&
-                       skeletonImTmp.at(n_pos))
+                       skeletonImTmp.at(n_pos) == 255)
                     {
                         arcToSingleNeighboor(n0, n_pos);
                     }
@@ -234,9 +236,9 @@ void SkeletonGraph::arcToSingleNeighboor(ExtendedNode n0, int n_pos){
 }
 
 bool SkeletonGraph::isNode(int x, int y, int z){
-    int nb_rows = skeletonIm3D->n_rows;
-    int nb_cols = skeletonIm3D->n_cols;
-    int nb_slices = skeletonIm3D->n_slices;
+    int nb_rows = skeletonIm3D.n_rows;
+    int nb_cols = skeletonIm3D.n_cols;
+    int nb_slices = skeletonIm3D.n_slices;
     int nb_neighboor = 0;
     
     for (int i = -1; i <= 1 ; ++i) {
@@ -249,7 +251,7 @@ bool SkeletonGraph::isNode(int x, int y, int z){
                     if((x1>=0 && y1>=0 && z1>=0) &&
                        (x1<nb_cols && y1<nb_rows && z1<nb_slices)){
                         int pos = x1+(y1*nb_cols)+(z1*nb_rows*nb_cols);
-                        if(!isNodeTab[pos] && skeletonIm3D->at(x1+(y1*nb_cols)+(z1*nb_rows*nb_cols)) == 255){
+                        if(!isNodeTab[pos] && skeletonIm3D.at(x1+(y1*nb_cols)+(z1*nb_rows*nb_cols)) == 255){
                             nb_neighboor++;
                         }
                     }
@@ -259,7 +261,7 @@ bool SkeletonGraph::isNode(int x, int y, int z){
     }
     std::cout <<"at: " << x << " "<< y << " " << z << " "
     << "neighboor : " << nb_neighboor << " ("
-    << skeletonIm3D->at(x+(y*nb_cols)+(z*nb_rows*nb_cols)) << ")" << std::endl;
+    << skeletonIm3D.at(x+(y*nb_cols)+(z*nb_rows*nb_cols)) << ")" << std::endl;
     
     return ((nb_neighboor >= 3)||(nb_neighboor == 1));
 }
