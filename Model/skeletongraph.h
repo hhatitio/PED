@@ -33,7 +33,8 @@ public:
     bool isNode(int x, int y, int z);
     Image* getSkeleton3DIm();
     void initGraph();
-    void addNeighboor(int x, int y, int z, ListGraph::Node node);
+    void arcToNeighboors(ExtendedNode n);
+    void arcToSingleNeighboor(ExtendedNode n, int n_pos);
 
 private:
     ListGraph graph;
@@ -41,6 +42,7 @@ private:
     std::vector<bool> isVoxelChecked;
     std::vector<bool> isNodeTab;
     std::unordered_map<int, ExtendedNode> nodes;
+    std::unordered_map<int, bool> doesEdgeExist;
     Image3D<short int> *skeletonIm3D;
     Image3D<short int> skeletonImTmp;
 };

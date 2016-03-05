@@ -17,9 +17,13 @@ public:
     int getSize();
     void setSize(int length);
     int getId();
+    int getFirstNode();
+    int getSecondNode();
 
 private:
     int _id;
+    int _id_node1;
+    int _id_node2;
     int _length;
     std::vector<int> _adjacentNodes;
 };

@@ -3,6 +3,8 @@
 
 ExtendedEdge::ExtendedEdge(ListGraph &g, int u, int v){
     _id = g.id(g.addEdge(g.nodeFromId(u), g.nodeFromId(v)));
+    _id_node1 = u;
+    _id_node2 = v;
     _length = 0;
 }
 
@@ -23,6 +25,14 @@ void ExtendedEdge::setSize(int length){
 
 int ExtendedEdge::getId(){
     return _id;
+}
+
+int ExtendedEdge::getFirstNode(){
+    return _id_node1;
+}
+
+int ExtendedEdge::getSecondNode(){
+    return _id_node2;
 }
 
 int ExtendedEdge::getSize(){
