@@ -3,6 +3,8 @@
 
 #include <QFile>
 #include <lemon/list_graph.h>
+#include <lemon/graph_to_eps.h>
+#include <lemon/math.h>
 #include <unordered_map>
 
 //#include "Model/image3D.h"
@@ -11,6 +13,8 @@
 #include "deftypes.h"
 
 using namespace lemon;
+
+typedef dim2::Point<int> Point;
 
 class SkeletonGraph
 {
@@ -33,6 +37,7 @@ public:
     bool isNode(int x, int y, int z);
     Image* getSkeleton3DIm();
     void initGraph();
+    void contractNodes(ExtendedNode n);
     void arcToNeighboors(ExtendedNode n);
     void arcToSingleNeighboor(ExtendedNode n, int n_pos);
     std::vector<int> getCoordOutOfIndex(int idx);

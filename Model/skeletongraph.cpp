@@ -191,8 +191,35 @@ void SkeletonGraph::initGraph(){
         ExtendedNode n = it->second;
         arcToNeighboors(n);
         skeletonImTmp.at(it->first) = 200;
-        std::cout << "node | " << it->first << ":" << n.getId() << std::endl;
+        //std::cout << "node | " << it->first << ":" << n.getId() << std::endl;
     }
+    
+    ListGraph::NodeMap<Point> coords(graph);
+    ListGraph::NodeMap<double> sizes(graph);
+    ListGraph::NodeMap<int> colors(graph);
+    ListGraph::NodeMap<int> shapes(graph);
+    ListGraph::ArcMap<int> acolors(graph);
+    ListGraph::ArcMap<int> widths(graph);
+    
+    for (auto it = nodes.begin(); it!= nodes.end(); ++it){
+        ExtendedNode n = it->second;
+        contractNodes(n);
+        
+        int x = n.getX();
+        int y = n.getY();
+        int z = n.getZ();
+        
+        ListGraph::Node gn = graph.nodeFromId(n.getId());
+
+        coords[gn] = Point(x+z,y+z);
+        sizes[gn]  = 1;
+        colors[gn] = 1;
+        shapes[gn] = 0;
+    }
+
+    graphToEps(graph,"graph.eps").scale(10).coords(coords)
+    .nodeScale(1).nodeSizes(sizes)
+    .arcWidthScale(.4).run();
 }
 
 void SkeletonGraph::arcToNeighboors(ExtendedNode n0){
@@ -216,10 +243,16 @@ void SkeletonGraph::arcToNeighboors(ExtendedNode n0){
                     int n_pos = x1+(y1*nb_y)+(z1*nb_x*nb_y);
                     
                     if(x1 >= 0   && y1 >= 0   && z1 >= 0   &&
-                       x1 < nb_x && y1 < nb_y && z1 < nb_z &&
-                       skeletonImTmp.at(n_pos) == 255)
-                    {
-                        arcToSingleNeighboor(n0, n_pos);
+                       x1 < nb_x && y1 < nb_y && z1 < nb_z) {
+                        
+                        if (skeletonImTmp.at(n_pos) == 255) {
+                            arcToSingleNeighboor(n0, n_pos);
+                            n0.addAdjacentNode(n_pos);
+                        }
+                        
+                        if (skeletonImTmp.at(n_pos) == 200) {
+                            n0.addAdjacentNode(n_pos);
+                        }
                     }
                 }
             }
@@ -233,6 +266,14 @@ void SkeletonGraph::arcToSingleNeighboor(ExtendedNode n0, int n_pos){
     ExtendedEdge e = ExtendedEdge(graph, n0.getId(), id_n2);
     doesEdgeExist[e.getId()] = 1;
     std::cout << "edge | " << e.getId() << std::endl;
+}
+
+void SkeletonGraph::contractNodes(ExtendedNode n){
+    //supprimer dans graph g
+    //suppirmer arc du graph
+    //hashmap
+    //mettre a jour adjacentNodes dans extendedNode.
+    //connecter les deux voisins.
 }
 
 bool SkeletonGraph::isNode(int x, int y, int z){
