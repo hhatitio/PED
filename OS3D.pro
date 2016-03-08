@@ -35,6 +35,8 @@ SOURCES += main.cpp\
         Model/extendednode.cpp \
         Model/zoomer.cpp \
         Model/convertimage.cpp \
+        Model/mesh.cpp \
+        Model/meshStruct.cpp \
         Model/Layer/imagelayer.cpp \
         Model/Algorithm/algorithmexception.cpp \
         View/mainwindow.cpp \
@@ -44,6 +46,7 @@ SOURCES += main.cpp\
         View/windowingwindow.cpp \
         View/convertimageview.cpp \
         View/skeletonwindow.cpp \
+        View/myopenglwidget.cpp \
         View/Layer/imagelayerswindow.cpp \
         View/Layer/layersthresholdwindow.cpp \
         View/Layer/imagelayerstoolswindow.cpp \
@@ -59,6 +62,8 @@ HEADERS  += deftypes.h \
         Model/itktools.h \
         Model/dgtaltools.h \
         Model/interval.h \
+        Model/mesh.h \
+        Model/meshStruct.hpp \
         Model/skeletonmodel.h \
         Model/skeletongraph.h \
         Model/extendededge.h \
@@ -84,6 +89,7 @@ HEADERS  += deftypes.h \
         View/histogramwindow.h \
         View/windowingwindow.h \
         View/convertimageview.h \
+        View/myopenglwidget.h \
         View/skeletonwindow.h \
         View/Layer/imagelayerswindow.h \
         View/Layer/layersthresholdwindow.h \

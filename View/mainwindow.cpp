@@ -4,6 +4,7 @@
 #include "Model/dgtaltools.h"
 #include "Model/Algorithm/algorithmexception.h"
 #include "View/Customplot/qcustomplot.h"
+#include "View/myopenglwidget.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -544,5 +545,35 @@ void MainWindow::getGraph(){
     updateImageComponents();
     drawSlice();
     DGtalTools<PixelType>::saveImage3D("graphImage3D.vol", image);
+
+    QDialog *openglDialog = new QDialog(this);
+    
+    //openglDialog->setMinimumHeight(600);
+    //openglDialog->setMinimumWidth(800);
+    
+    openglDialog->setObjectName(QString("3D Visualizer"));
+    openglDialog->resize(500, 534);
+    openglDialog->setMinimumSize(QSize(500, 534));
+    QWidget *centralWidget = new QWidget(openglDialog);
+    centralWidget->setObjectName(QString("centralWidget"));
+    centralWidget->setMinimumSize(QSize(500, 500));
+    QGridLayout *gridLayout = new QGridLayout(centralWidget);
+    gridLayout->setSpacing(6);
+    gridLayout->setContentsMargins(11, 11, 11, 11);
+    gridLayout->setObjectName(QString("gridLayout"));
+    gridLayout->setContentsMargins(0, 0, 0, 0);
+    MyOpenGLWidget *openGLWidget = new MyOpenGLWidget(centralWidget);
+    openGLWidget->setObjectName(QString("openGLWidget"));
+    openGLWidget->setMinimumSize(QSize(500, 500));
+    
+    gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
+    
+    //openglDialog->set
+    
+    //QWidget *widget = new MyOpenGLWidget(openglDialog);
+    
+    openglDialog->show();
+    //widget->show();
+    
     //skeletonView.setFilename(filename);
 }
