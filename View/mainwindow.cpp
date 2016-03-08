@@ -539,9 +539,10 @@ void MainWindow::getGraph(){
     // Suppression des calques
     removeLayers();
     // Mise à jour de l'image et de la fenêtre principale
-    //image = skeletonGraph.getSkeleton3DIm();
-    //currentImageType = ImageType::Image3D;
-    //updateImageComponents();
-    //drawSlice();
+    image = skeletonGraph.getGraphImage3D();
+    currentImageType = ImageType::Image3D;
+    updateImageComponents();
+    drawSlice();
+    DGtalTools<PixelType>::saveImage3D("graphImage3D.vol", image);
     //skeletonView.setFilename(filename);
 }

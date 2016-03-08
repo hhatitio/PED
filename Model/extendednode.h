@@ -11,6 +11,7 @@ public:
 
     bool isAdjacentNode(int id);
     void addAdjacentNode(int id);
+    std::vector<int> getAdjacentNode();
     void deleteAdjacentNode(int id);
     int getNbIncidentEdges();
     void addIncidentEdges(int id);
@@ -22,6 +23,8 @@ public:
     void setZ(int z);
     bool operator ==(ExtendedNode v);
     int getId();
+    std::vector<int> getCoordOutOfIndex(int n_cols, int n_rows, int n_slices,int idx);
+    int getIndex(int n_cols, int n_rows, int n_slices);
 
 private:
     int _id;

@@ -36,20 +36,23 @@ public:
     int computeNbNode();
     bool isNode(int x, int y, int z);
     Image* getSkeleton3DIm();
+    Image* getGraphImage3D();
     void initGraph();
-    void contractNodes(ExtendedNode n);
-    void arcToNeighboors(ExtendedNode n);
-    void arcToSingleNeighboor(ExtendedNode n, int n_pos);
-    std::vector<int> getCoordOutOfIndex(int idx);
-    int getIndexOutOfCoord(int i, int j, int k);
+    bool contractNodes(ExtendedNode *n);
+    void arcToNeighboors(ExtendedNode *n);
+    void arcToSingleNeighboor(ExtendedNode *n, int n_pos);
+    std::vector<ExtendedNode*> getNeighboorhood(int x,
+                                                     int y,
+                                                     int z);
+    
 
 private:
     ListGraph graph;
     std::vector<double> data;
     std::vector<bool> isVoxelChecked;
     std::vector<bool> isNodeTab;
-    std::unordered_map<int, ExtendedNode> nodes;
-    std::unordered_map<int, bool> doesEdgeExist;
+    std::unordered_map<int, ExtendedNode*> nodes;
+    //std::unordered_map<int, bool> doesEdgeExist;
     Image3D<short int> skeletonIm3D;
     Image3D<short int> skeletonImTmp;
 };
