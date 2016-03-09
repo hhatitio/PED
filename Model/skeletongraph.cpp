@@ -215,6 +215,19 @@ void SkeletonGraph::initGraph(){
         std::cout << "while(process) : " << nb++
                   << (process?"true":"false") << std::endl;
     }
+
+    process = true;
+    while(process) {
+        process = false;
+        for (auto it = nodes.begin(); (it!= nodes.end() && !process); ++it){
+            ExtendedNode *n = it->second;
+            process = process || transformIntoArc(n);
+
+            std::cout << "transform " << n->getId() << " : " << n->getAdjacentNode().size() << std::endl;
+        }
+        //std::cout << "while(process) : " << nb++
+        //          << (process?"true":"false") << std::endl;
+    }
     
     for (auto it = nodes.begin(); it!= nodes.end(); ++it){
         ExtendedNode *n = it->second;
@@ -232,8 +245,8 @@ void SkeletonGraph::initGraph(){
     
     
     graphToEps(graph,"graph.eps").scale(10).coords(coords)
-    .nodeScale(.1).nodeSizes(sizes)
-    .arcWidthScale(.005).run();
+            .nodeScale(.1).nodeSizes(sizes)
+            .arcWidthScale(.005).run();
 }
 
 void SkeletonGraph::arcToNeighboors(ExtendedNode *n0){
@@ -257,7 +270,7 @@ void SkeletonGraph::arcToNeighboors(ExtendedNode *n0){
                     int n_pos = x1+(y1*nb_y)+(z1*nb_x*nb_y);
                     
                     if(x1 >= 0   && y1 >= 0   && z1 >= 0   &&
-                       x1 < nb_x && y1 < nb_y && z1 < nb_z) {
+                            x1 < nb_x && y1 < nb_y && z1 < nb_z) {
                         
                         if (skeletonImTmp.at(n_pos) == 255) {
                             arcToSingleNeighboor(n0, n_pos);
@@ -280,6 +293,75 @@ void SkeletonGraph::arcToSingleNeighboor(ExtendedNode *n0, int n_pos){
     ExtendedEdge e = ExtendedEdge(graph, n0->getId(), id_n2);
     //doesEdgeExist[e.getId()] = 1;
     //std::cout << "edge | " << e.getId() << std::endl;
+}
+
+bool SkeletonGraph::spotHighDivergentNodes(ExtendedNode *n){
+    return false;
+}
+
+bool SkeletonGraph::transformIntoArc(ExtendedNode *n){
+    //bool res = false;
+    std::vector<int> adNodes = n->getAdjacentNode();
+    std::vector<ExtendedNode*> neighboors;
+
+    neighboors = getNeighboorhood(n->getX(), n->getY(), n->getZ());
+
+    for(int i=0; i< neighboors.size(); ++i){
+        ExtendedNode *enode = neighboors.at(i);
+        if(adNodes.size() != enode->getAdjacentNode().size()){
+            std::cout << "transformIntoArc false 1" << std::endl;
+            return false;
+        }
+    }
+
+    for(int i=0; i< neighboors.size(); ++i){
+        ExtendedNode *enode = neighboors.at(i);
+        if(!eraseNodes(enode)){
+            std::cout << "transformIntoArc false 2" << std::endl;
+            return false;
+        }
+    }
+    std::cout << "transformIntoArc true" << std::endl;
+    return true;
+}
+
+bool SkeletonGraph::eraseNodes(ExtendedNode *n){
+    std::vector<int> adNodes = n->getAdjacentNode();
+    std::vector<ExtendedNode*> neighboors;
+
+    if(adNodes.empty()){
+        std::cout << "eraseNodes empty" << std::endl;
+        return false;
+    }
+    if(adNodes.size()>=2){
+        neighboors = getNeighboorhood(n->getX(), n->getY(), n->getZ());
+
+        ListGraph::Node u = graph.nodeFromId(adNodes.at(0));
+        ExtendedNode *enode_u = neighboors[0];
+        enode_u->deleteAdjacentNode(n->getId());
+
+        for(int i=1; i< adNodes.size();i++){
+            ListGraph::Node v = graph.nodeFromId(adNodes.at(i));
+            ExtendedEdge e = ExtendedEdge(graph, graph.id(u), graph.id(v));
+
+
+            ExtendedNode *enode_v = neighboors[i];
+
+            enode_u->addAdjacentNode(enode_v->getId());
+            enode_v->addAdjacentNode(enode_u->getId());
+
+            enode_v->deleteAdjacentNode(n->getId());
+        }
+
+        std::cout << "eraseNodes size >=2" << std::endl;
+
+    }
+    std::cout << "eraseNodes graph erase" << std::endl;
+    graph.erase(graph.nodeFromId(n->getId()));
+    std::cout << "eraseNodes nodes erase" << std::endl;
+    nodes.erase(n->getIndex(skeletonIm3D.n_cols, skeletonIm3D.n_rows, skeletonIm3D.n_slices));
+    std::cout << "eraseNodes true" << std::endl;
+    return true;
 }
 
 bool SkeletonGraph::contractNodes(ExtendedNode *n){
@@ -320,8 +402,8 @@ bool SkeletonGraph::contractNodes(ExtendedNode *n){
 }
 
 std::vector<ExtendedNode*> SkeletonGraph::getNeighboorhood(int x,
-                                                          int y,
-                                                          int z){
+                                                           int y,
+                                                           int z){
     int nb_rows = ((int)skeletonIm3D.n_rows);
     int nb_cols = ((int)skeletonIm3D.n_cols);
     int nb_slices = ((int)skeletonIm3D.n_slices);
@@ -336,7 +418,7 @@ std::vector<ExtendedNode*> SkeletonGraph::getNeighboorhood(int x,
                     int y1 = y+j;
                     int z1 = z+k;
                     if((x1>=0 && y1>=0 && z1>=0) &&
-                       (x1<nb_cols && y1<nb_rows && z1<nb_slices)){
+                            (x1<nb_cols && y1<nb_rows && z1<nb_slices)){
                         int pos = x1+(y1*nb_cols)+(z1*nb_rows*nb_cols);
                         
                         std::unordered_map<int,ExtendedNode*>::const_iterator n = nodes.find(pos);

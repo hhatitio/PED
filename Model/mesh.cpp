@@ -28,6 +28,14 @@ Mesh::Mesh(std::string file)
     loadFromFile(file);
 }
 
+Mesh::Mesh(Image *im)
+{
+    // On construit la liste des faces à partir du tableau mesh.
+    // et on ramène les positions de chaques faces entre -1 et 1.
+    _valmax = 255;
+    computeFace(im);
+    normalizeMesh();
+}
 
 // ----------------------------------------------------------
 Mesh::~Mesh()
@@ -163,6 +171,104 @@ void Mesh::computeFace(int *** t)
                     if (z < _dim3 - 1)
                         bool3 = (valCur > t[x][y][z + 1]);
                     
+                    if (bool1) {
+                        Face f1 = { p1, p2, p3, p4, valCur};
+                        _faces.push_back(f1);
+                    }
+                    if (bool2) {
+                        Face f2 = { p3, p4, p5, p6, valCur};
+                        _faces.push_back(f2);
+                    }
+                    if (bool3) {
+                        Face f3 = { p5, p6, p7, p8, valCur};
+                        _faces.push_back(f3);
+                    }
+                    if (bool4) {
+                        Face f4 = { p7, p8, p1, p2, valCur};
+                        _faces.push_back(f4);
+                    }
+                    if (bool5) {
+                        Face f5 = { p2, p3, p6, p7, valCur};
+                        _faces.push_back(f5);
+                    }
+                    if (bool6) {
+                        Face f6 = { p1, p4, p5, p8, valCur};
+                        _faces.push_back(f6);
+                    }
+                    //std::cout << bool1 << bool2 << bool3 << bool4 << bool5 << bool6 << std::endl;
+                }
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------
+void Mesh::computeFace(Image *im)
+{
+    // p1 .. p8 représentent les 8 sommets du cube
+    // englobant un voxel à une position (x,y,z).
+    // Une illustration de la disposition du cube est
+    // disponible dans le pdf joint au code source.
+    vec3 p1, p2, p3, p4, p5, p6, p7, p8;
+
+    _dim3 = ((unsigned int)im->n_slices);
+    _dim2 = ((unsigned int)im->n_rows);
+    _dim1 = ((unsigned int)im->n_cols);
+
+    for (unsigned int z = 0; z < _dim3; z++)
+    {
+        for (unsigned int y = 0; y < _dim2; y++)
+        {
+            for (unsigned int x = 0; x < _dim1; x++)
+            {
+                // On crée une variable booléenne pour chacunes des six
+                // faces du cube englobant le voxel à la position (x,y,z).
+                // Si le booléen est vrai la construction de la face
+                // correspondante s'effectuera, sinon elle sera 'oubliée'.
+                int pos =  x+(y*_dim2)+(z*_dim1*_dim2);
+                int valCur = im->at(pos);
+                bool bool1 = true, bool2 = true, bool3 = true,
+                     bool4 = true, bool5 = true, bool6 = true;
+
+                if (valCur != 0)
+                {
+                    p1.x = x - 0.5; p1.y = y - 0.5; p1.z = z - 0.5;
+                    p2.x = x - 0.5; p2.y = y + 0.5; p2.z = z - 0.5;
+                    p3.x = x + 0.5; p3.y = y + 0.5; p3.z = z - 0.5;
+                    p4.x = x + 0.5; p4.y = y - 0.5; p4.z = z - 0.5;
+                    p5.x = x + 0.5; p5.y = y - 0.5; p5.z = z + 0.5;
+                    p6.x = x + 0.5; p6.y = y + 0.5; p6.z = z + 0.5;
+                    p7.x = x - 0.5; p7.y = y + 0.5; p7.z = z + 0.5;
+                    p8.x = x - 0.5; p8.y = y - 0.5; p8.z = z + 0.5;
+
+                    // On met à jour les booléens, la face sera dessinée
+                    // uniquement si elle est strictement supérieur au
+                    // voisin concerné (du dessus, du dessous etc...).
+                    if (x > 0){
+                        pos = (x-1)+(y*_dim2)+(z*_dim1*_dim2);
+                        bool4 = (valCur > im->at(pos));
+                    }
+                    if (x < _dim1 - 1){
+                        pos = (x+1)+(y*_dim2)+(z*_dim1*_dim2);
+                        bool2 = (valCur > im->at(pos));
+                    }
+                    if (y > 0){
+                        pos = x+((y-1)*_dim2)+(z*_dim1*_dim2);
+                        bool6 = (valCur > im->at(pos));
+                    }
+                    if (y < _dim2 - 1){
+                        pos = x+((y+1)*_dim2)+(z*_dim1*_dim2);
+                        bool5 = (valCur > im->at(pos));
+                    }
+                    if (z > 0){
+                        pos = x+(y*_dim2)+((z-1)*_dim1*_dim2);
+                        bool1 = (valCur > im->at(pos));
+                    }
+                    if (z < _dim3 - 1){
+                        pos = x+(y*_dim2)+((z+1)*_dim1*_dim2);
+                        bool3 = (valCur > im->at(pos));
+                    }
+
                     if (bool1) {
                         Face f1 = { p1, p2, p3, p4, valCur};
                         _faces.push_back(f1);

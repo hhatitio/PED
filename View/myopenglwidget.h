@@ -18,12 +18,13 @@
 #include <QKeyEvent>
 #include <vector>
 
-#include "mesh.h"
+#include "Model/mesh.h"
 
 class MyOpenGLWidget : public QGLWidget
 {
 public:
-    MyOpenGLWidget(QWidget *parent);
+    MyOpenGLWidget(QWidget *parent, Image* im =NULL);
+   // MyOpenGLWidget(QWidget *parent, Image* im);
     ~MyOpenGLWidget();
     
     void setXRotation(int angle);

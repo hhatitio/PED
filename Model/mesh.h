@@ -23,16 +23,19 @@
 #include <vector>
 
 #include "meshStruct.hpp"
+#include "deftypes.h"
 
 class Mesh {
     
 public:
     Mesh(std::string f = "");
+    Mesh(Image *im);
     ~Mesh();
     
     int  loadFromFile(std::string file);
     size_t readFile(std::string f, std::vector<int> &t);
     void computeFace(int*** m);
+    void computeFace(Image *im);
     void normalizeMesh();
     
     std::vector<Face> getFaces();

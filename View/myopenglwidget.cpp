@@ -18,7 +18,7 @@
 std::string path = "/Users/andrearuffino/Downloads/pgm3dViewer/Data/test.pgm3d";
 
 
-MyOpenGLWidget::MyOpenGLWidget(QWidget *parent)
+MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im)
 : QGLWidget(parent)
 {
     setFocusPolicy(Qt::StrongFocus);
@@ -31,7 +31,11 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent)
     _transparency = 0.90;
     _splitVal = 0.;
     
+    if(im == NULL){
     _mesh = new Mesh(path);
+    }else{
+        _mesh = new Mesh(im);
+    }
     _faces = _mesh->getFaces();
     _trspcMod = 0;
     _splitMod = 0;
@@ -189,14 +193,14 @@ void MyOpenGLWidget::drawFace(Face f)
     float a;
     float alpha = (f.val / _mesh->getValmax());
     
-    if ((_trspcMod % 2) == 0)
+    /*if ((_trspcMod % 2) == 0)
         a = 1. - (alpha * _transparency);
-    else
+    else*/
         a = alpha * _transparency;
     
-    float r = (f.a.x + 1) / 2;
-    float g = (f.a.y + 1) / 2;
-    float b = (f.a.z + 1) / 2;
+    float r = alpha;//(f.a.x + 1) / 2;
+    float g = alpha;//(f.a.y + 1) / 2;
+    float b = alpha;//(f.a.z + 1) / 2;
     
     //std::cout <<r << " " << g << " " << b << " " << alpha << std::endl;
     

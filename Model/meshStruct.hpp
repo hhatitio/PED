@@ -16,6 +16,6 @@
 
 typedef struct { float x, y, z; } vec3;
 typedef struct { vec3 pos, nrm; } Voxel;
-typedef struct { vec3 a, b, c, d; int val; } Face;
+typedef struct { vec3 a, b, c, d; float val; } Face;
 
 #endif /* meshStruct_hpp */

@@ -534,11 +534,7 @@ void MainWindow::getGraph(){
     // Mise à jour de l'image et de la fenêtre principale
     //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
     //if (filename.isEmpty()) return;
-    // Fermeture de l'image courante
-    if (!closeImage())
-        return;
-    // Suppression des calques
-    removeLayers();
+
     // Mise à jour de l'image et de la fenêtre principale
     image = skeletonGraph.getGraphImage3D();
     currentImageType = ImageType::Image3D;
@@ -562,7 +558,7 @@ void MainWindow::getGraph(){
     gridLayout->setContentsMargins(11, 11, 11, 11);
     gridLayout->setObjectName(QString("gridLayout"));
     gridLayout->setContentsMargins(0, 0, 0, 0);
-    MyOpenGLWidget *openGLWidget = new MyOpenGLWidget(centralWidget);
+    MyOpenGLWidget *openGLWidget = new MyOpenGLWidget(centralWidget, image);
     openGLWidget->setObjectName(QString("openGLWidget"));
     openGLWidget->setMinimumSize(QSize(500, 500));
     
@@ -574,6 +570,11 @@ void MainWindow::getGraph(){
     
     openglDialog->show();
     //widget->show();
-    
+
+    // Fermeture de l'image courante
+    /*if (!closeImage())
+        return;
+    // Suppression des calques
+    removeLayers();*/
     //skeletonView.setFilename(filename);
 }

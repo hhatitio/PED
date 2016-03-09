@@ -39,6 +39,9 @@ public:
     Image* getGraphImage3D();
     void initGraph();
     bool contractNodes(ExtendedNode *n);
+    bool transformIntoArc(ExtendedNode *n);
+    bool eraseNodes(ExtendedNode *n);
+    bool spotHighDivergentNodes(ExtendedNode *n);
     void arcToNeighboors(ExtendedNode *n);
     void arcToSingleNeighboor(ExtendedNode *n, int n_pos);
     std::vector<ExtendedNode*> getNeighboorhood(int x,
