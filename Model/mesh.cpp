@@ -172,27 +172,27 @@ void Mesh::computeFace(int *** t)
                         bool3 = (valCur > t[x][y][z + 1]);
                     
                     if (bool1) {
-                        Face f1 = { p1, p2, p3, p4, valCur};
+                        Face f1 = { p1, p2, p3, p4, static_cast<float>(valCur)};
                         _faces.push_back(f1);
                     }
                     if (bool2) {
-                        Face f2 = { p3, p4, p5, p6, valCur};
+                        Face f2 = { p3, p4, p5, p6, static_cast<float>(valCur)};
                         _faces.push_back(f2);
                     }
                     if (bool3) {
-                        Face f3 = { p5, p6, p7, p8, valCur};
+                        Face f3 = { p5, p6, p7, p8, static_cast<float>(valCur)};
                         _faces.push_back(f3);
                     }
                     if (bool4) {
-                        Face f4 = { p7, p8, p1, p2, valCur};
+                        Face f4 = { p7, p8, p1, p2, static_cast<float>(valCur)};
                         _faces.push_back(f4);
                     }
                     if (bool5) {
-                        Face f5 = { p2, p3, p6, p7, valCur};
+                        Face f5 = { p2, p3, p6, p7, static_cast<float>(valCur)};
                         _faces.push_back(f5);
                     }
                     if (bool6) {
-                        Face f6 = { p1, p4, p5, p8, valCur};
+                        Face f6 = { p1, p4, p5, p8, static_cast<float>(valCur)};
                         _faces.push_back(f6);
                     }
                     //std::cout << bool1 << bool2 << bool3 << bool4 << bool5 << bool6 << std::endl;
@@ -270,27 +270,27 @@ void Mesh::computeFace(Image *im)
                     }
 
                     if (bool1) {
-                        Face f1 = { p1, p2, p3, p4, valCur};
+                        Face f1 = { p1, p2, p3, p4, static_cast<float>(valCur)};
                         _faces.push_back(f1);
                     }
                     if (bool2) {
-                        Face f2 = { p3, p4, p5, p6, valCur};
+                        Face f2 = { p3, p4, p5, p6, static_cast<float>(valCur)};
                         _faces.push_back(f2);
                     }
                     if (bool3) {
-                        Face f3 = { p5, p6, p7, p8, valCur};
+                        Face f3 = { p5, p6, p7, p8, static_cast<float>(valCur)};
                         _faces.push_back(f3);
                     }
                     if (bool4) {
-                        Face f4 = { p7, p8, p1, p2, valCur};
+                        Face f4 = { p7, p8, p1, p2, static_cast<float>(valCur)};
                         _faces.push_back(f4);
                     }
                     if (bool5) {
-                        Face f5 = { p2, p3, p6, p7, valCur};
+                        Face f5 = { p2, p3, p6, p7, static_cast<float>(valCur)};
                         _faces.push_back(f5);
                     }
                     if (bool6) {
-                        Face f6 = { p1, p4, p5, p8, valCur};
+                        Face f6 = { p1, p4, p5, p8, static_cast<float>(valCur)};
                         _faces.push_back(f6);
                     }
                     //std::cout << bool1 << bool2 << bool3 << bool4 << bool5 << bool6 << std::endl;

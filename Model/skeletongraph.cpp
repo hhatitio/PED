@@ -252,6 +252,8 @@ void SkeletonGraph::initGraph(){
         //std::cout << "node | " << it->first << ":" << n.getId() << std::endl;
     }
     
+    Palette palette;
+    Palette paletteW(true);
     ListGraph::NodeMap<Point> coords(graph);
     ListGraph::NodeMap<double> sizes(graph);
     ListGraph::NodeMap<int> colors(graph);
@@ -294,16 +296,37 @@ void SkeletonGraph::initGraph(){
         
         ListGraph::Node gn = graph.nodeFromId(n->getId());
         
-        coords[gn] = Point(x+z,y+z);
-        sizes[gn]  = .1;
-        colors[gn] = 1;
+        coords[gn] = Point(x*10,y*10);
+        sizes[gn]  = 1;
+        colors[gn] = 0;
         shapes[gn] = 0;
     }
     
+    for (ListGraph::ArcIt ait(graph); ait != INVALID; ++ait) {
+        acolors[ait]=0;
+        widths[ait]=1;
+    }
     
+    IdMap<ListGraph,ListGraph::Node> id(graph);
+    
+//<<<<<<< Updated upstream
     graphToEps(graph,"graph.eps").scale(10).coords(coords)
             .nodeScale(.1).nodeSizes(sizes)
             .arcWidthScale(.005).run();*/
+//=======
+//    // Create .eps files showing the digraph with different options
+//    std::cout << "Create 'graph_1.eps'" << std::endl;
+//    graphToEps(graph,"graph_1.eps").
+//    coords(coords).
+//    absoluteNodeSizes().absoluteArcWidths().
+//    nodeScale(2).nodeSizes(sizes).
+//    nodeShapes(shapes).
+//    nodeColors(composeMap(paletteW,colors)).
+//    arcColors(composeMap(palette,acolors)).
+//    arcWidthScale(.4).arcWidths(widths).
+//    nodeTexts(id).nodeTextSize(1).
+//    run();
+//>>>>>>> Stashed changes
 }
 
 void SkeletonGraph::arcToNeighboors(ExtendedNode *n0){
