@@ -6,6 +6,7 @@
 Image *neighboorMap;
 std::unordered_map<int, int> enhanceNeighboorMap;
 std::unordered_map<int, ExtendedNode*> voxels;
+std::vector<int> visitedVoxel;
 
 SkeletonGraph::SkeletonGraph() {
     
@@ -24,6 +25,20 @@ void SkeletonGraph::setGraph(Image* im) {
     //skeletonIm3D = new Image3D<short int>(im_const);
     skeletonIm3D = Image3D<short int>(im_const);
     skeletonImTmp = Image3D<short int>(im_const);
+}
+
+void addVisitedVoxel(int pos){
+    if(visitedVoxel.size()==10){
+        visitedVoxel.pop_back();
+    }
+    visitedVoxel.insert(visitedVoxel.begin(),pos);
+}
+
+bool isVisited(int pos){
+    for(unsigned int i = 0; i < visitedVoxel.size(); i++)
+        if(visitedVoxel[i] == pos)
+            return true;
+    return false;
 }
 
 /*
@@ -141,25 +156,99 @@ int nextVoxelPosition(int x, int y, int z, Image3D<short int>& ImTmp){
                     int n_posTmp = x1+(y1*nb_rows)+(z1*nb_cols*nb_rows);
                     if(x1 >= 0   && y1 >= 0   && z1 >= 0   &&
                             x1 < nb_rows && y1 < nb_cols && z1 < nb_slices) {
-                        int val = ImTmp.at(n_posTmp);
-                        if(val!=0){
-                            int val_nTmp = enhanceNeighboorMap.at(n_posTmp);
-                            if(val!=254 && val!=150 && val_nTmp>val_n){
-                                val_n = val_nTmp;
+                        //int val = ImTmp.at(n_posTmp);
+                        if(!isVisited(n_posTmp)){
+                            int val = neighboorMap->at(n_posTmp);
+                            //int val_nTmp = enhanceNeighboorMap.at(n_posTmp);
+                            //if(val!=254 && val!=150 && val_nTmp>val_n){
+                            if(val>val_n){
+                                //val_n = val_nTmp;
+                                //std::cout << "nb_neighboor node_n :" << val << std::endl;
+
+                                val_n = val;
                                 n_pos = n_posTmp;
                                 //std::cout << "coord nextVoxel :" << x1 << "," << y1 << "," << z1 << std::endl;
                                 //std::cout << "pos nextVoxel :" << n_pos << std::endl;
                             }
-                        }
-                        /*if (ImTmp->at(n_pos) == 120 && ImTmp->at(pos)==120) {
+                            /*if (ImTmp->at(n_pos) == 120 && ImTmp->at(pos)==120) {
                             ImTmp->at(n_pos) = 254;
                         }*/
+                        }
                     }
                 }
             }
         }
     }
+    if(n_pos != -1){
+        neighboorMap->at(pos) -= 1;
+    }
     return n_pos;
+}
+
+std::vector<ExtendedNode*> getNeighboorhoodList(int x,
+                                                int y,
+                                                int z,
+                                                std::unordered_map<int,ExtendedNode*> nodesList,
+                                                Image3D<short int>& skeletonIm3D){
+    int nb_rows = ((int)skeletonIm3D.n_rows);
+    int nb_cols = ((int)skeletonIm3D.n_cols);
+    int nb_slices = ((int)skeletonIm3D.n_slices);
+
+    std::vector<ExtendedNode*> neighboorhood;
+
+    for (int i = -1; i <= 1 ; ++i) {
+        for (int j = -1; j <= 1 ; ++j) {
+            for (int k = -1; k <= 1 ; ++k) {
+                if(i!=0 || j!=0 || k!=0){
+                    int x1 = x+i;
+                    int y1 = y+j;
+                    int z1 = z+k;
+                    if((x1>=0 && y1>=0 && z1>=0) &&
+                            (x1<nb_rows && y1<nb_cols && z1<nb_slices)){
+                        int pos = x1+(y1*nb_rows)+(z1*nb_rows*nb_cols);
+
+                        std::unordered_map<int,ExtendedNode*>::const_iterator n = nodesList.find(pos);
+
+                        if ( n != nodesList.end() )
+                            neighboorhood.push_back(n->second);
+                    }
+                }
+            }
+        }
+    }
+    return neighboorhood;
+}
+
+std::vector<ExtendedNode*> SkeletonGraph::getNeighboorhood(int x,
+                                                           int y,
+                                                           int z){
+    int nb_rows = ((int)skeletonIm3D.n_rows);
+    int nb_cols = ((int)skeletonIm3D.n_cols);
+    int nb_slices = ((int)skeletonIm3D.n_slices);
+
+    std::vector<ExtendedNode*> neighboorhood;
+
+    for (int i = -1; i <= 1 ; ++i) {
+        for (int j = -1; j <= 1 ; ++j) {
+            for (int k = -1; k <= 1 ; ++k) {
+                if(i!=0 || j!=0 || k!=0){
+                    int x1 = x+i;
+                    int y1 = y+j;
+                    int z1 = z+k;
+                    if((x1>=0 && y1>=0 && z1>=0) &&
+                            (x1<nb_rows && y1<nb_cols && z1<nb_slices)){
+                        int pos = x1+(y1*nb_rows)+(z1*nb_rows*nb_cols);
+
+                        std::unordered_map<int,ExtendedNode*>::const_iterator n = nodes.find(pos);
+
+                        if ( n != nodes.end() )
+                            neighboorhood.push_back(n->second);
+                    }
+                }
+            }
+        }
+    }
+    return neighboorhood;
 }
 
 void SkeletonGraph::compute() {
@@ -175,9 +264,52 @@ void SkeletonGraph::compute() {
             skeletonImTmp.at(pos) = 120;
             nodesList.insert({pos,it->second});
         }
+        //std::cout << "nb_neighboor node :" << neighboorMap->at(pos) << std::endl;
+
+    }
+    voxels.clear();
+    /*for (auto it = nodesList.begin(); (it!= nodesList.end()); ++it){
+        voxels.insert({it->first,it->second});
+    }*/
+    for (auto it = nodesList.begin(); (it!= nodesList.end()); ++it){
+        ExtendedNode *u = it->second;
+        int x = u->getX();
+        int y = u->getY();
+        int z = u->getZ();
+        std::vector<ExtendedNode*> neighboorList = getNeighboorhoodList(x,
+                                                                        y,
+                                                                        z,
+                                                                        nodesList,
+                                                                        skeletonIm3D);
+        if(!neighboorList.empty()){
+            int pos = it->first;
+            int val = enhanceNeighboorMap.at(pos);
+            if(skeletonImTmp.at(pos) != 255){
+                for (int i = 0; i < neighboorList.size(); ++i) {
+                    int posTmp = neighboorList[i]->getIndex(skeletonIm3D.n_cols,
+                                                            skeletonIm3D.n_rows,
+                                                            skeletonIm3D.n_slices);
+
+                    if(val < enhanceNeighboorMap.at(posTmp)){
+                        //voxels.erase(pos);
+                        pos = posTmp;
+                        u = neighboorList[i];
+                        skeletonImTmp.at(pos)= 255;
+                    }else{
+                        //voxels.erase(posTmp);
+                        skeletonImTmp.at(posTmp) = 255;
+                    }
+
+                }
+            }
+            //if(skeletonImTmp.at(pos) != 255 && skeletonImTmp.at(pos) != 150){
+                voxels.insert({pos,u});
+                //skeletonImTmp.at(pos) = 150;
+            //}
+        }
     }
 
-    for (auto it = nodesList.begin(); (it!= nodesList.end()); ++it){
+    for (auto it = voxels.begin(); (it!= voxels.end()); ++it){
         int pos = it->first;
         ExtendedNode *u = it->second;
         int x = u->getX();
@@ -186,13 +318,21 @@ void SkeletonGraph::compute() {
         do{
             //std::cout << "coord node :" << x << "," << y << "," << z << std::endl;
             //std::cout << "pos node :" << pos << std::endl;
+            //std::cout << "nb_neighboor node :" << neighboorMap->at(pos) << std::endl;
+            if(!isVisited(pos)){
+                addVisitedVoxel(pos);
+            }
             pos = nextVoxelPosition(x,y,z,skeletonImTmp);
-            auto nextVoxel = nodesList.find(pos);
-            if(nextVoxel != nodesList.end()){
+            auto nextVoxel = voxels.find(pos);
+            if(nextVoxel != voxels.end()){
                 ExtendedNode *v = nextVoxel->second;
-                skeletonImTmp.at(nextVoxel->first) = 150;
-                u->addAdjacentNode(nextVoxel->first);
-                v->addAdjacentNode(it->first);
+                //skeletonImTmp.at(nextVoxel->first) = 150;
+                if(!u->isAdjacentNode(nextVoxel->first)){
+                    u->addAdjacentNode(nextVoxel->first);
+                }
+                if(!v->isAdjacentNode(it->first)){
+                    v->addAdjacentNode(it->first);
+                }
                 pos = it->first;
                 x = u->getX(); y=u->getY(); z=u->getZ();
                 //std::cout << "coord1 node :" << x << "," << y << "," << z << std::endl;
@@ -202,26 +342,27 @@ void SkeletonGraph::compute() {
                 std::vector<int> coord = getCoordOutOfIndex(skeletonImTmp.n_cols,
                                                             skeletonImTmp.n_rows,
                                                             skeletonImTmp.n_slices,pos);
-                skeletonImTmp.at(pos) = 254;
+                //skeletonImTmp.at(pos) = 254;
                 x = coord[0]; y=coord[1]; z=coord[2];
                 //std::cout << "coord node1 :" << x << "," << y << "," << z << std::endl;
                 //std::cout << "pos node1 :" << pos << std::endl;
             }
-        }while(pos != -1);
+        }while((neighboorMap->at(pos) > 0) && (pos != -1));
         std::vector<int> adjNodesList = u->getAdjacentNode();
         std::cout << "nodePos :" << it->first << std::endl;
         std::cout << "nbAdjnode :" << adjNodesList.size() << std::endl;
         if(adjNodesList.size()==2){
-            skeletonImTmp.at(it->first)= 254;
-            skeletonImTmp.at(adjNodesList[0])= 120;
-            skeletonImTmp.at(adjNodesList[1])= 120;
-            ExtendedNode *adjNode1 = nodesList.at(adjNodesList[0]);
-            ExtendedNode *adjNode2 = nodesList.at(adjNodesList[1]);
+            skeletonImTmp.at(it->first)= 255;
+            //skeletonImTmp.at(adjNodesList[0])= 120;
+            //skeletonImTmp.at(adjNodesList[1])= 120;
+            ExtendedNode *adjNode1 = voxels.at(adjNodesList[0]);
+            ExtendedNode *adjNode2 = voxels.at(adjNodesList[1]);
             adjNode1->deleteAdjacentNode(it->first);
             adjNode2->deleteAdjacentNode(it->first);
-        }else{
-            skeletonImTmp.at(it->first)= 150;
-        }
+        }//else{
+        //   skeletonImTmp.at(it->first)= 150;
+        //}
+        visitedVoxel.clear();
     }
 
 }
@@ -481,37 +622,6 @@ bool SkeletonGraph::contractNodes(ExtendedNode *n){
     return res;
 }
 
-std::vector<ExtendedNode*> SkeletonGraph::getNeighboorhood(int x,
-                                                           int y,
-                                                           int z){
-    int nb_rows = ((int)skeletonIm3D.n_rows);
-    int nb_cols = ((int)skeletonIm3D.n_cols);
-    int nb_slices = ((int)skeletonIm3D.n_slices);
-    
-    std::vector<ExtendedNode*> neighboorhood;
-    
-    for (int i = -1; i <= 1 ; ++i) {
-        for (int j = -1; j <= 1 ; ++j) {
-            for (int k = -1; k <= 1 ; ++k) {
-                if(i!=0 || j!=0 || k!=0){
-                    int x1 = x+i;
-                    int y1 = y+j;
-                    int z1 = z+k;
-                    if((x1>=0 && y1>=0 && z1>=0) &&
-                            (x1<nb_rows && y1<nb_cols && z1<nb_slices)){
-                        int pos = x1+(y1*nb_rows)+(z1*nb_rows*nb_cols);
-                        
-                        std::unordered_map<int,ExtendedNode*>::const_iterator n = nodes.find(pos);
-                        
-                        if ( n != nodes.end() )
-                            neighboorhood.push_back(n->second);
-                    }
-                }
-            }
-        }
-    }
-    return neighboorhood;
-}
 
 bool SkeletonGraph::isInnerNode(int pos){
     int nb_rows = skeletonIm3D.n_rows;
