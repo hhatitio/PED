@@ -101,7 +101,7 @@ void SkeletonModel::generate3DImFromData() {
     for(int x = 0; x < row; x++){
         for(int y = 0; y < col; y++){
             for(int z = 0; z < slice; z++){
-                skeletonIm3D->at(x+(y*col)+(z*row*col)) = 0;
+                skeletonIm3D->at(x+(y*row)+(z*row*col)) = 0;
                 boolMap.push_back(false);
                 isNodeTab.push_back(false);
             }
@@ -114,7 +114,7 @@ void SkeletonModel::generate3DImFromData() {
         int y = floor(data[i+1]*col);
         int z = floor(data[i+2]*slice);
 
-        skeletonIm3D->at(x+(y*col)+(z*row*slice)) = 255;
+        skeletonIm3D->at(x+(y*row)+(z*row*slice)) = 255;
 
         std::cout << x <<" "<< y <<" "<< z;
         std::cout << " : " << data[i] <<" "<< data[i+1] <<" "<< data[i+2] << std::endl;

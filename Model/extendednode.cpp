@@ -18,10 +18,10 @@ int ExtendedNode::getIndex(int n_cols, int n_rows, int n_slices){
     int j = getY();
     int k = getZ();
     // IF Coordinate is out of boundaries associate intensity with -1
-    if(i < 0||i>=n_cols){
+    if(i < 0||i>=n_rows){
         return -1;
     }
-    if(j < 0||j>=n_rows){
+    if(j < 0||j>=n_cols){
         return -1;
     }
     if(k < 0||k>=n_slices){
@@ -30,53 +30,27 @@ int ExtendedNode::getIndex(int n_cols, int n_rows, int n_slices){
     
     // Formula to calculate IDX out of 3D Dimensional coordinate
     int sizeLayer = n_cols*n_rows;
-    return (k*sizeLayer)+(j*n_cols)+i;
+    return (k*sizeLayer)+(j*n_rows)+i;
 }
 
-/*
- * getCoordOutOfIndex(int idx)
- * INPUT:
- * Scalar INDEX of the Voxel to access intensity
- * in "std::vector<int> data;"
- * OUTPUT:
- * 3D Dimensional coordinate of voxel point
- */
-
-std::vector<int> ExtendedNode::getCoordOutOfIndex(int n_cols, int n_rows, int n_slices,int idx){
-    
-    // Mathematical formulas to calculate 3D Coordinte of voxel
-    int sizeLayer = n_cols*n_rows;
-    int z =(int)idx/sizeLayer;
-    int idx2D = idx-z*sizeLayer;
-    int y =(int) idx2D/n_cols;
-    int x = idx2D%n_cols;
-    // Store the calculated coordinates
-    std::vector<int> coord;
-    coord.push_back(x);
-    coord.push_back(y);
-    coord.push_back(z);
-    return coord;
-}
-
-
-bool ExtendedNode::isAdjacentNode(int id){
+bool ExtendedNode::isAdjacentNode(int pos){
     for(unsigned int i = 0; i < _adjacentNodes.size(); i++)
-        if(_adjacentNodes[i] == id)
+        if(_adjacentNodes[i] == pos)
             return true;
     return false;
 }
 
-void ExtendedNode::addAdjacentNode(int id){
-    _adjacentNodes.push_back(id);
+void ExtendedNode::addAdjacentNode(int pos){
+    _adjacentNodes.push_back(pos);
 }
 
 std::vector<int> ExtendedNode::getAdjacentNode(){
     return _adjacentNodes;
 }
 
-void ExtendedNode::deleteAdjacentNode(int id){
+void ExtendedNode::deleteAdjacentNode(int pos){
     for(unsigned int i = 0; i < _adjacentNodes.size(); i++){
-        if(_adjacentNodes[i] == id){
+        if(_adjacentNodes[i] == pos){
             _adjacentNodes.erase(_adjacentNodes.begin()+i);
             return;
         }

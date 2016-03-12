@@ -35,6 +35,7 @@ public:
     
     int computeNbNode();
     bool isNode(int x, int y, int z);
+    bool isInnerNode(int pos);
     Image* getSkeleton3DIm();
     Image* getGraphImage3D();
     void initGraph();

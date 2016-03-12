@@ -536,7 +536,8 @@ void MainWindow::getGraph(){
     //if (filename.isEmpty()) return;
 
     // Mise à jour de l'image et de la fenêtre principale
-    image = skeletonGraph.getGraphImage3D();
+    //image = skeletonGraph.getGraphImage3D();
+    image = skeletonGraph.getSkeleton3DIm();
     currentImageType = ImageType::Image3D;
     updateImageComponents();
     drawSlice();

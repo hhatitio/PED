@@ -9,10 +9,10 @@ class ExtendedNode{
 public:
     ExtendedNode(ListGraph &g, int x, int y, int z);
 
-    bool isAdjacentNode(int id);
-    void addAdjacentNode(int id);
+    bool isAdjacentNode(int pos);
+    void addAdjacentNode(int pos);
     std::vector<int> getAdjacentNode();
-    void deleteAdjacentNode(int id);
+    void deleteAdjacentNode(int pos);
     int getNbIncidentEdges();
     void addIncidentEdges(int id);
     int getX();
