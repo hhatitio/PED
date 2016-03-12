@@ -129,6 +129,7 @@ int nextVoxelPosition(int x, int y, int z, Image3D<short int>& ImTmp){
     int nb_slices = ImTmp.n_slices;
     int pos = x+(y*nb_rows)+(z*nb_cols*nb_rows);
     int n_pos = -1;
+    int val_n = 0;
     for (int i = -1; i <= 1 ; ++i) {
         for (int j = -1; j <= 1 ; ++j) {
             for (int k = -1; k <= 1 ; ++k) {
@@ -141,8 +142,14 @@ int nextVoxelPosition(int x, int y, int z, Image3D<short int>& ImTmp){
                     if(x1 >= 0   && y1 >= 0   && z1 >= 0   &&
                             x1 < nb_rows && y1 < nb_cols && z1 < nb_slices) {
                         int val = ImTmp.at(n_posTmp);
-                        if(val!=254 && val>n_pos){
-                            n_pos = val;
+                        if(val!=0){
+                            int val_nTmp = enhanceNeighboorMap.at(n_posTmp);
+                            if(val!=254 && val!=150 && val_nTmp>val_n){
+                                val_n = val_nTmp;
+                                n_pos = n_posTmp;
+                                //std::cout << "coord nextVoxel :" << x1 << "," << y1 << "," << z1 << std::endl;
+                                //std::cout << "pos nextVoxel :" << n_pos << std::endl;
+                            }
                         }
                         /*if (ImTmp->at(n_pos) == 120 && ImTmp->at(pos)==120) {
                             ImTmp->at(n_pos) = 254;
@@ -170,21 +177,26 @@ void SkeletonGraph::compute() {
         }
     }
 
-    /*for (auto it = nodesList.begin(); (it!= nodesList.end()); ++it){
+    for (auto it = nodesList.begin(); (it!= nodesList.end()); ++it){
         int pos = it->first;
         ExtendedNode *u = it->second;
         int x = u->getX();
         int y = u->getY();
         int z = u->getZ();
         do{
+            //std::cout << "coord node :" << x << "," << y << "," << z << std::endl;
+            //std::cout << "pos node :" << pos << std::endl;
             pos = nextVoxelPosition(x,y,z,skeletonImTmp);
             auto nextVoxel = nodesList.find(pos);
             if(nextVoxel != nodesList.end()){
                 ExtendedNode *v = nextVoxel->second;
+                skeletonImTmp.at(nextVoxel->first) = 150;
                 u->addAdjacentNode(nextVoxel->first);
                 v->addAdjacentNode(it->first);
                 pos = it->first;
                 x = u->getX(); y=u->getY(); z=u->getZ();
+                //std::cout << "coord1 node :" << x << "," << y << "," << z << std::endl;
+                //std::cout << "pos1 node :" << pos << std::endl;
             }
             else if(pos != -1){
                 std::vector<int> coord = getCoordOutOfIndex(skeletonImTmp.n_cols,
@@ -192,17 +204,25 @@ void SkeletonGraph::compute() {
                                                             skeletonImTmp.n_slices,pos);
                 skeletonImTmp.at(pos) = 254;
                 x = coord[0]; y=coord[1]; z=coord[2];
+                //std::cout << "coord node1 :" << x << "," << y << "," << z << std::endl;
+                //std::cout << "pos node1 :" << pos << std::endl;
             }
         }while(pos != -1);
         std::vector<int> adjNodesList = u->getAdjacentNode();
+        std::cout << "nodePos :" << it->first << std::endl;
+        std::cout << "nbAdjnode :" << adjNodesList.size() << std::endl;
         if(adjNodesList.size()==2){
             skeletonImTmp.at(it->first)= 254;
+            skeletonImTmp.at(adjNodesList[0])= 120;
+            skeletonImTmp.at(adjNodesList[1])= 120;
             ExtendedNode *adjNode1 = nodesList.at(adjNodesList[0]);
             ExtendedNode *adjNode2 = nodesList.at(adjNodesList[1]);
             adjNode1->deleteAdjacentNode(it->first);
             adjNode2->deleteAdjacentNode(it->first);
+        }else{
+            skeletonImTmp.at(it->first)= 150;
         }
-    }*/
+    }
 
 }
 
