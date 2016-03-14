@@ -177,14 +177,18 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
         if (_splitVal > -0.95)
             _splitVal -= 0.05;
     
-    if (e->key() == Qt::Key_Up)
-        y_T += 0.05;
     if (e->key() == Qt::Key_Down)
+        y_T += 0.05;
+    if (e->key() == Qt::Key_Up)
         y_T -= 0.05;
     if (e->key() == Qt::Key_Left)
         x_T += 0.05;
     if (e->key() == Qt::Key_Right)
         x_T -= 0.05;
+
+    if (e->key() == Qt::Key_A) _scale *= 1.05;
+    if (e->key() == Qt::Key_Z) _scale *= 0.95;
+    paintGL();
 }
 
 

@@ -259,6 +259,7 @@ void MainWindow::openOthersImage3D()
     currentImageType = ImageType::Image3D;
     skeletonModel.setFilename(filename);
     convertImage.setFilename(filename);
+    /** TODO METHODE TIF **/
     if (filename.contains(".skel")) {
         skeletonModel.setDataFromFile();
         skeletonModel.generate3DImFromData();
