@@ -25,14 +25,6 @@ public:
     
     void setGraph(Image* im);
     void compute();
-    void setDataFromFile(QString filename);
-    void generate3DImFromData();
-    
-    void extractMinAndMaxFromData(double &xmin, double &xmax, double &ymin,
-                                  double &ymax, double &zmin, double &zmax);
-    int normalize(double xmin, double xmax, double ymin,
-                  double ymax, double zmin, double zmax);
-    
     int computeNbNode();
     bool isNode(int x, int y, int z);
     bool isInnerNode(int pos);

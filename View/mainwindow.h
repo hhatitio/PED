@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "deftypes.h"
+#include "graphtest.h"
 
 #include "Model/Algorithm/algorithm.h"
 #include "Model/Layer/imagelayer.h"
@@ -106,6 +107,7 @@ private:
     ConvertImage convertImage;
     ConvertImageView convertImageView;
     SkeletonGraph  skeletonGraph;
+    GraphTest  graphTest;
 
     Interval<PixelType> *intervalIntensity;
 

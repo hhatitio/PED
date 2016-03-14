@@ -55,6 +55,7 @@ SOURCES += main.cpp\
         View/Customplot/qcustomplot.cpp \
         View/Spanslider/qxtspanslider.cpp \
         View/viewer3d.cpp \
+    graphtest.cpp
 
 HEADERS  += deftypes.h \
         Model/zoomer.h \
@@ -110,7 +111,8 @@ HEADERS  += deftypes.h \
         View/Spanslider/qxtglobal.h \
         View/Spanslider/qxtspanslider.h \
         View/Spanslider/qxtspanslider_p.h \
-        View/viewer3d.h
+        View/viewer3d.h \
+    graphtest.h
 
 # Directives compilateur
 
