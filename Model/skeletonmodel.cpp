@@ -127,3 +127,7 @@ Image3D<short int>* SkeletonModel::getSkeleton3DIm(){
     Image3D<short int> im = *skeletonIm3D;
     return new Image3D<short int>(im);
 }
+
+void SkeletonModel::setSkeleton3DIm(Image *image) {
+    this->skeletonIm3D = image;
+}

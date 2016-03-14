@@ -241,11 +241,12 @@ void MainWindow::openImage3D()
     // Mise à jour de l'image et de la fenêtre principale
     image = DGtalTools<PixelType>::loadImage3D(filename.toStdString());
     currentImageType = ImageType::Image3D;
+    skeletonModel.setSkeleton3DIm(image);
     updateImageComponents();
     drawSlice();
 }
 
-void MainWindow::openOthersImage3D() /** TODO PUSH **/
+void MainWindow::openOthersImage3D()
 {
     // Mise à jour de l'image et de la fenêtre principale
     QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.tif *.raw *.skel)");
@@ -513,7 +514,7 @@ void MainWindow::openSecondaryWindow()
     }
 }
 
-void MainWindow::skeletonization() {                /** TODO PUSH **/
+void MainWindow::skeletonization() {
     skeletonModel.compute();
 }
 
@@ -523,6 +524,7 @@ void MainWindow::convertImageRawToVol() {
     int z = convertImageView.getZ();
     QString filename = convertImage.rawToVol(x, y, z);
     image = DGtalTools<PixelType>::loadImage3D(filename.toStdString());
+    skeletonModel.setSkeleton3DIm(image);
     updateImageComponents();
     drawSlice();
 }
