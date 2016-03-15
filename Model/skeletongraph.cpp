@@ -138,6 +138,7 @@ void computeNeighboorMap(Image3D<short int> *im){
     }
 }
 
+// choisi le voxel contenant le plus grand nombre de voisins
 int nextVoxelPosition(int x, int y, int z, Image3D<short int>& ImTmp){
     int nb_cols = ImTmp.n_cols;
     int nb_rows = ImTmp.n_rows;
@@ -157,7 +158,7 @@ int nextVoxelPosition(int x, int y, int z, Image3D<short int>& ImTmp){
                     if(x1 >= 0   && y1 >= 0   && z1 >= 0   &&
                             x1 < nb_rows && y1 < nb_cols && z1 < nb_slices) {
                         //int val = ImTmp.at(n_posTmp);
-                        if(!isVisited(n_posTmp)){
+                        if(!isVisited(n_posTmp)){       // liste de voisins visités
                             int val = neighboorMap->at(n_posTmp);
                             //int val_nTmp = enhanceNeighboorMap.at(n_posTmp);
                             //if(val!=254 && val!=150 && val_nTmp>val_n){
@@ -319,7 +320,7 @@ void SkeletonGraph::compute() {
             //std::cout << "coord node :" << x << "," << y << "," << z << std::endl;
             //std::cout << "pos node :" << pos << std::endl;
             //std::cout << "nb_neighboor node :" << neighboorMap->at(pos) << std::endl;
-            if(!isVisited(pos)){
+            if(!isVisited(pos)){ /** TODO TAILLE LISTE **/
                 addVisitedVoxel(pos);
             }
             pos = nextVoxelPosition(x,y,z,skeletonImTmp);

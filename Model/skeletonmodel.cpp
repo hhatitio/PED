@@ -9,12 +9,59 @@ void SkeletonModel::setFilename(QString filename) {
 }
 
 void SkeletonModel::compute() {
-    std::cout << "Execute process" << std::endl;
+    /*std::cout << "Execute process" << std::endl;
     QString cmdImageJ(PATH_TO_IMAGEJ);
     cmdImageJ += " \""+filename+"\""+MAKE_BINARY+SKELETONIZE+SAVE_AS;
     std::cout << "cmdImageJ = " << cmdImageJ.toStdString() << std::endl;
-    QString cmdRaw2Vol("raw2vol"); /** TODO **/
-    QProcess::execute(cmdImageJ);
+    QString cmdRaw2Vol("raw2vol");
+    QProcess::execute(cmdImageJ);*/
+
+    int width = this->skeletonIm3D->n_rows;
+    int height = this->skeletonIm3D->n_cols;
+    int depth = this->skeletonIm3D->n_slices;
+
+    Image3D<short int> *skeletonImTmp = this->skeletonIm3D;
+
+}
+
+void SkeletonModel::loadTIFFFile() {
+    TIFF *file = TIFFOpen(filename.toStdString().c_str(), "r");
+
+    uint32 width, height;
+
+    TIFFGetField(file, TIFFTAG_IMAGEWIDTH, &width);
+    TIFFGetField(file, TIFFTAG_IMAGELENGTH, &height);
+
+    int slices = 0;
+    do {
+        slices++;
+    } while (TIFFReadDirectory(file));
+
+    TIFFClose(file);
+
+    file = TIFFOpen(filename.toStdString().c_str(), "r");
+
+    skeletonIm3D = new Image3D<short int>((int)width, (int)height, slices);
+
+    int j = 0;
+    do {
+        uint32 size = (width*height);
+        uint32 *tiff = (uint32 *)_TIFFmalloc(size*sizeof(uint32));
+        int read = TIFFReadRGBAImage(file, width, height, tiff, 0);
+        if (read) {
+            for(uint32 i = 0; i < size/4; i++) {
+                int r = TIFFGetR(*(tiff+i));
+                int g = TIFFGetG(*(tiff+i));
+                int b = TIFFGetB(*(tiff+i));
+                if (r == 0 || g == 0 || b == 0) skeletonIm3D->at(j) = 0;
+                else skeletonIm3D->at(j) = r;
+                j++;
+            }
+        }
+        _TIFFfree(tiff);
+    } while (TIFFReadDirectory(file));
+
+    TIFFClose(file);
 }
 
 void SkeletonModel::setDataFromFile() {
@@ -68,8 +115,8 @@ int SkeletonModel::normalize(double xmin, double xmax, double ymin,
     double delta_z = zmax - zmin;
 
     double delta = (delta_x > delta_y) ?
-    ( (delta_x > delta_z) ? delta_x : delta_z):
-    ( (delta_y > delta_z) ? delta_y : delta_z);
+                ( (delta_x > delta_z) ? delta_x : delta_z):
+                ( (delta_y > delta_z) ? delta_y : delta_z);
 
     for(unsigned long i = 0; i < data.size(); i+= 3){
         data[i] = (data[i]-xmin) / delta;
