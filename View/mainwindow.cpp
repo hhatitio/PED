@@ -538,11 +538,11 @@ void MainWindow::convertImageRawToVol() {
 
 void MainWindow::getGraph(){
     image = skeletonModel.getSkeleton3DIm();
-    //skeletonGraph.setGraph(image);
-    //skeletonGraph.compute();
-    graphTest.setGraph(image);
-    graphTest.initGraph();
-    graphTest.compute();
+    skeletonGraph.setGraph(image);
+    skeletonGraph.compute();
+    //graphTest.setGraph(image);
+    //graphTest.initGraph();
+    //graphTest.compute();
     //graphTest.compute();
     // Mise à jour de l'image et de la fenêtre principale
     //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
@@ -550,8 +550,8 @@ void MainWindow::getGraph(){
 
     // Mise à jour de l'image et de la fenêtre principale
     //image = skeletonGraph.getGraphImage3D();
-    //image = skeletonGraph.getSkeleton3DIm();
-    image = graphTest.getSkeleton3DIm();
+    image = skeletonGraph.getSkeleton3DIm();
+    //image = graphTest.getSkeleton3DIm();
     currentImageType = ImageType::Image3D;
     updateImageComponents();
     drawSlice();

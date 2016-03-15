@@ -12,6 +12,10 @@ bool ExtendedNode::operator ==(ExtendedNode v){
     return (this->node == v.getNode());
 }
 
+ListGraph::Node ExtendedNode::getNode() {
+    return node;
+}
+
 int ExtendedNode::getIndex(int n_cols, int n_rows, int n_slices){
 
     int i = getX();
@@ -48,11 +52,11 @@ void ExtendedNode::addAdjacentNodePos(int pos){
     _adjacentNodes.push_back(pos);
 }
 
-std::vector<int> ExtendedNode::getAdjacentNode(){
+std::vector<int> ExtendedNode::getAdjacentNodes(){
     return _adjacentNodes;
 }
 
-std::vector<int> ExtendedNode::getAdjacentNodePos(){
+std::vector<int> ExtendedNode::getAdjacentNodesPos(){
     return _adjacentNodesPos;
 }
 

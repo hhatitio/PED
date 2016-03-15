@@ -361,23 +361,27 @@ void SkeletonGraph::initGraph(){
     }
     voxels = (const std::unordered_map<int,ExtendedNode*>) nodes;
 }
-void addEdge(ListGraph &graph, ListGraph::Node u, ListGraph::Node v,
+void addEdge(ListGraph &graph, ExtendedNode* u, ExtendedNode* v,
              int pos_u, int pos_v){
-    ExtendedEdge *e = new ExtendedEdge(graph,u,v,pos_u,pos_v);
-    u->addAdjacentNode(graph.id(v));
+    ListGraph::Node n1, n2;
+    n1 = u->getNode();
+    n2 = v->getNode();
+    ExtendedEdge *e = new ExtendedEdge(graph,n1,n2,pos_u,pos_v);
+    u->addAdjacentNode(graph.id(n2));
     u->addAdjacentNodePos(pos_u);
     u->addIncidentEdges(e);
-    v->addAdjacentNode(graph.id(u));
+    v->addAdjacentNode(graph.id(n1));
     v->addAdjacentNodePos(pos_v);
     v->addIncidentEdges(e);
 }
 
 void SkeletonGraph::initNodeEdges(int pos){
     ExtendedNode *u;
-    if((u=nodes.find(pos))==nodes.end()){
+    if((nodes.find(pos))==nodes.end()){
         std::cout << "node doesn't exist" << std::endl;
-        return false;
+        return;
     }
+    u = nodes.at(pos);
     int nb_rows = skeletonImTmp.n_rows;
     int nb_cols = skeletonImTmp.n_cols;
     int nb_slices = skeletonImTmp.n_slices;
@@ -403,10 +407,11 @@ void SkeletonGraph::initNodeEdges(int pos){
                             u->addAdjacentNode(n_pos);
                         }
                         if (skeletonImTmp.at(n_pos) == 255 || skeletonImTmp.at(n_pos) == 200) {
-                            ListGraph::Node U1 = u->getNode();
-                            ListGraph::Node V1 = v->getNode();
                             ExtendedNode *v = new ExtendedNode(graph,x1,y1,z1);
-                            addEdge(graph,U1,V1,pos,n_pos);
+                            //ListGraph::Node U1 = u->getNode();
+                            //ListGraph::Node V1 = v->getNode();
+
+                            addEdge(graph,u,v,pos,n_pos);
                             nodes.insert({n_pos,v});
                             skeletonImTmp.at(n_pos) = 200;
                         }
@@ -417,39 +422,39 @@ void SkeletonGraph::initNodeEdges(int pos){
     }
 }
 
-void SkeletonGraph::arcToSingleNeighboor(ExtendedNode *n0, int n_pos){
-    int id_n2 = nodes.at(n_pos)->getId();
-    ExtendedEdge e = ExtendedEdge(graph, n0->getId(), id_n2);
-    //doesEdgeExist[e.getId()] = 1;
-    //std::cout << "edge | " << e.getId() << std::endl;
-}
+//void SkeletonGraph::arcToSingleNeighboor(ExtendedNode *n0, int n_pos){
+//    int id_n2 = nodes.at(n_pos)->getId();
+//    ExtendedEdge e = ExtendedEdge(graph, n0->getId(), id_n2);
+//    //doesEdgeExist[e.getId()] = 1;
+//    //std::cout << "edge | " << e.getId() << std::endl;
+//}
 
 
-bool SkeletonGraph::transformIntoArc(ExtendedNode *n){
-    //bool res = false;
-    std::vector<int> adNodes = n->getAdjacentNode();
-    std::vector<ExtendedNode*> neighboors;
+//bool SkeletonGraph::transformIntoArc(ExtendedNode *n){
+//    //bool res = false;
+//    std::vector<int> adNodes = n->getAdjacentNodes();
+//    std::vector<ExtendedNode*> neighboors;
 
-    neighboors = getNeighboorhood(n->getX(), n->getY(), n->getZ());
+//    neighboors = getNeighboorhood(n->getX(), n->getY(), n->getZ());
 
-    for(int i=0; i< neighboors.size(); ++i){
-        ExtendedNode *enode = neighboors.at(i);
-        if(adNodes.size() != enode->getAdjacentNode().size()){
-            std::cout << "transformIntoArc false 1" << std::endl;
-            return false;
-        }
-    }
+//    for(int i=0; i< neighboors.size(); ++i){
+//        ExtendedNode *enode = neighboors.at(i);
+//        if(adNodes.size() != enode->getAdjacentNodes().size()){
+//            std::cout << "transformIntoArc false 1" << std::endl;
+//            return false;
+//        }
+//    }
 
-    for(int i=0; i< neighboors.size(); ++i){
-        ExtendedNode *enode = neighboors.at(i);
-        if(!eraseNodes(enode)){
-            std::cout << "transformIntoArc false 2" << std::endl;
-            return false;
-        }
-    }
-    std::cout << "transformIntoArc true" << std::endl;
-    return true;
-}
+//    for(int i=0; i< neighboors.size(); ++i){
+//        ExtendedNode *enode = neighboors.at(i);
+//        if(!eraseNodes(enode)){
+//            std::cout << "transformIntoArc false 2" << std::endl;
+//            return false;
+//        }
+//    }
+//    std::cout << "transformIntoArc true" << std::endl;
+//    return true;
+//}
 
 bool SkeletonGraph::eraseNodes(ExtendedNode *n){
     std::vector<int> adNodes = n->getAdjacentNodesPos();
@@ -475,8 +480,12 @@ bool SkeletonGraph::eraseNodes(ExtendedNode *n){
 
 bool SkeletonGraph::contractNodes(ExtendedNode *n){
 
+    int nb_rows = skeletonIm3D.n_rows;
+    int nb_cols = skeletonIm3D.n_cols;
+    int nb_slices = skeletonIm3D.n_slices;
+
     std::vector<int> adNodes = n->getAdjacentNodesPos();
-    if(adNodes.empty() || nodes.find(pos)==nodes.end()){
+    if(adNodes.empty() || nodes.find(n->getIndex(nb_cols, nb_rows, nb_slices))==nodes.end()){
         std::cout << "eraseNodes empty or node doesn't exist" << std::endl;
         return false;
     }
@@ -525,7 +534,7 @@ bool SkeletonGraph::isIntersectionNode(int pos){
     return true;
 }
 
-void GraphTest::updateNodeMap(){
+void SkeletonGraph::updateNodeMap(){
     std::cout << "taille nodeMap : " << nodes.size() << std::endl;
     int nb_rows = skeletonImTmp.n_rows;
     int nb_cols = skeletonImTmp.n_cols;
@@ -550,7 +559,7 @@ void GraphTest::updateNodeMap(){
     std::cout << "taille nodeMap : " << nodes.size() << std::endl;
 }
 
-void GraphTest::updateNodeMap(std::unordered_map<int,ExtendedNode*> nodesList){
+void SkeletonGraph::updateNodeMap(std::unordered_map<int,ExtendedNode*> nodesList){
     std::cout << "taille nodeMap : " << nodes.size() << std::endl;
     nodes.clear();
     for(auto it = nodesList.begin(); it!=nodesList.end(); ++it){

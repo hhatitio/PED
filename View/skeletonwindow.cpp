@@ -6,8 +6,8 @@ SkeletonWindow::SkeletonWindow()
 }
 
 void SkeletonWindow::compute() {
-    std::cout << "SkeletonWindow - show" << std::endl;
+    /*std::cout << "SkeletonWindow - show" << std::endl;
     Skeleton *Skel;
     Skel = NULL;
-    AllocateSkeleton(&Skel, 50000, 5000);
+    AllocateSkeleton(&Skel, 50000, 5000);*/
 }

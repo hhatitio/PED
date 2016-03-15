@@ -2,7 +2,7 @@
 #define VERTEXGRAPH
 
 #include <lemon/list_graph.h>
-#include "extendededge.h"
+#include <Model/extendededge.h>
 
 using namespace lemon;
 

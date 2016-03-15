@@ -47,7 +47,7 @@ int ExtendedEdge::getSecondNode(){
     return _adjacentNodes.at(1);
 }
 
-int ExtendedEdge::getSecondNode(){
+int ExtendedEdge::getSecondNodePos(){
     return _adjacentNodesPos.at(1);
 }
 

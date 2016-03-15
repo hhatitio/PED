@@ -178,48 +178,50 @@ LIBS += -lDGtal
 
 LIBS += -lemon
 
+LIBS += -ltiff
+
 # pfSkel
 
-SOURCES += pfSkel/common.cpp \
-            pfSkel/pfSkel.cpp \
-            pfSkel/CritPts/CritPts.cpp \
-            pfSkel/ExpandVol/expandVol.cpp \
-            pfSkel/HighDiverg/HighDiverg.cpp \
-            pfSkel/MakeSolidVol/makeSolidVol.cpp \
-            pfSkel/PotField/potVect.cpp \
-            pfSkel/StreamLn/StreamLn.cpp
+#SOURCES += pfSkel/common.cpp \
+#            pfSkel/pfSkel.cpp \
+#            pfSkel/CritPts/CritPts.cpp \
+#            pfSkel/ExpandVol/expandVol.cpp \
+#            pfSkel/HighDiverg/HighDiverg.cpp \
+#            pfSkel/MakeSolidVol/makeSolidVol.cpp \
+#            pfSkel/PotField/potVect.cpp \
+#            pfSkel/StreamLn/StreamLn.cpp
 
-HEADERS += pfSkel/common.h \
-            pfSkel/pfSkel.h \
-            pfSkel/CritPts/CritPts.h \
-            pfSkel/ExpandVol/expandVol.h \
-            pfSkel/HighDiverg/HighDiverg.h \
-            pfSkel/JAMA/jama_cholesky.h \
-            pfSkel/JAMA/jama_eig.h \
-            pfSkel/JAMA/jama_lu.h \
-            pfSkel/JAMA/jama_qr.h \
-            pfSkel/JAMA/jama_svd.h \
-            pfSkel/MakeSolidVol/makeSolidVol.h \
-            pfSkel/PotField/potVect.h \
-            pfSkel/StreamLn/StreamLn.h \
-            pfSkel/TNT/tnt.h \
-            pfSkel/TNT/tnt_array1d.h \
-            pfSkel/TNT/tnt_array1d_utils.h \
-            pfSkel/TNT/tnt_array2d.h \
-            pfSkel/TNT/tnt_array2d_utils.h \
-            pfSkel/TNT/tnt_array3d.h \
-            pfSkel/TNT/tnt_array3d_utils.h \
-            pfSkel/TNT/tnt_cmat.h \
-            pfSkel/TNT/tnt_fortran_array1d.h \
-            pfSkel/TNT/tnt_fortran_array1d_utils.h \
-            pfSkel/TNT/tnt_fortran_array2d.h \
-            pfSkel/TNT/tnt_fortran_array2d_utils.h \
-            pfSkel/TNT/tnt_fortran_array3d.h \
-            pfSkel/TNT/tnt_fortran_array3d_utils.h \
-            pfSkel/TNT/tnt_i_refvec.h \
-            pfSkel/TNT/tnt_math_utils.h \
-            pfSkel/TNT/tnt_sparse_matrix_csr.h \
-            pfSkel/TNT/tnt_stopwatch.h \
-            pfSkel/TNT/tnt_subscript.h \
-            pfSkel/TNT/tnt_vec.h \
-            pfSkel/TNT/tnt_version.h
+#HEADERS += pfSkel/common.h \
+#            pfSkel/pfSkel.h \
+#            pfSkel/CritPts/CritPts.h \
+#            pfSkel/ExpandVol/expandVol.h \
+#            pfSkel/HighDiverg/HighDiverg.h \
+#            pfSkel/JAMA/jama_cholesky.h \
+#            pfSkel/JAMA/jama_eig.h \
+#            pfSkel/JAMA/jama_lu.h \
+#            pfSkel/JAMA/jama_qr.h \
+#            pfSkel/JAMA/jama_svd.h \
+#            pfSkel/MakeSolidVol/makeSolidVol.h \
+#            pfSkel/PotField/potVect.h \
+#            pfSkel/StreamLn/StreamLn.h \
+#            pfSkel/TNT/tnt.h \
+#            pfSkel/TNT/tnt_array1d.h \
+#            pfSkel/TNT/tnt_array1d_utils.h \
+#            pfSkel/TNT/tnt_array2d.h \
+#            pfSkel/TNT/tnt_array2d_utils.h \
+#            pfSkel/TNT/tnt_array3d.h \
+#            pfSkel/TNT/tnt_array3d_utils.h \
+#            pfSkel/TNT/tnt_cmat.h \
+#            pfSkel/TNT/tnt_fortran_array1d.h \
+#            pfSkel/TNT/tnt_fortran_array1d_utils.h \
+#            pfSkel/TNT/tnt_fortran_array2d.h \
+#            pfSkel/TNT/tnt_fortran_array2d_utils.h \
+#            pfSkel/TNT/tnt_fortran_array3d.h \
+#            pfSkel/TNT/tnt_fortran_array3d_utils.h \
+#            pfSkel/TNT/tnt_i_refvec.h \
+#            pfSkel/TNT/tnt_math_utils.h \
+#            pfSkel/TNT/tnt_sparse_matrix_csr.h \
+#            pfSkel/TNT/tnt_stopwatch.h \
+#            pfSkel/TNT/tnt_subscript.h \
+#            pfSkel/TNT/tnt_vec.h \
+#            pfSkel/TNT/tnt_version.h

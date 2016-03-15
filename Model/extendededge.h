@@ -2,7 +2,6 @@
 #define EDGEGRAPH
 
 #include <lemon/list_graph.h>
-#include "extendednode.h"
 
 using namespace lemon;
 
