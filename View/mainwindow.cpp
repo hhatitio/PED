@@ -523,6 +523,10 @@ void MainWindow::openSecondaryWindow()
 
 void MainWindow::skeletonization() {
     skeletonModel.compute();
+    image = skeletonModel.getSkeleton3DIm();
+    currentImageType = ImageType::Image3D;
+    updateImageComponents();
+    drawSlice();
 }
 
 void MainWindow::convertImageRawToVol() {
