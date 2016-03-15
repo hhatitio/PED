@@ -22,25 +22,22 @@ public:
     SkeletonGraph();
     SkeletonGraph(Image* im);
     ~SkeletonGraph();
-    
+
     void setGraph(Image* im);
     void compute();
     int computeNbNode();
-    bool isNode(int x, int y, int z);
-    bool isInnerNode(int pos);
+    bool isIntersectionNode(int pos);
     Image* getSkeleton3DIm();
     Image* getGraphImage3D();
     void initGraph();
     bool contractNodes(ExtendedNode *n);
     bool transformIntoArc(ExtendedNode *n);
     bool eraseNodes(ExtendedNode *n);
-    bool spotHighDivergentNodes(ExtendedNode *n);
-    void arcToNeighboors(ExtendedNode *n);
+    void initNodeEdges(int pos);
     void arcToSingleNeighboor(ExtendedNode *n, int n_pos);
-    std::vector<ExtendedNode*> getNeighboorhood(int x,
-                                                     int y,
-                                                     int z);
-    
+    void updateNodeMap(std::unordered_map<int,ExtendedNode*> nodesList);
+    void updateNodeMap();
+
 
 private:
     ListGraph graph;

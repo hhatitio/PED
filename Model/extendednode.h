@@ -2,6 +2,7 @@
 #define VERTEXGRAPH
 
 #include <lemon/list_graph.h>
+#include "extendededge.h"
 
 using namespace lemon;
 
@@ -9,12 +10,16 @@ class ExtendedNode{
 public:
     ExtendedNode(ListGraph &g, int x, int y, int z);
 
-    bool isAdjacentNode(int pos);
-    void addAdjacentNode(int pos);
-    std::vector<int> getAdjacentNode();
-    void deleteAdjacentNode(int pos);
+    bool isAdjacentNode(int id);
+    void addAdjacentNode(int id);
+    void addAdjacentNodePos(int pos);
+    std::vector<int> getAdjacentNodes();
+    std::vector<int> getAdjacentNodesPos();
+    void deleteAdjacentNode(int id);
+    void deleteAdjacentNodePos(int pos);
     int getNbIncidentEdges();
-    void addIncidentEdges(int id);
+    std::vector<ExtendedEdge*> getIncidentEdges();
+    void addIncidentEdges(ExtendedEdge* e);
     int getX();
     int getY();
     int getZ();
@@ -22,14 +27,16 @@ public:
     void setY(int y);
     void setZ(int z);
     bool operator ==(ExtendedNode v);
+    ListGraph::Node getNode();
     int getId();
-    std::vector<int> getCoordOutOfIndex(int n_cols, int n_rows, int n_slices,int idx);
     int getIndex(int n_cols, int n_rows, int n_slices);
 
 private:
     int _id;
+    ListGraph::Node node;
     std::vector<int> _adjacentNodes;
-    std::vector<int> _incidentEdges;
+    std::vector<int> _adjacentNodesPos;
+    std::vector<ExtendedEdge*> _incidentEdges;
     std::vector<int> _coord;
 };
 
