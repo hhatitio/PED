@@ -34,7 +34,7 @@ SOURCES += main.cpp\
         Model/extendededge.cpp \
         Model/extendednode.cpp \
         Model/zoomer.cpp \
-        Model/convertimage.cpp \
+        #Model/convertimage.cpp \
         Model/mesh.cpp \
         Model/meshStruct.cpp \
         Model/Layer/imagelayer.cpp \
@@ -44,7 +44,7 @@ SOURCES += main.cpp\
         View/opendicomwindow.cpp \
         View/histogramwindow.cpp \
         View/windowingwindow.cpp \
-        View/convertimageview.cpp \
+        #View/convertimageview.cpp \
         View/skeletonwindow.cpp \
         View/myopenglwidget.cpp \
         View/Layer/imagelayerswindow.cpp \
@@ -69,7 +69,7 @@ HEADERS  += deftypes.h \
         Model/skeletongraph.h \
         Model/extendededge.h \
         Model/extendednode.h \
-        Model/convertimage.h \
+        #Model/convertimage.h \
         Model/Layer/imagelayer.h \
         Model/Algorithm/algorithmexception.h \
         Model/Algorithm/algorithm.h \
@@ -89,7 +89,7 @@ HEADERS  += deftypes.h \
         View/opendicomwindow.h \
         View/histogramwindow.h \
         View/windowingwindow.h \
-        View/convertimageview.h \
+        #View/convertimageview.h \
         View/myopenglwidget.h \
         View/skeletonwindow.h \
         View/Layer/imagelayerswindow.h \

@@ -26,7 +26,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), image(0), sliderSlice(Qt::Horizontal),
     imageLayersWindow(this), imageLayersToolsWindow(this), imageLayersViewer3DWindow(this),
-    layersThresholdWindow(this), windowingWindow(this), convertImageView(this)
+    layersThresholdWindow(this), windowingWindow(this)//, convertImageView(this)
 {
     buildMenus();
 
@@ -76,13 +76,13 @@ void MainWindow::buildMenus()
     QMenu *menuFile = menuBar()->addMenu("&Fichier");
     QAction *actionOpenDicom = new QAction("&Ouvrir DICOM", this);
     QAction *actionOpenImage3D = new QAction("&Ouvrir image 3D", this);
-    QAction *actionOpenOthersImage3D = new QAction("&Ouvrir image 3D (.tif, .raw)", this);                           /** TODO PUSH **/
+    QAction *actionOpenOthersImage3D = new QAction("&Ouvrir image 3D (.tif, .skel)", this);
     QAction *actionSave = new QAction("&Sauvegarder", this);
     QAction *actionClose = new QAction("&Fermer", this);
     QAction *actionQuit = new QAction("&Quitter", this);
     menuFile->addAction(actionOpenDicom);
     menuFile->addAction(actionOpenImage3D);
-    menuFile->addAction(actionOpenOthersImage3D); /** TODO PUSH **/
+    menuFile->addAction(actionOpenOthersImage3D);
     menuFile->addAction(actionSave);
     menuFile->addAction(actionClose);
     menuFile->addAction(actionQuit);
@@ -93,13 +93,13 @@ void MainWindow::buildMenus()
     QAction *actionChangeWindowing = new QAction(ACTION_WINDOWING_TEXT, this);
     QAction *actionHistogram = new QAction(ACTION_HISTOGRAM_TEXT, this);
     QAction *actionSkeletonization = new QAction(ACTION_SKELETONIZATION_TEXT, this);
-    QAction *actionConvert = new QAction(ACTION_CONVERT_TEXT, this);                                /** TODO PUSH **/
+    //QAction *actionConvert = new QAction(ACTION_CONVERT_TEXT, this);
     QAction *actionGenerateGraph = new QAction(ACTION_GRAPH_TEXT, this);
     menuTools->addAction(actionChooseAlgorithms);
     menuTools->addAction(actionChangeWindowing);
     menuTools->addAction(actionHistogram);
     menuTools->addAction(actionSkeletonization);
-    menuTools->addAction(actionConvert);                                        /** TODO PUSH **/
+    //menuTools->addAction(actionConvert);
     menuTools->addAction(actionGenerateGraph);
 
     // Menu Calque
@@ -127,7 +127,7 @@ void MainWindow::buildMenus()
     // Gestion des connexions
     QObject::connect(actionOpenDicom, SIGNAL(triggered()), this, SLOT(chooseDicom()));
     QObject::connect(actionOpenImage3D, SIGNAL(triggered()), this, SLOT(openImage3D()));
-    QObject::connect(actionOpenOthersImage3D, SIGNAL(triggered()), this, SLOT(openOthersImage3D()));                  /** TODO PUSH **/
+    QObject::connect(actionOpenOthersImage3D, SIGNAL(triggered()), this, SLOT(openOthersImage3D()));
     QObject::connect(actionSave, SIGNAL(triggered()), this, SLOT(saveImage()));
     QObject::connect(actionClose, SIGNAL(triggered()), this, SLOT(closeImage()));
     QObject::connect(actionQuit, SIGNAL(triggered()), this, SLOT(close()));
@@ -139,7 +139,7 @@ void MainWindow::buildMenus()
     QObject::connect(actionManageImageLayers, SIGNAL(triggered()), this, SLOT(openSecondaryWindow()));
     QObject::connect(actionViewer3DImageLayers, SIGNAL(triggered()), this, SLOT(openSecondaryWindow()));
     QObject::connect(actionSkeletonization, SIGNAL(triggered()), this, SLOT(skeletonization()));
-    QObject::connect(actionConvert, SIGNAL(triggered()), this, SLOT(openSecondaryWindow()));
+    //QObject::connect(actionConvert, SIGNAL(triggered()), this, SLOT(openSecondaryWindow()));
     QObject::connect(actionGenerateGraph, SIGNAL(triggered()), this, SLOT(getGraph()));
 }
 
@@ -249,7 +249,7 @@ void MainWindow::openImage3D()
 void MainWindow::openOthersImage3D()
 {
     // Mise à jour de l'image et de la fenêtre principale
-    QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.tif *.raw *.skel)");
+    QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.tif *.skel)");
     if (filename.isEmpty()) return;
     // Fermeture de l'image courante
     if (!closeImage())
@@ -258,7 +258,7 @@ void MainWindow::openOthersImage3D()
     removeLayers();
     currentImageType = ImageType::Image3D;
     skeletonModel.setFilename(filename);
-    convertImage.setFilename(filename);
+    //convertImage.setFilename(filename);
     if (filename.contains(".tif")) {
         skeletonModel.loadTIFFFile();
         image = skeletonModel.getSkeleton3DIm();
@@ -512,8 +512,8 @@ void MainWindow::openSecondaryWindow()
             windowingWindow.show();
         if (action->text() == ACTION_HISTOGRAM_TEXT)
             histogramWindow.show();
-        if (action->text() == ACTION_CONVERT_TEXT)
-            convertImageView.show();
+        //if (action->text() == ACTION_CONVERT_TEXT)
+        //    convertImageView.show();
     }
     else
     {
@@ -529,7 +529,7 @@ void MainWindow::skeletonization() {
     drawSlice();
 }
 
-void MainWindow::convertImageRawToVol() {
+/*void MainWindow::convertImageRawToVol() {
     int x = convertImageView.getX();
     int y = convertImageView.getY();
     int z = convertImageView.getZ();
@@ -538,7 +538,7 @@ void MainWindow::convertImageRawToVol() {
     skeletonModel.setSkeleton3DIm(image);
     updateImageComponents();
     drawSlice();
-}
+}*/
 
 void MainWindow::getGraph(){
     image = skeletonModel.getSkeleton3DIm();
