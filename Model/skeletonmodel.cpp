@@ -8,13 +8,16 @@ void SkeletonModel::setFilename(QString filename) {
     this->filename = filename;
 }
 
+/***
+        SKELETONIZE3D (Fiji)
+        Author : Ignacio Arganda-Carreras
+        http://imagej.net/Skeletonize3D
+
+        from Lee et al. "Building skeleton models via 3-D medial surface/axis thinning algorithms.
+            Computer Vision, Graphics, and Image Processing, 56(6):462-478, 1994."
+  ***/
+
 void SkeletonModel::compute() {
-    /*std::cout << "Execute process" << std::endl;
-    QString cmdImageJ(PATH_TO_IMAGEJ);
-    cmdImageJ += " \""+filename+"\""+MAKE_BINARY+SKELETONIZE+SAVE_AS;
-    std::cout << "cmdImageJ = " << cmdImageJ.toStdString() << std::endl;
-    QString cmdRaw2Vol("raw2vol");
-    QProcess::execute(cmdImageJ);*/
 
     this->width = (int)this->skeletonIm3D->n_rows;
     this->height = (int)this->skeletonIm3D->n_cols;
@@ -864,6 +867,8 @@ void SkeletonModel::octreeLabeling(int octant, int label, int cube[26]) {
         if (cube[25] == 1) cube[25] = label;
     }
 }
+
+/***                        END SKELETONIZE3D (Fiji)                        ***/
 
 void SkeletonModel::loadTIFFFile() {
     TIFF *file = TIFFOpen(filename.toStdString().c_str(), "r");

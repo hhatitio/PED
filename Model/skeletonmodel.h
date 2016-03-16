@@ -4,35 +4,21 @@
 #include "../deftypes.h"
 
 #include <QString>
-#include <QProcess>
 #include <QTextStream>
 #include <iostream>
 #include <cstdlib>
 #include <string>
 #include <tiffio.h>
 
-#define PATH_TO_IMAGEJ       "../ImageJ/ImageJ"
-#define MAKE_BINARY          " -run \"Make Binary\""
-#define SKELETONIZE          " -run \"Skeletonize (2D/3D)\""
-#define SAVE_AS              " -run \"Raw Data...\""
-
 // ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.6.tar.gz
 
 class SkeletonModel {
 public:
     SkeletonModel();
-    void setFilename(QString filename);
-    void compute();
-    void setDataFromFile();
-    void generate3DImFromData();
-    void extractMinAndMaxFromData(double &xmin, double &xmax, double &ymin,
-                                  double &ymax, double &zmin, double &zmax);
 
-    int normalize(double xmin, double xmax, double ymin,
-                  double ymax, double zmin, double zmax);
-    Image3D<short int>* getSkeleton3DIm();
-    void setSkeleton3DIm(Image *image);
-    void loadTIFFFile();
+    void setFilename(QString filename);
+
+    void compute();
     void fillEulerLUT(int LUT[256]);
     void fillnumOfPointsLUT(int LUT[256]);
     int getPixelNoCheck(int x, int y, int z);
@@ -56,6 +42,19 @@ public:
     uint8 indexOctantNEB(int neighbors[27]);
     bool isSimplePoint(int neighbors[27]);
     void octreeLabeling(int octant, int label, int cube[26]);
+
+    void loadTIFFFile();
+
+    void setDataFromFile();
+    void extractMinAndMaxFromData(double &xmin, double &xmax, double &ymin,
+                                  double &ymax, double &zmin, double &zmax);
+    int normalize(double xmin, double xmax, double ymin,
+                  double ymax, double zmin, double zmax);
+    void generate3DImFromData();
+
+    Image3D<short int>* getSkeleton3DIm();
+    void setSkeleton3DIm(Image *image);
+
 
 private:
     QString filename;
