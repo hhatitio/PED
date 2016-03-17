@@ -49,7 +49,7 @@ void ExtendedNode::addAdjacentNode(int id){
 }
 
 void ExtendedNode::addAdjacentNodePos(int pos){
-    _adjacentNodes.push_back(pos);
+    _adjacentNodesPos.push_back(pos);
 }
 
 std::vector<int> ExtendedNode::getAdjacentNodes(){
@@ -70,9 +70,9 @@ void ExtendedNode::deleteAdjacentNode(int id){
 }
 
 void ExtendedNode::deleteAdjacentNodePos(int pos){
-    for(unsigned int i = 0; i < _adjacentNodes.size(); i++){
-        if(_adjacentNodes[i] == pos){
-            _adjacentNodes.erase(_adjacentNodes.begin()+i);
+    for(unsigned int i = 0; i < _adjacentNodesPos.size(); i++){
+        if(_adjacentNodesPos[i] == pos){
+            _adjacentNodesPos.erase(_adjacentNodesPos.begin()+i);
             return;
         }
     }

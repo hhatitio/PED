@@ -31,13 +31,16 @@ public:
     Image* getGraphImage3D();
     void initGraph();
     bool contractNodes(ExtendedNode *n);
+    bool mergeNodes(ExtendedNode *n1,ExtendedNode *n2);
     bool transformIntoArc(ExtendedNode *n);
     bool eraseNodes(ExtendedNode *n);
     void initNodeEdges(int pos);
     void arcToSingleNeighboor(ExtendedNode *n, int n_pos);
     void updateNodeMap(std::unordered_map<int,ExtendedNode*> nodesList);
     void updateNodeMap();
-
+    void processIntersectionNode(ExtendedNode *u);
+    void processNodeWith2neighboor(ExtendedNode *u);
+    int getNodeWeight(ExtendedNode *u);
 
 private:
     ListGraph graph;

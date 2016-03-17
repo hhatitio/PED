@@ -24,7 +24,7 @@ void ExtendedEdge::addAdjacentNode(int id){
 }
 
 void ExtendedEdge::addAdjacentNodePos(int pos){
-    _adjacentNodes.push_back(pos);
+    _adjacentNodesPos.push_back(pos);
 }
 
 void ExtendedEdge::setSize(int length){

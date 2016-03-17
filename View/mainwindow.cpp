@@ -549,8 +549,8 @@ void MainWindow::getGraph(){
     //if (filename.isEmpty()) return;
 
     // Mise à jour de l'image et de la fenêtre principale
-    //image = skeletonGraph.getGraphImage3D();
-    image = skeletonGraph.getSkeleton3DIm();
+    image = skeletonGraph.getGraphImage3D();
+    //image = skeletonGraph.getSkeleton3DIm();
     //image = graphTest.getSkeleton3DIm();
     currentImageType = ImageType::Image3D;
     updateImageComponents();
