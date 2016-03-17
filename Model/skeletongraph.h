@@ -42,6 +42,7 @@ public:
     void processNodeWith2neighboor(ExtendedNode *u);
     int getNodeWeight(ExtendedNode *u);
     bool hasBiggerWeiht(int pos);
+    void exportGraph(std::string name);
 
 private:
     ListGraph graph;

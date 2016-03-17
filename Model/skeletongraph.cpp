@@ -802,3 +802,67 @@ Image* SkeletonGraph::getGraphImage3D(){
 
     return im;
 }
+
+void SkeletonGraph::exportGraph(std::string name){
+    
+    Palette palette;
+    Palette paletteW(true);
+    
+    ListGraph::NodeMap<dim2::Point<int> > coords(graph);
+    ListGraph::NodeMap<double> sizes(graph);
+    ListGraph::NodeMap<int> colors(graph);
+    ListGraph::NodeMap<int> shapes(graph);
+    ListGraph::ArcMap<int> acolors(graph);
+    ListGraph::ArcMap<int> widths(graph);
+    
+    IdMap<ListGraph,ListGraph::Node> id(graph);
+    
+    int nbz = skeletonIm3D.n_slices;
+    int nbx = 0;
+    //int nby = 0;
+    for(auto nit = nodes.begin(); nit!=nodes.end(); ++nit){
+        ListGraph::Node n = graph.nodeFromId(nit->second->getId());
+        
+        int x = nit->second->getX();
+        int y = nit->second->getY();
+        int z = nit->second->getZ();
+        
+        std::cout << "exportGraph"<< nbx++ << " : "
+        << nit->second->getId() << " "
+        << nit->second->getX() << " "
+        << nit->second->getY() << " "
+        << nit->second->getZ() << std::endl;
+        
+        coords[n] = Point(x*10+(nbz*z),y*10+(nbz*z));
+        sizes[n]  = 20;
+        colors[n] = 0;
+        shapes[n] = 0;
+    }
+    
+    //    for (ListGraph::NodeIt nit(graph); nit != INVALID; ++nit){
+    //
+    //        coords[nit] = Point(10,10);
+    //        sizes[nit]  = 1;
+    //        colors[nit] = 0;
+    //        shapes[nit] = 0;
+    //    }
+    
+    for (ListGraph::ArcIt ait(graph); ait != INVALID; ++ait){
+        acolors[ait] = 0;
+        widths[ait]  = 1;
+    }
+    
+    std::cout << "Create " << name << std::endl;
+    graphToEps(graph,name.data()).
+    coords(coords).
+    title("Sample .eps figure").
+    copyright("(C) 2003-2009 LEMON Project").
+    absoluteNodeSizes().absoluteArcWidths().
+    nodeScale(2).nodeSizes(sizes).
+    nodeShapes(shapes).
+    nodeColors(composeMap(paletteW,colors)).
+    arcColors(composeMap(palette,acolors)).
+    arcWidthScale(.4).arcWidths(widths).
+    nodeTexts(id).nodeTextSize(3*5).
+    run();
+}

@@ -544,6 +544,7 @@ void MainWindow::getGraph(){
     image = skeletonModel.getSkeleton3DIm();
     skeletonGraph.setGraph(image);
     skeletonGraph.compute();
+    skeletonGraph.exportGraph("graph.eps");
     //graphTest.setGraph(image);
     //graphTest.initGraph();
     //graphTest.compute();
