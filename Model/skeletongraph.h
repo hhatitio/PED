@@ -41,6 +41,7 @@ public:
     void processIntersectionNode(ExtendedNode *u);
     void processNodeWith2neighboor(ExtendedNode *u);
     int getNodeWeight(ExtendedNode *u);
+    bool hasBiggerWeiht(int pos);
 
 private:
     ListGraph graph;

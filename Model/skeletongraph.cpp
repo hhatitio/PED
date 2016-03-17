@@ -306,10 +306,17 @@ void SkeletonGraph::processIntersectionNode(ExtendedNode *u){
                          skeletonImTmp.n_slices);
     if(adnodes.size() > 2){
         for(int i = 0; i<adnodes.size(); ++i){
-            if(nodes.find(adnodes.at(i))!=nodes.end() /*&& !isIntersectionNode(adnodes.at(i))*/){
-                mergeNodes(u,nodes.at(adnodes.at(i)));
-                skeletonImTmp.at(adnodes.at(i)) = 255;
-                //neighboorMap->at(adnodes[i])=0;
+            if(nodes.find(adnodes.at(i))!=nodes.end()){
+                ExtendedNode *v = nodes.at(adnodes.at(i));
+                if(!isIntersectionNode(adnodes.at(i)) || isSpatialNeighboor(u,v)){
+                    //std::cout << "Inter noeud :" << v->getId() << std::endl;
+                    if(v->getAdjacentNodesPos().size()>1 || isSpatialNeighboor(u,v)){
+                        if(mergeNodes(u,v)){
+                            skeletonImTmp.at(adnodes.at(i)) = 255;
+                        }
+                    }
+                    //neighboorMap->at(adnodes[i])=0;
+                }
             }
         }
         //        enhanceNeighboorMap.at(pos) = getNodeWeight(u);
@@ -325,46 +332,49 @@ void SkeletonGraph::compute() {
     std::unordered_map<int, ExtendedNode*> nodesList;
     std::cout << "noeuds :" << nodes.size() << std::endl;
     int size_graph;
-     //do{
+    do{
         size_graph = nodes.size();
         for (auto it = voxels.begin(); (it!= voxels.end()); ++it){
             int pos = it->first;
             ExtendedNode *u = it->second;
 
-            if(nodes.find(pos)!=nodes.end() && (isIntersectionNode(pos))){
+            if(nodes.find(pos)!=nodes.end() && (hasBiggerWeiht(pos))){
                 processIntersectionNode(u);
             }
             if(nodes.find(pos)!=nodes.end() && u->getAdjacentNodesPos().size()==2){
                 processNodeWith2neighboor(u);
             }
+            //            if(nodes.find(pos)!=nodes.end() && (hasBiggerWeiht(pos))){
+            //                processIntersectionNode(u);
+            //            }
 
         }
+        //        voxels.clear();
+        //        for (auto it = nodes.begin(); (it!= nodes.end()); ++it){
+        //            voxels.insert({it->first,it->second});
+        //        }
+        //    }while(size_graph != nodes.size());
+
+        //        do{
+        //            size_graph = nodes.size();
+        //            for (auto it = voxels.begin(); (it!= voxels.end()); ++it){
+        //                int pos = it->first;
+        //                ExtendedNode *u = it->second;
+
+        //                if(nodes.find(pos)!=nodes.end() && u->getAdjacentNodesPos().size()==2){
+        //                    processNodeWith2neighboor(u);
+        //                }
+
+        //                if(nodes.find(pos)!=nodes.end() && (hasBiggerWeiht(pos))){
+        //                    processIntersectionNode(u);
+        //                }
+
+        //            }
         voxels.clear();
         for (auto it = nodes.begin(); (it!= nodes.end()); ++it){
             voxels.insert({it->first,it->second});
         }
-//    }while(size_graph != nodes.size());
-
-        //do{
-//            size_graph = nodes.size();
-            for (auto it = voxels.begin(); (it!= voxels.end()); ++it){
-                int pos = it->first;
-                ExtendedNode *u = it->second;
-
-                if(nodes.find(pos)!=nodes.end() && u->getAdjacentNodesPos().size()==2){
-                    processNodeWith2neighboor(u);
-                }
-
-                if(nodes.find(pos)!=nodes.end() && (isIntersectionNode(pos))){
-                    processIntersectionNode(u);
-                }
-
-            }
-            voxels.clear();
-            for (auto it = nodes.begin(); (it!= nodes.end()); ++it){
-                voxels.insert({it->first,it->second});
-            }
-     //}while(size_graph != nodes.size());
+    }while(size_graph != nodes.size());
     std::cout << "noeuds :" << nodes.size() << std::endl;
     /*for (auto it = voxels.begin(); (it!= voxels.end()); ++it){
         int pos = it->first;
@@ -694,6 +704,38 @@ bool SkeletonGraph::isIntersectionNode(int pos){
     int x = n->getX();
     int y = n->getY();
     int z = n->getZ();
+    //    std::vector<int> adNodes = n->getAdjacentNodesPos();
+    //    for(int i =0; i<adNodes.size();++i){
+    //        ExtendedNode *n1 = nodes.at(adNodes[i]);
+    //        if(getNodeWeight(n) < getNodeWeight(n1)){
+    //            return false;
+    //        }
+    //    }
+    for (int i = -1; i <= 1 ; ++i) {
+        for (int j = -1; j <= 1 ; ++j) {
+            for (int k = -1; k <= 1 ; ++k) {
+                if(i!=0 || j!=0 || k!=0){
+                    int x1 = x+i;
+                    int y1 = y+j;
+                    int z1 = z+k;
+                    if((x1>=0 && y1>=0 && z1>=0) &&
+                            (x1<nb_rows && y1<nb_cols && z1<nb_slices)){
+                        int pos_n = x1+(y1*nb_rows)+(z1*nb_rows*nb_cols);
+                        if(skeletonIm3D.at(pos_n)==255){
+                            if(enhanceNeighboorMap.at(pos)<enhanceNeighboorMap.at(pos_n)){
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool SkeletonGraph::hasBiggerWeiht(int pos){
+    ExtendedNode *n = nodes.at(pos);
     std::vector<int> adNodes = n->getAdjacentNodesPos();
     for(int i =0; i<adNodes.size();++i){
         ExtendedNode *n1 = nodes.at(adNodes[i]);
@@ -701,29 +743,8 @@ bool SkeletonGraph::isIntersectionNode(int pos){
             return false;
         }
     }
-//    for (int i = -1; i <= 1 ; ++i) {
-//        for (int j = -1; j <= 1 ; ++j) {
-//            for (int k = -1; k <= 1 ; ++k) {
-//                if(i!=0 || j!=0 || k!=0){
-//                    int x1 = x+i;
-//                    int y1 = y+j;
-//                    int z1 = z+k;
-//                    if((x1>=0 && y1>=0 && z1>=0) &&
-//                            (x1<nb_rows && y1<nb_cols && z1<nb_slices)){
-//                        int pos_n = x1+(y1*nb_rows)+(z1*nb_rows*nb_cols);
-//                        if(skeletonIm3D.at(pos_n)==255){
-//                            if(enhanceNeighboorMap.at(pos)<enhanceNeighboorMap.at(pos_n)){
-//                                return false;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
     return true;
 }
-
 void SkeletonGraph::updateNodeMap(){
     std::cout << "taille nodeMap : " << nodes.size() << std::endl;
     int nb_rows = skeletonImTmp.n_rows;
@@ -769,6 +790,13 @@ Image* SkeletonGraph::getGraphImage3D(){
     Image3D<short int> *im = new Image3D<short int>(skeletonIm3D);
 
     for (auto it = nodes.begin(); it!= nodes.end(); ++it){
+        ExtendedNode *u = it->second;
+        std::vector<int> adnodes = u->getAdjacentNodes();
+        //        std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
+        //        for(int i= 0; i<adnodes.size(); ++i){
+        //            std::cout << " " << adnodes.at(i);
+        //        }
+        //        std::cout << " " << std::endl;
         im->at(it->first) = 120;
     }
 
