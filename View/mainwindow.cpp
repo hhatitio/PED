@@ -60,6 +60,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(&imageLayersWindow, SIGNAL(imageLayerRemoved(int)), &imageLayersToolsWindow, SLOT(removeViewLayer(int)));
     QObject::connect(&imageLayersWindow, SIGNAL(imageLayerRemoved(int)), &imageLayersViewer3DWindow, SLOT(removeViewLayer(int)));
     QObject::connect(&imageLayersToolsWindow, SIGNAL(rejected()), this, SLOT(drawSlice()));
+    skeletonGraph = new SkeletonGraph();
+    skeletonModel = new SkeletonModel();
 }
 
 MainWindow::~MainWindow()
@@ -68,6 +70,8 @@ MainWindow::~MainWindow()
     delete imageLayerMenu;
     delete imageLayers;
     delete intervalIntensity;
+    delete skeletonGraph;
+    delete skeletonModel;
 }
 
 void MainWindow::buildMenus()
@@ -241,7 +245,9 @@ void MainWindow::openImage3D()
     // Mise à jour de l'image et de la fenêtre principale
     image = DGtalTools<PixelType>::loadImage3D(filename.toStdString());
     currentImageType = ImageType::Image3D;
-    skeletonModel.setSkeleton3DIm(image);
+    delete skeletonModel;
+    skeletonModel = new SkeletonModel();
+    skeletonModel->setSkeleton3DIm(image);
     updateImageComponents();
     drawSlice();
 }
@@ -257,19 +263,21 @@ void MainWindow::openOthersImage3D()
     // Suppression des calques
     removeLayers();
     currentImageType = ImageType::Image3D;
-    skeletonModel.setFilename(filename);
+    delete skeletonModel;
+    skeletonModel = new SkeletonModel();
+    skeletonModel->setFilename(filename);
     //convertImage.setFilename(filename);
     if (filename.contains(".tif")) {
-        skeletonModel.loadTIFFFile();
-        image = skeletonModel.getSkeleton3DIm();
+        skeletonModel->loadTIFFFile();
+        image = skeletonModel->getSkeleton3DIm();
         currentImageType = ImageType::Image3D;
         updateImageComponents();
         drawSlice();
     }
-    if (filename.contains(".skel")) {
-        skeletonModel.setDataFromFile();
-        skeletonModel.generate3DImFromData();
-        image = skeletonModel.getSkeleton3DIm();
+    else if (filename.contains(".skel")) {
+        skeletonModel->setDataFromFile();
+        skeletonModel->generate3DImFromData();
+        image = skeletonModel->getSkeleton3DIm();
         currentImageType = ImageType::Image3D;
         updateImageComponents();
         drawSlice();
@@ -522,8 +530,8 @@ void MainWindow::openSecondaryWindow()
 }
 
 void MainWindow::skeletonization() {
-    skeletonModel.compute();
-    image = skeletonModel.getSkeleton3DIm();
+    skeletonModel->compute();
+    image = skeletonModel->getSkeleton3DIm();
     currentImageType = ImageType::Image3D;
     updateImageComponents();
     drawSlice();
@@ -541,17 +549,20 @@ void MainWindow::skeletonization() {
 }*/
 
 void MainWindow::getGraph(){
-    image = skeletonModel.getSkeleton3DIm();
-    skeletonGraph.setGraph(image);
-    skeletonGraph.compute();
-    skeletonGraph.exportGraph("graph.eps");
+    delete skeletonGraph;
+    image = skeletonModel->getSkeleton3DIm();
+
+    skeletonGraph = new SkeletonGraph(image);
+    //skeletonGraph.setGraph(image);
+    skeletonGraph->compute();
+    skeletonGraph->exportGraph("graph.eps");
 
     // Mise à jour de l'image et de la fenêtre principale
     //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
     //if (filename.isEmpty()) return;
 
     // Mise à jour de l'image et de la fenêtre principale
-    image = skeletonGraph.getGraphImage3D();
+    image = skeletonGraph->getGraphImage3D();
 
     currentImageType = ImageType::Image3D;
     updateImageComponents();

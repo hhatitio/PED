@@ -3,11 +3,6 @@
 #include <limits>
 #include <string>
 
-Image *neighboorMap;
-std::unordered_map<int, int> enhanceNeighboorMap;
-std::unordered_map<int, ExtendedNode*> voxels;
-std::vector<int> visitedVoxel;
-
 SkeletonGraph::SkeletonGraph() {
 
 }
@@ -18,7 +13,8 @@ SkeletonGraph::SkeletonGraph(Image* im) {
     skeletonImTmp = Image3D<short int>(skeletonIm3D);
 }
 
-SkeletonGraph::~SkeletonGraph() {}
+SkeletonGraph::~SkeletonGraph() {
+}
 
 void SkeletonGraph::setGraph(Image* im) {
     const Image3D<short int> im_const = *im;
@@ -26,21 +22,21 @@ void SkeletonGraph::setGraph(Image* im) {
     skeletonImTmp = Image3D<short int>(im_const);
 }
 
-void addVisitedVoxel(int pos){
+void SkeletonGraph::addVisitedVoxel(int pos){
     if(visitedVoxel.size()==10){
         visitedVoxel.pop_back();
     }
     visitedVoxel.insert(visitedVoxel.begin(),pos);
 }
 
-bool isVisited(int pos){
+bool SkeletonGraph::isVisited(int pos){
     for(unsigned int i = 0; i < visitedVoxel.size(); i++)
         if(visitedVoxel[i] == pos)
             return true;
     return false;
 }
 
-void computeEnhanceMapFromNeighboorMap(){
+void SkeletonGraph::computeEnhanceMapFromNeighboorMap(){
     int nb_rows = neighboorMap->n_rows;
     int nb_cols = neighboorMap->n_cols;
     int nb_slices = neighboorMap->n_slices;
@@ -76,8 +72,8 @@ void computeEnhanceMapFromNeighboorMap(){
     }
 }
 
-void computeNeighboorMap(Image3D<short int> *im){
-    neighboorMap = new Image3D<short int>(*im);
+void SkeletonGraph::computeNeighboorMap(){
+    neighboorMap = new Image3D<short int>(skeletonIm3D);
     int nb_cols = neighboorMap->n_cols;
     int nb_rows = neighboorMap->n_rows;
     int nb_slices = neighboorMap->n_slices;
@@ -102,7 +98,7 @@ void computeNeighboorMap(Image3D<short int> *im){
                         if(x1 >= 0   && y1 >= 0   && z1 >= 0   &&
                                 x1 < nb_rows && y1 < nb_cols && z1 < nb_slices) {
 
-                            if (im->at(n_pos) == 255) {
+                            if (skeletonIm3D.at(n_pos) == 255) {
                                 neighboorMap->at(pos) += 1;
                             }
                         }
@@ -113,10 +109,10 @@ void computeNeighboorMap(Image3D<short int> *im){
     }
 }
 
-int nextVoxelPosition(int x, int y, int z, Image3D<short int>& ImTmp){
-    int nb_cols = ImTmp.n_cols;
-    int nb_rows = ImTmp.n_rows;
-    int nb_slices = ImTmp.n_slices;
+int SkeletonGraph::nextVoxelPosition(int x, int y, int z){
+    int nb_cols = neighboorMap->n_cols;
+    int nb_rows = neighboorMap->n_rows;
+    int nb_slices = neighboorMap->n_slices;
     int pos = x+(y*nb_rows)+(z*nb_cols*nb_rows);
     int n_pos = -1;
     int val_n = 0;
@@ -149,9 +145,7 @@ int nextVoxelPosition(int x, int y, int z, Image3D<short int>& ImTmp){
     return n_pos;
 }
 
-std::vector<ExtendedNode*> getNeighboorhoodList(ExtendedNode* n,
-                                                std::unordered_map<int,ExtendedNode*> nodesList,
-                                                Image3D<short int>& skeletonIm3D){
+std::vector<ExtendedNode*> SkeletonGraph::getNeighboorhoodList(ExtendedNode* n){
     int nb_rows = ((int)skeletonIm3D.n_rows);
     int nb_cols = ((int)skeletonIm3D.n_cols);
     int nb_slices = ((int)skeletonIm3D.n_slices);
@@ -173,9 +167,9 @@ std::vector<ExtendedNode*> getNeighboorhoodList(ExtendedNode* n,
                             (x1<nb_rows && y1<nb_cols && z1<nb_slices)){
                         int pos = x1+(y1*nb_rows)+(z1*nb_rows*nb_cols);
 
-                        std::unordered_map<int,ExtendedNode*>::const_iterator n = nodesList.find(pos);
+                        std::unordered_map<int,ExtendedNode*>::const_iterator n = nodes.find(pos);
 
-                        if ( n != nodesList.end() )
+                        if ( n != nodes.end() )
                             neighboorhood.push_back(n->second);
                     }
                 }
@@ -274,7 +268,7 @@ void SkeletonGraph::processIntersectionNode(int pos){
 
 void SkeletonGraph::compute() {
     initGraph();
-    computeNeighboorMap(&skeletonIm3D);
+    computeNeighboorMap();
     computeEnhanceMapFromNeighboorMap();
     std::cout << "noeuds :" << nodes.size() << std::endl;
     int size_graph;
@@ -298,6 +292,8 @@ void SkeletonGraph::compute() {
         }
     }while(size_graph != nodes.size());
     std::cout << "noeuds :" << nodes.size() << std::endl;
+
+    delete neighboorMap;
 }
 
 void SkeletonGraph::initGraph(){

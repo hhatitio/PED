@@ -45,12 +45,21 @@ public:
 private:
     ListGraph graph;
     std::vector<double> data;
-    std::vector<bool> isVoxelChecked;
-    std::vector<bool> isNodeTab;
     std::unordered_map<int, ExtendedNode*> nodes;
-    //std::unordered_map<int, bool> doesEdgeExist;
     Image3D<short int> skeletonIm3D;
     Image3D<short int> skeletonImTmp;
+    Image *neighboorMap;
+    std::unordered_map<int, int> enhanceNeighboorMap;
+    std::unordered_map<int, ExtendedNode*> voxels;
+    std::vector<int> visitedVoxel;
+
+
+    void addVisitedVoxel(int pos);
+    bool isVisited(int pos);
+    void computeEnhanceMapFromNeighboorMap();
+    void computeNeighboorMap();
+    int nextVoxelPosition(int x, int y, int z);
+    std::vector<ExtendedNode*> getNeighboorhoodList(ExtendedNode* n);
 };
 
 

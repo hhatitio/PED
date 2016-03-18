@@ -15,6 +15,7 @@
 class SkeletonModel {
 public:
     SkeletonModel();
+    ~SkeletonModel();
 
     void setFilename(QString filename);
 

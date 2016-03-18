@@ -103,11 +103,10 @@ private:
     LayersThresholdWindow layersThresholdWindow;
     HistogramWindow histogramWindow;
     WindowingWindow windowingWindow;
-    SkeletonModel skeletonModel;
+    SkeletonModel *skeletonModel;
     //ConvertImage convertImage;
     //ConvertImageView convertImageView;
-    SkeletonGraph  skeletonGraph;
-    GraphTest  graphTest;
+    SkeletonGraph  *skeletonGraph;
 
     Interval<PixelType> *intervalIntensity;
 
