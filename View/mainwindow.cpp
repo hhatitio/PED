@@ -545,18 +545,14 @@ void MainWindow::getGraph(){
     skeletonGraph.setGraph(image);
     skeletonGraph.compute();
     skeletonGraph.exportGraph("graph.eps");
-    //graphTest.setGraph(image);
-    //graphTest.initGraph();
-    //graphTest.compute();
-    //graphTest.compute();
+
     // Mise à jour de l'image et de la fenêtre principale
     //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
     //if (filename.isEmpty()) return;
 
     // Mise à jour de l'image et de la fenêtre principale
     image = skeletonGraph.getGraphImage3D();
-    //image = skeletonGraph.getSkeleton3DIm();
-    //image = graphTest.getSkeleton3DIm();
+
     currentImageType = ImageType::Image3D;
     updateImageComponents();
     drawSlice();
@@ -583,13 +579,8 @@ void MainWindow::getGraph(){
     openGLWidget->setMinimumSize(QSize(500, 500));
     
     gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
-    
-    //openglDialog->set
-    
-    //QWidget *widget = new MyOpenGLWidget(openglDialog);
-    
+
     openglDialog->show();
-    //widget->show();
 
     // Fermeture de l'image courante
     /*if (!closeImage())
