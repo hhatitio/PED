@@ -23,13 +23,15 @@
 class MyOpenGLWidget : public QGLWidget
 {
 public:
-    MyOpenGLWidget(QWidget *parent, Image* im =NULL);
+    MyOpenGLWidget(QWidget *parent = 0, Image* im = NULL);
    // MyOpenGLWidget(QWidget *parent, Image* im);
     ~MyOpenGLWidget();
     
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
+    
+    void setImageLayer(Image *im);
     
 signals:
     
@@ -55,7 +57,10 @@ private:
     float _transparency;
     float _splitVal;
     
-    unsigned int _trspcMod;
+    float _alphaVol;
+    float _alphaSkel;
+    
+    //unsigned int _trspcMod;
     unsigned int _splitMod;
     
     QPoint _lastPos;

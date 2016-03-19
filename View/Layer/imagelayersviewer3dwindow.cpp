@@ -50,6 +50,7 @@ void ImageLayersViewer3DWindow::openViewer3D()
 
     if (withDGtal)
     {
+        //std::cout << "with DGTAL" << std::endl;
         dgtalViewer.clear();
         dgtalViewer.show();
 
@@ -63,14 +64,13 @@ void ImageLayersViewer3DWindow::openViewer3D()
             if (dgtalImage(*it) != 0)
                 dgtalViewer << *it;
         }
-
-        dgtalViewer << Viewer::updateDisplay;
     }
     else
     {
+        //std::cout << "without DGTAL" << std::endl;
         QString windowTitle = "0S3D - Visualistion 3D - Calque : "+imageLayer.getName();
         myViewer.setWindowTitle(windowTitle);
-        myViewer.setImageLayer(imageLayer);
+        myViewer.setImageLayer(imageLayer.getImage());
         myViewer.show();
     }
 }

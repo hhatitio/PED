@@ -233,15 +233,15 @@ void SkeletonGraph::processNodeWith2neighboor(ExtendedNode *u){
 
 void SkeletonGraph::processIntersectionNode(int pos){
     ExtendedNode *u = nodes.at(pos);
-    std::cout << "ici" << std::endl;
+    //std::cout << "ici" << std::endl;
     std::vector<int> adnodes = u->getAdjacentNodesPos();
     if(adnodes.size() > 2){
         for(int i = 0; i<adnodes.size(); ++i){
             if(nodes.find(adnodes.at(i))!=nodes.end()){
                 ExtendedNode *v = nodes.at(adnodes.at(i));
-                std::cout << "ici1" << std::endl;
+                //std::cout << "ici1" << std::endl;
                 if(!isIntersectionNode(adnodes.at(i))){
-                    std::cout << "ici2" << std::endl;
+                    //std::cout << "ici2" << std::endl;
                     if(v->getAdjacentNodesPos().size()>1){
                         if(mergeNodes(u,v)){
                             skeletonImTmp.at(adnodes.at(i)) = 255;
@@ -263,14 +263,14 @@ void SkeletonGraph::processIntersectionNode(int pos){
             }
         }
     }
-    std::cout << "ici3" << std::endl;
+    //std::cout << "ici3" << std::endl;
 }
 
 void SkeletonGraph::compute() {
     initGraph();
     computeNeighboorMap();
     computeEnhanceMapFromNeighboorMap();
-    std::cout << "noeuds :" << nodes.size() << std::endl;
+    //std::cout << "noeuds :" << nodes.size() << std::endl;
     int size_graph;
     do{
         size_graph = nodes.size();
@@ -291,7 +291,7 @@ void SkeletonGraph::compute() {
             voxels.insert({it->first,it->second});
         }
     }while(size_graph != nodes.size());
-    std::cout << "noeuds :" << nodes.size() << std::endl;
+    //std::cout << "noeuds :" << nodes.size() << std::endl;
 
     delete neighboorMap;
 }
@@ -517,7 +517,7 @@ bool SkeletonGraph::hasBiggerWeiht(int pos){
     return true;
 }
 void SkeletonGraph::updateNodeMap(){
-    std::cout << "taille nodeMap : " << nodes.size() << std::endl;
+    //std::cout << "taille nodeMap : " << nodes.size() << std::endl;
     int nb_rows = skeletonImTmp.n_rows;
     int nb_cols = skeletonImTmp.n_cols;
     int nb_slices = skeletonImTmp.n_slices;
@@ -531,7 +531,7 @@ void SkeletonGraph::updateNodeMap(){
             }
         }
     }
-    std::cout << "taille nodeMap : " << nodes.size() << std::endl;
+    //std::cout << "taille nodeMap : " << nodes.size() << std::endl;
 }
 
 void SkeletonGraph::updateNodeMap(std::unordered_map<int,ExtendedNode*> nodesList){
@@ -552,13 +552,13 @@ Image* SkeletonGraph::getGraphImage3D(){
     for (auto it = nodes.begin(); it!= nodes.end(); ++it){
         ExtendedNode *u = it->second;
         //std::vector<int> adnodes = u->getAdjacentNodes();
-        std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
+        //std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
         std::vector<ExtendedEdge *> incidentEdge = u->getIncidentEdges();
-        for(int i= 0; i<incidentEdge.size(); ++i){
-            ExtendedEdge *e = incidentEdge.at(i);
-            std::cout << " " << e->getSize() << "/" << e->getOppositeNode(u->getId()) << " -";
-        }
-        std::cout << " " << std::endl;
+        //for(int i= 0; i<incidentEdge.size(); ++i){
+            //ExtendedEdge *e = incidentEdge.at(i);
+            //std::cout << " " << e->getSize() << "/" << e->getOppositeNode(u->getId()) << " -";
+        //}
+        //std::cout << " " << std::endl;
         //        for(int i= 0; i<adnodes.size(); ++i){
         //            std::cout << " " << adnodes.at(i);
         //        }
@@ -593,11 +593,11 @@ void SkeletonGraph::exportGraph(std::string name){
         int y = nit->second->getY();
         int z = nit->second->getZ();
         
-        std::cout << "exportGraph"<< nbx++ << " : "
-                  << nit->second->getId() << " "
-                  << nit->second->getX() << " "
-                  << nit->second->getY() << " "
-                  << nit->second->getZ() << std::endl;
+        //std::cout << "exportGraph"<< nbx++ << " : "
+                  //<< nit->second->getId() << " "
+                  //<< nit->second->getX() << " "
+                  //<< nit->second->getY() << " "
+                  //<< nit->second->getZ() << std::endl;
         
         coords[n] = Point(x*10+(nbz*z),y*10+(nbz*z));
         sizes[n]  = 20;
@@ -610,7 +610,7 @@ void SkeletonGraph::exportGraph(std::string name){
         widths[ait]  = 1;
     }
     
-    std::cout << "Create " << name << std::endl;
+    //std::cout << "Create " << name << std::endl;
     graphToEps(graph,name.data()).
             coords(coords).
             title("Sample .eps figure").

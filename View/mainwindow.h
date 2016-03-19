@@ -55,6 +55,7 @@ public:
     void buildMenus();
     void updateImageComponents();
     void removeLayers();
+    void autoAddNewLayer(QString name, Image * imageLayer);
 
     bool eventFilter(QObject *object, QEvent *event);
 
@@ -90,6 +91,7 @@ public slots:
 private:
 
     Image *image;
+    Image *skeletonImage;
     ImageType currentImageType = ImageType::Empty;
 
     QMenu *imageLayerMenu;
@@ -111,6 +113,7 @@ private:
     Interval<PixelType> *intervalIntensity;
 
     int currentSlice;
+    int layersCount;
 };
 
 #endif // MAINWINDOW_H

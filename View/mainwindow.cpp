@@ -433,25 +433,26 @@ void MainWindow::addImageLayer(const QString &name, const std::vector<Algorithm<
     // Si l'utilisateur valide le nouveau calque image
     if (ImageLayer::checkSizeComponents(imageLayer))
     {
-        // Si premier calque à ajouter on supprime l'action emptyImageLayer
-        QAction *firstImageLayer = imageLayerMenu->actions()[0];
-        if (firstImageLayer->text() == ACTION_EMPTY_IMAGE_LAYER)
-            imageLayerMenu->removeAction(firstImageLayer);
+        //// Si premier calque à ajouter on supprime l'action emptyImageLayer
+        //QAction *firstImageLayer = imageLayerMenu->actions()[0];
+        //if (firstImageLayer->text() == ACTION_EMPTY_IMAGE_LAYER)
+            //imageLayerMenu->removeAction(firstImageLayer);
 
-        // Ajout de l'action au menu ajouter calque
-        QAction *addImageLayer = new QAction(name, this);
-        addImageLayer->setCheckable(true);
-        imageLayerMenu->addAction(addImageLayer);
-        QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(applyImageLayers()));
-        QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(drawSlice()));
+        //// Ajout de l'action au menu ajouter calque
+        //QAction *addImageLayer = new QAction(name, this);
+        //addImageLayer->setCheckable(true);
+        //imageLayerMenu->addAction(addImageLayer);
+        //QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(applyImageLayers()));
+        //QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(drawSlice()));
 
-        // On ajoute le nouveau calque image et sa vue
-        ImageLayer layer (name, imageLayer);
-        imageLayers->push_back(layer);
-        imageLayersWindow.addViewLayer(layer);
-        imageLayersToolsWindow.addViewLayer(layer);
-        imageLayersViewer3DWindow.addViewLayer(layer);
-        imageLayersWindow.addApplyActionLayer(imageLayers->size()-1, addImageLayer);
+        //// On ajoute le nouveau calque image et sa vue
+        //ImageLayer layer (name, imageLayer);
+        //imageLayers->push_back(layer);
+        //imageLayersWindow.addViewLayer(layer);
+        //imageLayersToolsWindow.addViewLayer(layer);
+        //imageLayersViewer3DWindow.addViewLayer(layer);
+        //imageLayersWindow.addApplyActionLayer(imageLayers->size()-1, addImageLayer);
+        autoAddNewLayer(name, imageLayer);
     }
 }
 
@@ -529,9 +530,34 @@ void MainWindow::openSecondaryWindow()
     }
 }
 
+void mergeImages(Image *src, Image *dst, int val1, int val2)
+{
+    for (unsigned long i = 0; i < dst->size(); i++)
+    {
+        if (src->at(i) == val1)
+        {
+            dst->at(i) = val2;
+        }
+    }
+}
+
 void MainWindow::skeletonization() {
+    
     skeletonModel->compute();
-    image = skeletonModel->getSkeleton3DIm();
+    skeletonImage = skeletonModel->getSkeleton3DIm();
+    
+    mergeImages(skeletonImage, image, 255, 200);
+    
+    string s = "Default-";
+    s += std::to_string(layersCount++);
+    QString name = QString(s.data());
+    autoAddNewLayer(name, image);
+    
+    s = "Default-";
+    s += std::to_string(layersCount++);
+    name = QString(s.data());
+    autoAddNewLayer(name, skeletonImage);
+    
     currentImageType = ImageType::Image3D;
     updateImageComponents();
     drawSlice();
@@ -550,24 +576,51 @@ void MainWindow::skeletonization() {
 
 void MainWindow::getGraph(){
     delete skeletonGraph;
-    image = skeletonModel->getSkeleton3DIm();
-
-    skeletonGraph = new SkeletonGraph(image);
+    
+    if (skeletonImage == NULL)
+    {
+        image = skeletonModel->getSkeleton3DIm();
+        skeletonGraph = new SkeletonGraph(image);
+    }
+    else
+    {
+        skeletonGraph = new SkeletonGraph(skeletonImage);
+    }
+    
     //skeletonGraph.setGraph(image);
     skeletonGraph->compute();
     skeletonGraph->exportGraph("graph.eps");
-
+    
     // Mise à jour de l'image et de la fenêtre principale
     //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
     //if (filename.isEmpty()) return;
+    
+    Image *imageGraph = skeletonGraph->getGraphImage3D();
+    mergeImages(imageGraph, image, 120, 120);
 
     // Mise à jour de l'image et de la fenêtre principale
-    image = skeletonGraph->getGraphImage3D();
+    //image = skeletonGraph->getGraphImage3D();
 
     currentImageType = ImageType::Image3D;
     updateImageComponents();
     drawSlice();
-    DGtalTools<PixelType>::saveImage3D("graphImage3D.vol", image);
+    //DGtalTools<PixelType>::saveImage3D("graphImage3D.vol", image);
+    
+    //========================================
+    
+    string s = "Default-";
+    s += std::to_string(layersCount++);
+    QString name = QString(s.data());
+    
+    autoAddNewLayer(name, image);
+    
+    s = "Default-";
+    s += std::to_string(layersCount++);
+    name = QString(s.data());
+    
+    autoAddNewLayer(name, imageGraph);
+    
+    //========================================
 
     QDialog *openglDialog = new QDialog(this);
     
@@ -600,3 +653,29 @@ void MainWindow::getGraph(){
     removeLayers();*/
     //skeletonView.setFilename(filename);
 }
+
+void MainWindow::autoAddNewLayer(QString name, Image * imageLayer)
+{
+    
+    
+    // Si premier calque à ajouter on supprime l'action emptyImageLayer
+    QAction *firstImageLayer = imageLayerMenu->actions()[0];
+    if (firstImageLayer->text() == ACTION_EMPTY_IMAGE_LAYER)
+        imageLayerMenu->removeAction(firstImageLayer);
+    
+    // Ajout de l'action au menu ajouter calque
+    QAction *addImageLayer = new QAction(name, this);
+    addImageLayer->setCheckable(true);
+    imageLayerMenu->addAction(addImageLayer);
+    QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(applyImageLayers()));
+    QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(drawSlice()));
+    
+    // On ajoute le nouveau calque image et sa vue
+    ImageLayer layer (name, imageLayer);
+    imageLayers->push_back(layer);
+    imageLayersWindow.addViewLayer(layer);
+    imageLayersToolsWindow.addViewLayer(layer);
+    imageLayersViewer3DWindow.addViewLayer(layer);
+    imageLayersWindow.addApplyActionLayer(imageLayers->size()-1, addImageLayer);
+}
+

@@ -4,12 +4,14 @@
 #include "../../Model/Layer/imagelayer.h"
 
 #include "../viewer3d.h"
+#include "../myopenglwidget.h"
 
 #include <DGtal/io/viewers/Viewer3D.h>
 
 #include <QDialog>
 #include <QComboBox>
 #include <QPushButton>
+
 
 #define IMAGE_LAYER_VIEWER3D_WINDOW_MINIMUM_WIDTH 500
 
@@ -41,9 +43,10 @@ private:
     QPushButton buttonValid;
 
     Viewer dgtalViewer;
-    Viewer3D myViewer;
+    //Viewer3D myViewer;
+    MyOpenGLWidget myViewer;
 
-    static const bool withDGtal = true;
+    static const bool withDGtal = false;
 
 };
 

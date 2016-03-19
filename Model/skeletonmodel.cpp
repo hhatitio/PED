@@ -974,10 +974,10 @@ int SkeletonModel::normalize(double xmin, double xmax, double ymin,
         data[i+2] = (data[i+2]-zmin) / delta;
     }
 
-    std::cout << "max   : " << xmax <<" "<< ymax <<" "<< zmax << std::endl;
-    std::cout << "min   : " << xmin <<" "<< ymin <<" "<< zmin << std::endl;
-    std::cout << "delta : " << delta_x <<" "<< delta_y <<" "<< delta_z << std::endl;
-    std::cout << "D     : " << delta << std::endl;
+    //std::cout << "max   : " << xmax <<" "<< ymax <<" "<< zmax << std::endl;
+    //std::cout << "min   : " << xmin <<" "<< ymin <<" "<< zmin << std::endl;
+    //std::cout << "delta : " << delta_x <<" "<< delta_y <<" "<< delta_z << std::endl;
+    //std::cout << "D     : " << delta << std::endl;
 
     return (floor(delta));
 }
@@ -1014,11 +1014,11 @@ void SkeletonModel::generate3DImFromData() {
 
         skeletonIm3D->at(x+(y*row)+(z*row*slice)) = 255;
 
-        std::cout << x <<" "<< y <<" "<< z;
-        std::cout << " : " << data[i] <<" "<< data[i+1] <<" "<< data[i+2] << std::endl;
+        //std::cout << x <<" "<< y <<" "<< z;
+        //std::cout << " : " << data[i] <<" "<< data[i+1] <<" "<< data[i+2] << std::endl;
     }
 
-    std::cout << "data : " << data.size() << "/" << 372*3 << std::endl;
+    //std::cout << "data : " << data.size() << "/" << 372*3 << std::endl;
 }
 
 Image3D<short int>* SkeletonModel::getSkeleton3DIm(){

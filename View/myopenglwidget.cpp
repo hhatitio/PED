@@ -32,13 +32,15 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im)
     _splitVal = 0.;
     
     if(im == NULL){
-    _mesh = new Mesh(path);
+        _mesh = NULL;
     }else{
-        _mesh = new Mesh(im);
+        setImageLayer(im);
     }
-    _faces = _mesh->getFaces();
-    _trspcMod = 0;
+    //_trspcMod = 0;
     _splitMod = 0;
+    
+    _alphaSkel = 1.;
+    _alphaVol = 0.4;
     
     std::cout << "NbFaces : " << _faces.size() << std::endl;
 }
@@ -47,15 +49,23 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im)
 MyOpenGLWidget::~MyOpenGLWidget() { }
 
 
+void MyOpenGLWidget::setImageLayer(Image *im)
+{
+    _mesh = new Mesh(im);
+    _faces = _mesh->getFaces();
+
+}
+
+
 void MyOpenGLWidget::initializeGL()
 {
     glClearColor(0.2,0.2,0.2,1.);
     
-    glEnable(GL_DEPTH_TEST);
-    glShadeModel(GL_SMOOTH);
+    //glEnable(GL_DEPTH_TEST);
+    //glShadeModel(GL_SMOOTH);
     
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_DST_COLOR);
     
     //glCullFace(GL_FRONT);
     //glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
@@ -158,8 +168,8 @@ void MyOpenGLWidget::wheelEvent(QWheelEvent *e)
 
 void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
 {
-    if (e->key() == Qt::Key_M)
-        _trspcMod = (_trspcMod + 1) % 2;
+    //if (e->key() == Qt::Key_M)
+        //_trspcMod = (_trspcMod + 1) % 2;
     if (e->key() == Qt::Key_S)
         _splitMod = (_splitMod + 1) % 2;
     
@@ -185,7 +195,7 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
         x_T += 0.05;
     if (e->key() == Qt::Key_Right)
         x_T -= 0.05;
-
+    
     if (e->key() == Qt::Key_A) _scale *= 1.05;
     if (e->key() == Qt::Key_Z) _scale *= 0.95;
     paintGL();
@@ -194,17 +204,42 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
 
 void MyOpenGLWidget::drawFace(Face f)
 {
-    float a;
-    float alpha = (f.val / _mesh->getValmax());
+    float r, g, b, a;
     
+    int max = _mesh->getValmax();
     /*if ((_trspcMod % 2) == 0)
-        a = 1. - (alpha * _transparency);
-    else*/
-        a = alpha * _transparency;
+     a = 1. - (alpha * _transparency);
+     else*/
     
-    float r = alpha;//(f.a.x + 1) / 2;
-    float g = alpha;//(f.a.y + 1) / 2;
-    float b = alpha;//(f.a.z + 1) / 2;
+    if (f.val == 255) {
+        a = _alphaVol;
+        r = .6;
+        g = .6;
+        b = .6;
+    }
+    else if (f.val == 200) {
+        //std::cout << 2 << " " << std::endl;
+        a = _alphaSkel;
+        r = 0.0;
+        g = 1.0;
+        b = 0.0;
+    }
+    else if (f.val <= 199) {
+        //std::cout << 3 << " " << std::endl;
+        a = 1.0;
+        r = 1.0;
+        g = 0.0;
+        b = 0.0;
+    }
+    else {
+        //std::cout << 4 << " " << std::endl;
+        a = 1.0;
+        r = f.val / max;
+        g = f.val / max;
+        b = f.val / max;
+    }
+    
+    //a = color * _transparency;
     
     //std::cout <<r << " " << g << " " << b << " " << alpha << std::endl;
     
@@ -213,9 +248,9 @@ void MyOpenGLWidget::drawFace(Face f)
         glBegin(GL_QUADS);
         glColor4f(r, g, b, a);
         glVertex3f(f.a.x, f.a.y, f.a.z);
-        glVertex3f(f.b.x, f.b.y, f.b.z);
-        glVertex3f(f.c.x, f.c.y, f.c.z);
         glVertex3f(f.d.x, f.d.y, f.d.z);
+        glVertex3f(f.c.x, f.c.y, f.c.z);
+        glVertex3f(f.b.x, f.b.y, f.b.z);
         glEnd();
     }
 }
