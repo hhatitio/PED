@@ -78,12 +78,31 @@ void ExtendedNode::deleteAdjacentNodePos(int pos){
     }
 }
 
+void ExtendedNode::deleteIncidentEdge(ExtendedEdge *e){
+    for(unsigned int i = 0; i < _incidentEdges.size(); i++){
+        ExtendedEdge *edge = _incidentEdges[i];
+        if(edge->getId() == e->getId()){
+            _incidentEdges.erase(_incidentEdges.begin()+i);
+            return;
+        }
+    }
+}
+
 int ExtendedNode::getNbIncidentEdges(){
     return _incidentEdges.size();
 }
 
 std::vector<ExtendedEdge*> ExtendedNode::getIncidentEdges(){
     return _incidentEdges;
+}
+
+ExtendedEdge* ExtendedNode::getIncidentEdge(ExtendedNode *v){
+    for(unsigned int i = 0; i < _adjacentNodes.size(); i++){
+        if(_adjacentNodes[i] == v->getId()){
+            return _incidentEdges.at(i);
+        }
+    }
+    return NULL;
 }
 
 void ExtendedNode::addIncidentEdges(ExtendedEdge* e){

@@ -22,6 +22,7 @@ public:
     int getSecondNode();
     int getFirstNodePos();
     int getSecondNodePos();
+    int getOppositeNode(int id);
 
 private:
     int _id;

@@ -50,6 +50,14 @@ int ExtendedEdge::getSecondNode(){
 int ExtendedEdge::getSecondNodePos(){
     return _adjacentNodesPos.at(1);
 }
+int ExtendedEdge::getOppositeNode(int id){
+    if(_adjacentNodes.at(0)==id){
+        return _adjacentNodes.at(1);
+    }
+    else{
+        return _adjacentNodes.at(0);
+    }
+}
 
 int ExtendedEdge::getSize(){
     return _length;

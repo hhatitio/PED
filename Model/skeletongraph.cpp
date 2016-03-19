@@ -405,9 +405,11 @@ bool SkeletonGraph::eraseNodes(ExtendedNode *n){
     for(int i=0; i< adNodes.size();i++){
         if(nodes.find(adNodes[i])!=nodes.end()){
             ExtendedNode *enode = nodes.at(adNodes[i]);
+            ExtendedEdge *edge = enode->getIncidentEdge(n);
+            enode->deleteIncidentEdge(edge);
             enode->deleteAdjacentNode(n->getId());
             enode->deleteAdjacentNodePos(pos);
-            //enode->deleteIncidentEdge(i);
+
         }
     }
     graph.erase(n->getNode());
@@ -428,18 +430,20 @@ bool SkeletonGraph::mergeNodes(ExtendedNode *n1,ExtendedNode *n2){
         std::cout << "fonction merge: adNodes empty or node doesn't exist" << std::endl;
         return false;
     }
-    if(!eraseNodes(n2)){return false;}
+
+    ExtendedEdge *edge_n1n2 = n1->getIncidentEdge(n2);
     for(int i = 0; i < adNodes.size(); ++i){
         if(nodes.find(adNodes[i])!=nodes.end()){
             ExtendedNode *enode_u = nodes.at(adNodes[i]);
             int id_node_u = enode_u->getId();
             if(!n1->isAdjacentNode(id_node_u) && n1->getId()!=id_node_u){
-                ExtendedEdge *e = addEdge(graph,n1,enode_u,pos_n1,adNodes[i]);
-                //e->setSize(e->ge);
+                ExtendedEdge *edge_n2N = n2->getIncidentEdge(enode_u);
+                ExtendedEdge *e1 = addEdge(graph,n1,enode_u,pos_n1,adNodes[i]);
+                e1->setSize(edge_n1n2->getSize()+edge_n2N->getSize()+1);
             }
         }
     }
-
+    if(!eraseNodes(n2)){return false;}
     return true;
 }
 
@@ -457,8 +461,11 @@ bool SkeletonGraph::contractNodes(ExtendedNode *n){
     if(nodes.find(adNodes[0])!=nodes.end() && nodes.find(adNodes[1])!=nodes.end()){
         ExtendedNode *enode_u = nodes.at(adNodes[0]);
         ExtendedNode *enode_v = nodes.at(adNodes[1]);
+        ExtendedEdge *edge_u = n->getIncidentEdge(enode_u);
+        ExtendedEdge *edge_v = n->getIncidentEdge(enode_v);
         if(!enode_u->isAdjacentNode(enode_v->getId())){
-            addEdge(graph,enode_u,enode_v,adNodes[0],adNodes[1]);
+            ExtendedEdge *e = addEdge(graph,enode_u,enode_v,adNodes[0],adNodes[1]);
+            e->setSize(edge_u->getSize()+edge_v->getSize()+1);
         }
         return eraseNodes(n);
     }else{
@@ -544,8 +551,14 @@ Image* SkeletonGraph::getGraphImage3D(){
 
     for (auto it = nodes.begin(); it!= nodes.end(); ++it){
         ExtendedNode *u = it->second;
-        std::vector<int> adnodes = u->getAdjacentNodes();
-        //        std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
+        //std::vector<int> adnodes = u->getAdjacentNodes();
+        std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
+        std::vector<ExtendedEdge *> incidentEdge = u->getIncidentEdges();
+        for(int i= 0; i<incidentEdge.size(); ++i){
+            ExtendedEdge *e = incidentEdge.at(i);
+            std::cout << " " << e->getSize() << "/" << e->getOppositeNode(u->getId()) << " -";
+        }
+        std::cout << " " << std::endl;
         //        for(int i= 0; i<adnodes.size(); ++i){
         //            std::cout << " " << adnodes.at(i);
         //        }
