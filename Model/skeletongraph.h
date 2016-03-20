@@ -5,6 +5,7 @@
 #include <lemon/list_graph.h>
 #include <lemon/graph_to_eps.h>
 #include <lemon/math.h>
+#include <math.h>
 #include <unordered_map>
 
 //#include "Model/image3D.h"
@@ -46,6 +47,7 @@ private:
     ListGraph graph;
     std::vector<double> data;
     std::unordered_map<int, ExtendedNode*> nodes;
+    std::unordered_map<int, ExtendedEdge*> edges;
     Image3D<short int> skeletonIm3D;
     Image3D<short int> skeletonImTmp;
     Image *neighboorMap;
@@ -60,6 +62,9 @@ private:
     void computeNeighboorMap();
     int nextVoxelPosition(int x, int y, int z);
     std::vector<ExtendedNode*> getNeighboorhoodList(ExtendedNode* n);
+    ExtendedEdge* addEdge(ListGraph &graph, ExtendedNode* u, ExtendedNode* v,
+                          int pos_u, int pos_v);
+    void computeAngles();
 };
 
 

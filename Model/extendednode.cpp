@@ -45,10 +45,17 @@ bool ExtendedNode::isAdjacentNode(int id){
 }
 
 void ExtendedNode::addAdjacentNode(int id){
+    if(!isAdjacentNode(id)){
     _adjacentNodes.push_back(id);
+    }
 }
 
 void ExtendedNode::addAdjacentNodePos(int pos){
+    for(unsigned int i = 0; i < _adjacentNodesPos.size(); i++){
+        if(_adjacentNodesPos[i] == pos){
+            return;
+        }
+    }
     _adjacentNodesPos.push_back(pos);
 }
 
@@ -81,7 +88,7 @@ void ExtendedNode::deleteAdjacentNodePos(int pos){
 void ExtendedNode::deleteIncidentEdge(ExtendedEdge *e){
     for(unsigned int i = 0; i < _incidentEdges.size(); i++){
         ExtendedEdge *edge = _incidentEdges[i];
-        if(edge->getId() == e->getId()){
+        if(edge->getId()==e->getId()){
             _incidentEdges.erase(_incidentEdges.begin()+i);
             return;
         }
@@ -104,9 +111,20 @@ ExtendedEdge* ExtendedNode::getIncidentEdge(ExtendedNode *v){
     }
     return NULL;
 }
+bool ExtendedNode::isIncidentEdge(int id){
+    for(unsigned int i = 0; i < _incidentEdges.size(); i++){
+        ExtendedEdge *edge = _incidentEdges[i];
+        if(edge->getId() == id){
+            return true;
+        }
+    }
+    return false;
+}
 
 void ExtendedNode::addIncidentEdges(ExtendedEdge* e){
-    _incidentEdges.push_back(e);
+    if(!isIncidentEdge(e->getId())){
+     _incidentEdges.push_back(e);
+    }
 }
 
 int ExtendedNode::getId(){

@@ -24,7 +24,7 @@
 #include <QShortcut>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), image(0), sliderSlice(Qt::Horizontal),
+    QMainWindow(parent), image(0), skeletonImage(0), sliderSlice(Qt::Horizontal),
     imageLayersWindow(this), imageLayersToolsWindow(this), imageLayersViewer3DWindow(this),
     layersThresholdWindow(this), windowingWindow(this)//, convertImageView(this)
 {
@@ -72,6 +72,7 @@ MainWindow::~MainWindow()
     delete intervalIntensity;
     delete skeletonGraph;
     delete skeletonModel;
+    delete skeletonImage;
 }
 
 void MainWindow::buildMenus()
@@ -579,27 +580,27 @@ void MainWindow::getGraph(){
     
     if (skeletonImage == NULL)
     {
-        image = skeletonModel->getSkeleton3DIm();
-        skeletonGraph = new SkeletonGraph(image);
+        skeletonImage= skeletonModel->getSkeleton3DIm();
+        //skeletonGraph = new SkeletonGraph(image);
     }
-    else
-    {
+    //else
+    //{
         skeletonGraph = new SkeletonGraph(skeletonImage);
-    }
+    //}
     
     //skeletonGraph.setGraph(image);
     skeletonGraph->compute();
-    skeletonGraph->exportGraph("graph.eps");
+//    skeletonGraph->exportGraph("graph.eps");
     
-    // Mise à jour de l'image et de la fenêtre principale
-    //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
-    //if (filename.isEmpty()) return;
+//    // Mise à jour de l'image et de la fenêtre principale
+//    //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
+//    //if (filename.isEmpty()) return;
     
     Image *imageGraph = skeletonGraph->getGraphImage3D();
     mergeImages(imageGraph, image, 120, 120);
 
-    // Mise à jour de l'image et de la fenêtre principale
-    //image = skeletonGraph->getGraphImage3D();
+//    // Mise à jour de l'image et de la fenêtre principale
+//    //image = skeletonGraph->getGraphImage3D();
 
     currentImageType = ImageType::Image3D;
     updateImageComponents();
@@ -622,29 +623,29 @@ void MainWindow::getGraph(){
     
     //========================================
 
-    QDialog *openglDialog = new QDialog(this);
+    //QDialog *openglDialog = new QDialog(this);
     
     //openglDialog->setMinimumHeight(600);
     //openglDialog->setMinimumWidth(800);
     
-    openglDialog->setObjectName(QString("3D Visualizer"));
-    openglDialog->resize(500, 534);
-    openglDialog->setMinimumSize(QSize(500, 534));
-    QWidget *centralWidget = new QWidget(openglDialog);
-    centralWidget->setObjectName(QString("centralWidget"));
-    centralWidget->setMinimumSize(QSize(500, 500));
-    QGridLayout *gridLayout = new QGridLayout(centralWidget);
-    gridLayout->setSpacing(6);
-    gridLayout->setContentsMargins(11, 11, 11, 11);
-    gridLayout->setObjectName(QString("gridLayout"));
-    gridLayout->setContentsMargins(0, 0, 0, 0);
-    MyOpenGLWidget *openGLWidget = new MyOpenGLWidget(centralWidget, image);
-    openGLWidget->setObjectName(QString("openGLWidget"));
-    openGLWidget->setMinimumSize(QSize(500, 500));
+//    openglDialog->setObjectName(QString("3D Visualizer"));
+//    openglDialog->resize(500, 534);
+//    openglDialog->setMinimumSize(QSize(500, 534));
+//    QWidget *centralWidget = new QWidget(openglDialog);
+//    centralWidget->setObjectName(QString("centralWidget"));
+//    centralWidget->setMinimumSize(QSize(500, 500));
+//    QGridLayout *gridLayout = new QGridLayout(centralWidget);
+//    gridLayout->setSpacing(6);
+//    gridLayout->setContentsMargins(11, 11, 11, 11);
+//    gridLayout->setObjectName(QString("gridLayout"));
+//    gridLayout->setContentsMargins(0, 0, 0, 0);
+//    MyOpenGLWidget *openGLWidget = new MyOpenGLWidget(centralWidget, image);
+//    openGLWidget->setObjectName(QString("openGLWidget"));
+//    openGLWidget->setMinimumSize(QSize(500, 500));
     
-    gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
+//    gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
 
-    openglDialog->show();
+//    openglDialog->show();
 
     // Fermeture de l'image courante
     /*if (!closeImage())

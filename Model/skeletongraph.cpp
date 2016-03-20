@@ -270,7 +270,7 @@ void SkeletonGraph::compute() {
     initGraph();
     computeNeighboorMap();
     computeEnhanceMapFromNeighboorMap();
-    //std::cout << "noeuds :" << nodes.size() << std::endl;
+    std::cout << "noeuds :" << nodes.size() << std::endl;
     int size_graph;
     do{
         size_graph = nodes.size();
@@ -291,8 +291,8 @@ void SkeletonGraph::compute() {
             voxels.insert({it->first,it->second});
         }
     }while(size_graph != nodes.size());
-    //std::cout << "noeuds :" << nodes.size() << std::endl;
-
+    std::cout << "noeuds :" << nodes.size() << std::endl;
+    computeAngles();
     delete neighboorMap;
 }
 
@@ -325,12 +325,13 @@ void SkeletonGraph::initGraph(){
     }
 
 }
-ExtendedEdge* addEdge(ListGraph &graph, ExtendedNode* u, ExtendedNode* v,
-                      int pos_u, int pos_v){
+ExtendedEdge* SkeletonGraph::addEdge(ListGraph &graph, ExtendedNode* u, ExtendedNode* v,
+                                     int pos_u, int pos_v){
     ListGraph::Node u1, v1;
     u1 = u->getNode();
     v1 = v->getNode();
     ExtendedEdge *e = new ExtendedEdge(graph,u1,v1,pos_u,pos_v);
+    edges.insert({e->getId(),e});
     int idu1 = graph.id(u1);
     int idv1 = graph.id(v1);
 
@@ -374,13 +375,15 @@ void SkeletonGraph::initNodeEdges(int pos){
                         if (skeletonImTmp.at(n_pos) == 200) {
                             ExtendedNode *n = nodes.at(n_pos);
                             if(!(u->isAdjacentNode(n->getId()))){
-                                addEdge(graph,u,n,pos,n_pos);
+                                /*ExtendedEdge*  e = */addEdge(graph,u,n,pos,n_pos);
+                                //edges.insert({e->getId(),e});
                             }
                         }
                         if (skeletonImTmp.at(n_pos) == 255) {
                             ExtendedNode *v = new ExtendedNode(graph,x1,y1,z1);
                             if(!(u->isAdjacentNode(v->getId()))){
-                                addEdge(graph,u,v,pos,n_pos);
+                                /*ExtendedEdge*  e = */addEdge(graph,u,v,pos,n_pos);
+                                //edges.insert({e->getId(),e});
                             }
                             nodes.insert({n_pos,v});
                             skeletonImTmp.at(n_pos) = 200;
@@ -406,10 +409,12 @@ bool SkeletonGraph::eraseNodes(ExtendedNode *n){
         if(nodes.find(adNodes[i])!=nodes.end()){
             ExtendedNode *enode = nodes.at(adNodes[i]);
             ExtendedEdge *edge = enode->getIncidentEdge(n);
+            if(edges.find(edge->getId())!=edges.end()){
+                edges.erase(edge->getId());
+            }
             enode->deleteIncidentEdge(edge);
             enode->deleteAdjacentNode(n->getId());
             enode->deleteAdjacentNodePos(pos);
-
         }
     }
     graph.erase(n->getNode());
@@ -443,8 +448,7 @@ bool SkeletonGraph::mergeNodes(ExtendedNode *n1,ExtendedNode *n2){
             }
         }
     }
-    if(!eraseNodes(n2)){return false;}
-    return true;
+    return eraseNodes(n2);
 }
 
 bool SkeletonGraph::contractNodes(ExtendedNode *n){
@@ -555,8 +559,8 @@ Image* SkeletonGraph::getGraphImage3D(){
         //std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
         std::vector<ExtendedEdge *> incidentEdge = u->getIncidentEdges();
         //for(int i= 0; i<incidentEdge.size(); ++i){
-            //ExtendedEdge *e = incidentEdge.at(i);
-            //std::cout << " " << e->getSize() << "/" << e->getOppositeNode(u->getId()) << " -";
+        //ExtendedEdge *e = incidentEdge.at(i);
+        //std::cout << " " << e->getSize() << "/" << e->getOppositeNode(u->getId()) << " -";
         //}
         //std::cout << " " << std::endl;
         //        for(int i= 0; i<adnodes.size(); ++i){
@@ -567,6 +571,65 @@ Image* SkeletonGraph::getGraphImage3D(){
     }
 
     return im;
+}
+
+void SkeletonGraph::computeAngles(){
+    for (auto it = edges.begin(); it!= edges.end(); ++it){
+       // std::cout << "toto"<< std::endl;
+        ExtendedEdge *edge = it->second;
+        std::vector<int> adjacentNodesPos = edge->getAdjacentNodesPos();
+        //std::cout << "toto2 "<< edge->getId() << std::endl;
+        //if(!adjacentNodesPos.empty()){
+        for(int i = 0; i<adjacentNodesPos.size(); i++){
+            //std::cout << "totof "<< i << std::endl;
+            ExtendedNode *n1 = nodes.at(adjacentNodesPos.at(i));
+            std::vector<ExtendedEdge*> n1_incidentEdges = n1->getIncidentEdges();
+            //      if(!n1_incidentEdges.empty()){
+            //std::cout << "totof1 "<< i << std::endl;
+            for(int j = 0; j<n1_incidentEdges.size(); j++){
+                //std::cout << "toto "<< n1_incidentEdges.size() << std::endl;
+                //std::cout << "toto2 "<< j << std::endl;
+                //std::cout << "edge :"<< edge->getId() << std::endl;
+                ExtendedEdge *edge2 = n1_incidentEdges.at(j);
+                //std::cout << "edge 2: "<< edge2->getId() << std::endl;
+                if(edge2->getId() != edge->getId() && !edge->containAngle(edge2->getId())){
+                    //  std::cout << "totoB "<< j << std::endl;
+                    ExtendedNode *n2 = nodes.at(edge2->getOppositeNodePos(n1->getId()));
+                    ExtendedNode *n3 = nodes.at(edge->getOppositeNodePos(n1->getId()));
+                    //std::cout << "totoB "<< j << std::endl;
+                    std::vector<int> vec_n1n2,vec_n1n3;
+                    vec_n1n2.push_back(n2->getX()-n1->getX());
+                    vec_n1n2.push_back(n2->getY()-n1->getY());
+                    vec_n1n2.push_back(n2->getZ()-n1->getZ());
+
+                    vec_n1n3.push_back(n3->getX()-n1->getX());
+                    vec_n1n3.push_back(n3->getY()-n1->getY());
+                    vec_n1n3.push_back(n3->getZ()-n1->getZ());
+
+                    int produiScalaire = vec_n1n2.at(0)*vec_n1n3.at(0)+
+                            vec_n1n2.at(1)*vec_n1n3.at(1)+
+                            vec_n1n2.at(2)*vec_n1n3.at(2);
+                    double norm_n1n2 = sqrt(vec_n1n2.at(0)*vec_n1n2.at(0)+
+                                            vec_n1n2.at(1)*vec_n1n2.at(1)+
+                                            vec_n1n2.at(2)*vec_n1n2.at(2));
+                    double norm_n1n3 = sqrt(vec_n1n3.at(0)*vec_n1n3.at(0)+
+                                            vec_n1n3.at(1)*vec_n1n3.at(1)+
+                                            vec_n1n3.at(2)*vec_n1n3.at(2));
+                    double val = (double)produiScalaire/(norm_n1n2*norm_n1n3);
+                    double angle = acos(val)*180/PI;
+                    edge->addAngle(edge2->getId(),angle);
+                    edge2->addAngle(edge->getId(),angle);
+                    std::cout << "angle edges (" << edge->getId() << ","
+                              << edge2->getId() << ") :" << angle << std::endl;
+                }
+                //std::cout << "toto2"<< std::endl;
+            }
+
+            //  }
+            //}
+        }
+
+    }
 }
 
 void SkeletonGraph::exportGraph(std::string name){
@@ -594,10 +657,10 @@ void SkeletonGraph::exportGraph(std::string name){
         int z = nit->second->getZ();
         
         //std::cout << "exportGraph"<< nbx++ << " : "
-                  //<< nit->second->getId() << " "
-                  //<< nit->second->getX() << " "
-                  //<< nit->second->getY() << " "
-                  //<< nit->second->getZ() << std::endl;
+        //<< nit->second->getId() << " "
+        //<< nit->second->getX() << " "
+        //<< nit->second->getY() << " "
+        //<< nit->second->getZ() << std::endl;
         
         coords[n] = Point(x*10+(nbz*z),y*10+(nbz*z));
         sizes[n]  = 20;

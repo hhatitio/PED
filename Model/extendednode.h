@@ -11,6 +11,7 @@ public:
     ExtendedNode(ListGraph &g, int x, int y, int z);
 
     bool isAdjacentNode(int id);
+    bool isIncidentEdge(int id);
     void addAdjacentNode(int id);
     void addAdjacentNodePos(int pos);
     std::vector<int> getAdjacentNodes();
