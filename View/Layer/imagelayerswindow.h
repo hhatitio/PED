@@ -24,6 +24,7 @@ public:
     void setImageLayers(std::vector<ImageLayer> *imageLayers);
     void addViewLayer(const ImageLayer &layer);
     void addApplyActionLayer(int indexLayer, QAction *applyAction);
+    void removeLayer(int indexLayer);
 
 public slots:
 

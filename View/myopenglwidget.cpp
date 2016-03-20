@@ -28,7 +28,6 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im)
     z_R = 0.; z_T =-10.;
     
     _scale = 1.;
-    _transparency = 0.90;
     _splitVal = 0.;
     
     if(im == NULL){
@@ -36,11 +35,13 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im)
     }else{
         setImageLayer(im);
     }
-    //_trspcMod = 0;
     _splitMod = 0;
     
-    _alphaSkel = 1.;
-    _alphaVol = 0.4;
+    _alphaSkel = 0.8;
+    _alphaVol  = 0.4;
+    
+    _boundingboxes = true;
+    _axes = true;
     
     std::cout << "NbFaces : " << _faces.size() << std::endl;
 }
@@ -61,16 +62,8 @@ void MyOpenGLWidget::initializeGL()
 {
     glClearColor(0.2,0.2,0.2,1.);
     
-    //glEnable(GL_DEPTH_TEST);
-    //glShadeModel(GL_SMOOTH);
-    
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_DST_COLOR);
-    
-    //glCullFace(GL_FRONT);
-    //glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
-    //glEnable(GL_POLYGON_SMOOTH);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 
@@ -168,21 +161,27 @@ void MyOpenGLWidget::wheelEvent(QWheelEvent *e)
 
 void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
 {
-    //if (e->key() == Qt::Key_M)
-        //_trspcMod = (_trspcMod + 1) % 2;
     if (e->key() == Qt::Key_S)
         _splitMod = (_splitMod + 1) % 2;
     
+    if (e->key() == Qt::Key_B)
+        _boundingboxes = !_boundingboxes;
+    
+    if (e->key() == Qt::Key_A)
+        _axes = !_axes;
+    
     if (e->key() == Qt::Key_Plus)
-        if (_transparency < 1.0)
-            _transparency += 0.05;
+        if (_alphaVol < 1.00)
+            _alphaVol += 0.05;
+    
     if (e->key() == Qt::Key_Minus)
-        if (_transparency > 0.2)
-            _transparency -= 0.05;
+        if (_alphaVol > 0.00)
+            _alphaVol -= 0.05;
     
     if (e->key() == Qt::Key_PageUp)
         if (_splitVal < 0.95)
             _splitVal += 0.05;
+    
     if (e->key() == Qt::Key_PageDown)
         if (_splitVal > -0.95)
             _splitVal -= 0.05;
@@ -195,9 +194,6 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
         x_T += 0.05;
     if (e->key() == Qt::Key_Right)
         x_T -= 0.05;
-    
-    if (e->key() == Qt::Key_A) _scale *= 1.05;
-    if (e->key() == Qt::Key_Z) _scale *= 0.95;
     paintGL();
 }
 
@@ -205,43 +201,32 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
 void MyOpenGLWidget::drawFace(Face f)
 {
     float r, g, b, a;
-    
     int max = _mesh->getValmax();
-    /*if ((_trspcMod % 2) == 0)
-     a = 1. - (alpha * _transparency);
-     else*/
     
-    if (f.val == 255) {
+    if (f.val == VOXEL_VOLM) {
         a = _alphaVol;
-        r = .6;
-        g = .6;
-        b = .6;
+        r = .7;
+        g = .7;
+        b = .7;
     }
-    else if (f.val == 200) {
-        //std::cout << 2 << " " << std::endl;
-        a = _alphaSkel;
-        r = 0.0;
-        g = 1.0;
-        b = 0.0;
-    }
-    else if (f.val <= 199) {
-        //std::cout << 3 << " " << std::endl;
+    else if (f.val == VOXEL_SKEL) {
         a = 1.0;
         r = 1.0;
-        g = 0.0;
+        g = 1.0;
+        b = 1.0;
+    }
+    else if (f.val == VOXEL_NODE) {
+        a = 1.0;
+        r = 1.0;
+        g = 0.3;
         b = 0.0;
     }
     else {
-        //std::cout << 4 << " " << std::endl;
         a = 1.0;
-        r = f.val / max;
-        g = f.val / max;
-        b = f.val / max;
+        r = f.val / (float)max;
+        g = f.val / (float)max;
+        b = f.val / (float)max;
     }
-    
-    //a = color * _transparency;
-    
-    //std::cout <<r << " " << g << " " << b << " " << alpha << std::endl;
     
     if ((f.a.z > _splitVal && f.c.z > _splitVal) || !_splitMod)
     {
@@ -298,33 +283,11 @@ static void drawAxes()
 
 
 void MyOpenGLWidget::draw() {
-    drawAxes();
-    drawBoundingBox(1, 1, 1);
+    
+    if (_axes) drawAxes();
+    if (_boundingboxes) drawBoundingBox(1, 1, 1);
     
     for (unsigned int i = 0; i < _faces.size(); i++) {
         drawFace(_faces[i]);
     }
-    /*
-     glBegin(GL_QUADS);
-     glColor4f(0.9, 0.6, 0.2, 0.4);
-     glVertex3f(-1., 1., -0.2);
-     glVertex3f( 1., 1., -0.2);
-     glVertex3f( 1.,-1., -0.2);
-     glVertex3f(-1.,-1., -0.2);
-     glEnd();
-     glBegin(GL_QUADS);
-     glColor4f(0.4, 0.6, 0.9, 0.4);
-     glVertex3f(-1., 1., 0.3);
-     glVertex3f( 1., 1., 0.3);
-     glVertex3f( 1.,-1., 0.3);
-     glVertex3f(-1.,-1., 0.3);
-     glEnd();
-     glBegin(GL_QUADS);
-     glColor4f(0.2, 0.9, 0.2, 1.);
-     glVertex3f(-1., 1., 0.5);
-     glVertex3f( 1., 1., 0.5);
-     glVertex3f( 1.,-1., 0.5);
-     glVertex3f(-1.,-1., 0.5);
-     glEnd();*/
-    
 }

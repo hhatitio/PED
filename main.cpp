@@ -10,8 +10,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    //QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
-    QTextCodec::setCodecForLocale(QTextCodec::codecForLocale());
+    #if QT_VERSION < 0x050100
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
+    #endif
 
     MainWindow w;
     w.show();

@@ -9,6 +9,10 @@
 #include <DGtal/images/ImageContainerByITKImage.h>
 #include <DGtal/images/ImageContainerBySTLVector.h>
 
+#define VOXEL_VOLM 1
+#define VOXEL_SKEL 2
+#define VOXEL_NODE 3
+
 const unsigned int Dimension = 3;
 
 typedef short PixelType;

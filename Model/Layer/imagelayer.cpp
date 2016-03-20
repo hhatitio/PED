@@ -19,8 +19,8 @@ ImageLayer::ImageLayer(const QString &name, Image *layer)
     for (Image::iterator it=image->begin(); it!=image->end(); ++it)
     {
         if ((components.find(*it) == components.end()) && *it != 0) {
-            //QColor color = randColor();
-            QColor color = QColor((*it), (*it), (*it));
+            QColor color = randColor();
+            //QColor color = QColor((*it), (*it), (*it));
             std::pair<PixelType, QColor> component(*it, color);
             components.insert(component);
             ++numComponent;

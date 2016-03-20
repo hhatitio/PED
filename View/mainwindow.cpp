@@ -24,23 +24,23 @@
 #include <QShortcut>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), image(0), skeletonImage(0), sliderSlice(Qt::Horizontal),
-    imageLayersWindow(this), imageLayersToolsWindow(this), imageLayersViewer3DWindow(this),
-    layersThresholdWindow(this), windowingWindow(this)//, convertImageView(this)
+QMainWindow(parent), image(0), skeletonImage(0), sliderSlice(Qt::Horizontal),
+imageLayersWindow(this), imageLayersToolsWindow(this), imageLayersViewer3DWindow(this),
+layersThresholdWindow(this), windowingWindow(this)//, convertImageView(this)
 {
     buildMenus();
-
+    
     // Initialisation de la fenêtre principale
-
+    
     setWindowTitle("OS3D");
     setMinimumHeight(MAINWINDOW_MINIMUM_HEIGHT);
     setMinimumWidth(MAINWINDOW_MINIMUM_WIDTH);
     int centerX = (qApp->desktop()->width()-MAINWINDOW_MINIMUM_WIDTH)/2;
     int centerY = (qApp->desktop()->height()-MAINWINDOW_MINIMUM_HEIGHT)/2;
     move(centerX, centerY);
-
+    
     intervalIntensity = new Interval<PixelType>();
-
+    
     imageScroll.installLabelEventFilter(this);
     QObject::connect(&sliderSlice, SIGNAL(valueChanged(int)), this, SLOT(drawSlice()));
     QWidget *centralZone = new QWidget(this);
@@ -48,9 +48,9 @@ MainWindow::MainWindow(QWidget *parent) :
     layoutMain->addWidget(&imageScroll);
     layoutMain->addWidget(&sliderSlice);
     setCentralWidget(centralZone);
-
+    
     // Initialisation des fenêtres utilisant les images calques
-
+    
     imageLayers = new std::vector<ImageLayer>();
     imageLayersWindow.setImageLayers(imageLayers);
     imageLayersToolsWindow.setImageLayers(imageLayers);
@@ -91,7 +91,7 @@ void MainWindow::buildMenus()
     menuFile->addAction(actionSave);
     menuFile->addAction(actionClose);
     menuFile->addAction(actionQuit);
-
+    
     // Menu Outils
     QMenu *menuTools = menuBar()->addMenu("&Outils");
     QAction *actionChooseAlgorithms = new QAction("&Filtres", this);
@@ -106,7 +106,7 @@ void MainWindow::buildMenus()
     menuTools->addAction(actionSkeletonization);
     //menuTools->addAction(actionConvert);
     menuTools->addAction(actionGenerateGraph);
-
+    
     // Menu Calque
     QMenu *menuToolsLayer = menuBar()->addMenu("&Calques");
     imageLayerMenu = menuToolsLayer->addMenu("&Images calques");
@@ -121,14 +121,14 @@ void MainWindow::buildMenus()
     menuToolsLayer->addAction(actionToolsImageLayers);
     menuToolsLayer->addAction(actionManageImageLayers);
     menuToolsLayer->addAction(actionViewer3DImageLayers);
-
+    
     // Gestion des raccourcis clavier
     actionOpenDicom->setShortcut(Qt::CTRL + Qt::Key_O);
     actionOpenImage3D->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_O);
     actionClose->setShortcut(Qt::CTRL + Qt::Key_W);
     actionSave->setShortcut(Qt::CTRL + Qt::Key_S);
     actionQuit->setShortcut(Qt::CTRL + Qt::Key_Q);
-
+    
     // Gestion des connexions
     QObject::connect(actionOpenDicom, SIGNAL(triggered()), this, SLOT(chooseDicom()));
     QObject::connect(actionOpenImage3D, SIGNAL(triggered()), this, SLOT(openImage3D()));
@@ -148,6 +148,13 @@ void MainWindow::buildMenus()
     QObject::connect(actionGenerateGraph, SIGNAL(triggered()), this, SLOT(getGraph()));
 }
 
+void mergeImages(Image *src, Image *dst, int val1, int val2)
+{
+    for (unsigned long i = 0; i < dst->size(); i++)
+        if (src->at(i) == val1)
+            dst->at(i) = val2;
+}
+
 void MainWindow::updateImageComponents()
 {
     // Mise à jour du slider et de l'interval d'intensité
@@ -155,7 +162,7 @@ void MainWindow::updateImageComponents()
     sliderSlice.setRange(0, nbSlice-1);
     sliderSlice.setValue(nbSlice/2);
     intervalIntensity->setBounds(image->min(), image->max());
-
+    
     // Mise à jour des fenêtres secondaires
     histogramWindow.setHistogramData(image);
     layersThresholdWindow.setDataParameters(image->min(), image->max());
@@ -166,6 +173,15 @@ void MainWindow::removeLayers()
 {
     while (!imageLayers->empty())
         imageLayersWindow.removeLayer();
+}
+
+void MainWindow::removeLayer(QString name)
+{
+    for (unsigned int i = 0; i < imageLayers->size(); i++)
+    {
+        if (imageLayers->at(i).getName() == name)
+            imageLayersWindow.removeLayer(i);
+    }
 }
 
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
@@ -197,7 +213,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             }
         }
     }
-
+    
     return QMainWindow::eventFilter(object, event);
 }
 
@@ -205,7 +221,7 @@ void MainWindow::chooseDicom()
 {
     // Déclaration de la fenêtre d'ouverture de DICOM
     OpenDicomWindow *openDicomWindow;
-
+    
     do {
         // Choix du répertoire dicom par l'utilisateur
         QString folderName = QFileDialog::getExistingDirectory(this, "Sélection du répertoire DICOM", QDir::homePath(), QFileDialog::ShowDirsOnly);
@@ -282,6 +298,12 @@ void MainWindow::openOthersImage3D()
         currentImageType = ImageType::Image3D;
         updateImageComponents();
         drawSlice();
+        
+        Image *sImage = new Image(*image);
+        
+        mergeImages(image, sImage, 255, VOXEL_SKEL);
+        
+        autoAddImageLayer("Skeleton Only", sImage);
     }
 }
 
@@ -328,14 +350,14 @@ bool MainWindow::closeImage()
         QString title = "Confirmation fermeture image";
         QString question = "Êtes-vous sûr de vouloir fermer l'image courante ? Les calques associés seront supprimés.";
         reply = QMessageBox::question(this, title, question, QMessageBox::Yes|QMessageBox::No);
-
+        
         if (reply == QMessageBox::No)
             return false;
-
+        
         delete image;
         image = 0;
     }
-
+    
     // On met à jour une image vide
     currentImageType = ImageType::Empty;
     imageScroll.resizeBlackImage(1, 1);
@@ -430,22 +452,22 @@ void MainWindow::addImageLayer(const QString &name, const std::vector<Algorithm<
             QMessageBox::critical(this, QString("Erreur algorithme"), QString(exception.what()));
         }
     }
-
+    
     // Si l'utilisateur valide le nouveau calque image
     if (ImageLayer::checkSizeComponents(imageLayer))
     {
         //// Si premier calque à ajouter on supprime l'action emptyImageLayer
         //QAction *firstImageLayer = imageLayerMenu->actions()[0];
         //if (firstImageLayer->text() == ACTION_EMPTY_IMAGE_LAYER)
-            //imageLayerMenu->removeAction(firstImageLayer);
-
+        //imageLayerMenu->removeAction(firstImageLayer);
+        
         //// Ajout de l'action au menu ajouter calque
         //QAction *addImageLayer = new QAction(name, this);
         //addImageLayer->setCheckable(true);
         //imageLayerMenu->addAction(addImageLayer);
         //QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(applyImageLayers()));
         //QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(drawSlice()));
-
+        
         //// On ajoute le nouveau calque image et sa vue
         //ImageLayer layer (name, imageLayer);
         //imageLayers->push_back(layer);
@@ -453,7 +475,7 @@ void MainWindow::addImageLayer(const QString &name, const std::vector<Algorithm<
         //imageLayersToolsWindow.addViewLayer(layer);
         //imageLayersViewer3DWindow.addViewLayer(layer);
         //imageLayersWindow.addApplyActionLayer(imageLayers->size()-1, addImageLayer);
-        autoAddNewLayer(name, imageLayer);
+        autoAddImageLayer(name, imageLayer);
     }
 }
 
@@ -464,12 +486,12 @@ void MainWindow::applyImageLayers()
         ImageLayer imageLayer = imageLayersToolsWindow.getCurrentImageLayer();
         imageScroll.addImageLayer(imageLayer, currentSlice);
         imageScroll.updateLabel();
-
+        
     }
     else
     {
         QList<QAction*> actions = imageLayerMenu->actions();
-
+        
         // Ajout des calques sélectionnés par l'utilisateur sur l'image courante
         int indexLayer = 0;
         for (QList<QAction*>::Iterator action=actions.begin(); action!=actions.end(); ++action, ++indexLayer)
@@ -488,7 +510,7 @@ void MainWindow::removeActionImageLayer(int indexLayer)
 {
     // Suppression de l'action
     imageLayerMenu->removeAction(imageLayerMenu->actions()[indexLayer]);
-
+    
     if (imageLayerMenu->isEmpty())
     {
         // S'il n'y a plus d'image calque on le signale
@@ -496,7 +518,7 @@ void MainWindow::removeActionImageLayer(int indexLayer)
         emptyImageLayer->setEnabled(false);
         imageLayerMenu->addAction(emptyImageLayer);
     }
-
+    
     // On met à jour l'affichage
     drawSlice();
 }
@@ -531,33 +553,24 @@ void MainWindow::openSecondaryWindow()
     }
 }
 
-void mergeImages(Image *src, Image *dst, int val1, int val2)
-{
-    for (unsigned long i = 0; i < dst->size(); i++)
-    {
-        if (src->at(i) == val1)
-        {
-            dst->at(i) = val2;
-        }
-    }
-}
-
 void MainWindow::skeletonization() {
     
     skeletonModel->compute();
     skeletonImage = skeletonModel->getSkeleton3DIm();
     
+    //On prepare l'affichage 3D
+    Image *vsImage = new Image(*image);
+    Image *sImage = new Image(*skeletonImage);
+    
+    mergeImages(        image, vsImage, 255, VOXEL_VOLM);
+    mergeImages(skeletonImage, vsImage, 255, VOXEL_SKEL);
+    mergeImages(skeletonImage,  sImage, 255, VOXEL_SKEL);
+    
+    autoAddImageLayer("Skeleton With Volume", vsImage);
+    autoAddImageLayer("Skeleton Only", sImage);
+    
+    //Pour l'affichage par slice
     mergeImages(skeletonImage, image, 255, 200);
-    
-    string s = "Default-";
-    s += std::to_string(layersCount++);
-    QString name = QString(s.data());
-    autoAddNewLayer(name, image);
-    
-    s = "Default-";
-    s += std::to_string(layersCount++);
-    name = QString(s.data());
-    autoAddNewLayer(name, skeletonImage);
     
     currentImageType = ImageType::Image3D;
     updateImageComponents();
@@ -565,99 +578,59 @@ void MainWindow::skeletonization() {
 }
 
 /*void MainWindow::convertImageRawToVol() {
-    int x = convertImageView.getX();
-    int y = convertImageView.getY();
-    int z = convertImageView.getZ();
-    QString filename = convertImage.rawToVol(x, y, z);
-    image = DGtalTools<PixelType>::loadImage3D(filename.toStdString());
-    skeletonModel.setSkeleton3DIm(image);
-    updateImageComponents();
-    drawSlice();
-}*/
+ int x = convertImageView.getX();
+ int y = convertImageView.getY();
+ int z = convertImageView.getZ();
+ QString filename = convertImage.rawToVol(x, y, z);
+ image = DGtalTools<PixelType>::loadImage3D(filename.toStdString());
+ skeletonModel.setSkeleton3DIm(image);
+ updateImageComponents();
+ drawSlice();
+ }*/
 
 void MainWindow::getGraph(){
     delete skeletonGraph;
     
     if (skeletonImage == NULL)
-    {
         skeletonImage= skeletonModel->getSkeleton3DIm();
-        //skeletonGraph = new SkeletonGraph(image);
-    }
-    //else
-    //{
-        skeletonGraph = new SkeletonGraph(skeletonImage);
-    //}
+    
+    skeletonGraph = new SkeletonGraph(skeletonImage);
     
     //skeletonGraph.setGraph(image);
     skeletonGraph->compute();
-//    skeletonGraph->exportGraph("graph.eps");
-    
-//    // Mise à jour de l'image et de la fenêtre principale
-//    //QString filename = QFileDialog::getOpenFileName(this, "Sélection de l'image segmentée", QDir::homePath(), "Image3D (*.vol *.pgm3d)");
-//    //if (filename.isEmpty()) return;
-    
     Image *imageGraph = skeletonGraph->getGraphImage3D();
+    //skeletonGraph->exportGraph("graph.eps");
+    
+    // Pour l'affichage 3D
+    Image *gvsImage = new Image(*image);
+    Image *gImage = new Image(*imageGraph);
+    
+    mergeImages(     image, gvsImage, 255, VOXEL_VOLM);
+    mergeImages(     image, gvsImage, 200, VOXEL_SKEL);
+    mergeImages(imageGraph, gvsImage, 120, VOXEL_NODE);
+    mergeImages(     image,   gImage, 200, VOXEL_SKEL);
+    mergeImages(imageGraph,   gImage, 120, VOXEL_NODE);
+    
+    autoAddImageLayer("SkeletonGraph With Volume", gvsImage);
+    autoAddImageLayer("SkeletonGraph Only", gImage);
+    
+    // Pour l'affichage par slice
     mergeImages(imageGraph, image, 120, 120);
-
-//    // Mise à jour de l'image et de la fenêtre principale
-//    //image = skeletonGraph->getGraphImage3D();
-
+    
+    // Mise à jour de l'image et de la fenêtre principale
+    //image = skeletonGraph->getGraphImage3D();
     currentImageType = ImageType::Image3D;
     updateImageComponents();
     drawSlice();
-    //DGtalTools<PixelType>::saveImage3D("graphImage3D.vol", image);
-    
-    //========================================
-    
-    string s = "Default-";
-    s += std::to_string(layersCount++);
-    QString name = QString(s.data());
-    
-    autoAddNewLayer(name, image);
-    
-    s = "Default-";
-    s += std::to_string(layersCount++);
-    name = QString(s.data());
-    
-    autoAddNewLayer(name, imageGraph);
-    
-    //========================================
-
-    //QDialog *openglDialog = new QDialog(this);
-    
-    //openglDialog->setMinimumHeight(600);
-    //openglDialog->setMinimumWidth(800);
-    
-//    openglDialog->setObjectName(QString("3D Visualizer"));
-//    openglDialog->resize(500, 534);
-//    openglDialog->setMinimumSize(QSize(500, 534));
-//    QWidget *centralWidget = new QWidget(openglDialog);
-//    centralWidget->setObjectName(QString("centralWidget"));
-//    centralWidget->setMinimumSize(QSize(500, 500));
-//    QGridLayout *gridLayout = new QGridLayout(centralWidget);
-//    gridLayout->setSpacing(6);
-//    gridLayout->setContentsMargins(11, 11, 11, 11);
-//    gridLayout->setObjectName(QString("gridLayout"));
-//    gridLayout->setContentsMargins(0, 0, 0, 0);
-//    MyOpenGLWidget *openGLWidget = new MyOpenGLWidget(centralWidget, image);
-//    openGLWidget->setObjectName(QString("openGLWidget"));
-//    openGLWidget->setMinimumSize(QSize(500, 500));
-    
-//    gridLayout->addWidget(openGLWidget, 0, 0, 1, 1);
-
-//    openglDialog->show();
-
-    // Fermeture de l'image courante
-    /*if (!closeImage())
-        return;
-    // Suppression des calques
-    removeLayers();*/
-    //skeletonView.setFilename(filename);
 }
 
-void MainWindow::autoAddNewLayer(QString name, Image * imageLayer)
+void MainWindow::autoAddImageLayer(const QString &name, Image * imageLayer)
 {
-    
+    for (unsigned int i = 0; i < imageLayers->size(); i++) {
+        if (imageLayers->at(i).getName() == name) {
+            removeLayer(name);
+        }
+    }
     
     // Si premier calque à ajouter on supprime l'action emptyImageLayer
     QAction *firstImageLayer = imageLayerMenu->actions()[0];
@@ -680,3 +653,11 @@ void MainWindow::autoAddNewLayer(QString name, Image * imageLayer)
     imageLayersWindow.addApplyActionLayer(imageLayers->size()-1, addImageLayer);
 }
 
+void MainWindow::autoAddImageLayer(Image * imageLayer)
+{
+    string s = "Default-";
+    s += std::to_string(layersCount++);
+    QString name = QString(s.data());
+    
+    autoAddImageLayer(name, imageLayer);
+}

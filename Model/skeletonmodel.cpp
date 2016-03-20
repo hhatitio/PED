@@ -120,7 +120,7 @@ void SkeletonModel::compute() {
                 }
             }
             // sequential re-checking to preserve connectivity when deleting in a parallel way
-            for(int i = 0; i < simpleBorderPoints.size(); i++) {
+            for(unsigned long i = 0; i < simpleBorderPoints.size(); i++) {
                 std::array<int,3> index = simpleBorderPoints.at(i);
                 // check if border points is simple
                 int neighboors[27];

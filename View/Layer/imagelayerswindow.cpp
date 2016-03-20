@@ -139,3 +139,29 @@ void ImageLayersWindow::removeLayer()
 
     emit imageLayerRemoved(indexLayer);
 }
+
+void ImageLayersWindow::removeLayer(int indexLayer)
+{
+    unsigned long longIndex = (unsigned long)indexLayer;
+    if (longIndex  >= imageLayers->size() ||
+        longIndex  >= comboBoxesComponentsLayers.size() ||
+        indexLayer >= stackedWidgetLayers.count()) {
+        return;
+    }
+    
+    // Suppression des composants en liaison avec le calque
+    comboBoxLayers.removeItem(indexLayer);
+    comboBoxesComponentsLayers.erase(comboBoxesComponentsLayers.begin()+indexLayer);
+    stackedWidgetLayers.removeWidget(stackedWidgetLayers.widget(indexLayer));
+    imageLayers->erase(imageLayers->begin()+indexLayer);
+    
+    if (imageLayers->size() == 0)
+    {
+        // Si la liste de calques est vide on le signale
+        QLabel *emptyLayer = new QLabel("Aucune image calque.", parentWidget());
+        stackedWidgetLayers.addWidget(emptyLayer);
+        stackedWidgetLayers.setCurrentWidget(emptyLayer);
+    }
+    
+    emit imageLayerRemoved(indexLayer);
+}

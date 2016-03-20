@@ -55,7 +55,6 @@ SOURCES += main.cpp\
         View/Customplot/qcustomplot.cpp \
         View/Spanslider/qxtspanslider.cpp \
         View/viewer3d.cpp \
-    graphtest.cpp
 
 HEADERS  += deftypes.h \
         Model/zoomer.h \
@@ -112,17 +111,18 @@ HEADERS  += deftypes.h \
         View/Spanslider/qxtspanslider.h \
         View/Spanslider/qxtspanslider_p.h \
         View/viewer3d.h \
-    graphtest.h
 
 # Directives compilateur
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7
+LIBS += -stdlib=libc++ -mmacosx-version-min=10.7
 
 # Librairies externes
 
 INCLUDEPATH += /usr/include/ /usr/local/include/
 DEPENDPATH += /usr/local/include
 QMAKE_LIBDIR += /usr/local/lib/
+QMAKE_LFLAGS += -F/usr/local/lib/
 
 # Armadillo
 

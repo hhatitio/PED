@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include "deftypes.h"
-#include "graphtest.h"
+//#include "graphtest.h"
 
 #include "Model/Algorithm/algorithm.h"
 #include "Model/Layer/imagelayer.h"
@@ -55,7 +55,7 @@ public:
     void buildMenus();
     void updateImageComponents();
     void removeLayers();
-    void autoAddNewLayer(QString name, Image * imageLayer);
+    void removeLayer(QString name);
 
     bool eventFilter(QObject *object, QEvent *event);
 
@@ -78,6 +78,8 @@ public slots:
 
     // Gestion des calques Image
     void addImageLayer(const QString &name, const std::vector<Algorithm<Image, Image>*> &algorithmLogfile);
+    void autoAddImageLayer(const QString &name, Image * imageLayer);
+    void autoAddImageLayer(Image * imageLayer);
     void applyImageLayers();
     void removeActionImageLayer(int indexLayer);
 

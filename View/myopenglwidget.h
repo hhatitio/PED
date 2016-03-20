@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "Model/mesh.h"
+#include "../deftypes.h"
 
 class MyOpenGLWidget : public QGLWidget
 {
@@ -54,11 +55,13 @@ private:
     float x_R, y_R, z_R;
     float x_T, y_T, z_T;
     float _scale;
-    float _transparency;
     float _splitVal;
     
     float _alphaVol;
     float _alphaSkel;
+    
+    bool _boundingboxes;
+    bool _axes;
     
     //unsigned int _trspcMod;
     unsigned int _splitMod;
