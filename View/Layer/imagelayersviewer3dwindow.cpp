@@ -71,6 +71,8 @@ void ImageLayersViewer3DWindow::openViewer3D()
         QString windowTitle = "0S3D - Visualistion 3D - Calque : "+imageLayer.getName();
         myViewer.setWindowTitle(windowTitle);
         myViewer.setImageLayer(imageLayer.getImage());
+        if (imageLayer.hasGraph())
+            myViewer.setGraphLayer(imageLayer.getGraph()->getEEdges(), imageLayer.getImage());
         myViewer.show();
     }
 }

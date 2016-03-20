@@ -18,7 +18,7 @@
 std::string path = "/Users/andrearuffino/Downloads/pgm3dViewer/Data/test.pgm3d";
 
 
-MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im)
+MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges)
 : QGLWidget(parent)
 {
     setFocusPolicy(Qt::StrongFocus);
@@ -29,12 +29,16 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im)
     
     _scale = 1.;
     _splitVal = 0.;
+    _isGraph = false;
     
-    if(im == NULL){
+    if (im == NULL)
         _mesh = NULL;
-    }else{
+    else
         setImageLayer(im);
-    }
+    
+    if (edges.size() != 0)
+        setGraphLayer(edges, im);
+    
     _splitMod = 0;
     
     _alphaSkel = 0.8;
@@ -54,7 +58,46 @@ void MyOpenGLWidget::setImageLayer(Image *im)
 {
     _mesh = new Mesh(im);
     _faces = _mesh->getFaces();
+}
 
+void MyOpenGLWidget::setGraphLayer(EdgeMap edges, Image* im)
+{
+    _edges = edges;
+    _isGraph = true;
+    
+    int n_cols = im->n_cols;
+    int n_rows = im->n_rows;
+    int n_slices = im->n_slices;
+    
+    int dy = n_rows / 2;
+    int dx = n_cols / 2;
+    int dz = n_slices / 2;
+    
+    for (auto it = _edges.begin(); it!= _edges.end(); ++it){
+        std::vector<int> pos1 = getCoordOutOfIndex(n_cols, n_rows,
+                                                   it->second->getFirstNodePos());
+        std::vector<int> pos2 = getCoordOutOfIndex(n_cols, n_rows,
+                                                   it->second->getFirstNodePos());
+        for (unsigned int i = 0; i < pos1.size(); i++)
+            _edgeCoord.push_back((float)pos1[i]);
+        for (unsigned int i = 0; i < pos2.size(); i++)
+            _edgeCoord.push_back((float)pos2[i]);
+    }
+    
+    for (unsigned int i = 0; i < _edgeCoord.size(); i += 3)
+    {
+        float x = _edgeCoord[i+0];
+        float y = _edgeCoord[i+1];
+        float z = _edgeCoord[i+2];
+        
+        x = (x - dx) / (float)dx;
+        y = (y - dy) / (float)dy;
+        z = (z - dz) / (float)dz;
+        
+        _edgeCoord[i+0] = x;
+        _edgeCoord[i+1] = y;
+        _edgeCoord[i+2] = z;
+    }
 }
 
 
@@ -167,6 +210,9 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
     if (e->key() == Qt::Key_B)
         _boundingboxes = !_boundingboxes;
     
+    if (e->key() == Qt::Key_E)
+        _arcs = !_arcs;
+    
     if (e->key() == Qt::Key_A)
         _axes = !_axes;
     
@@ -197,6 +243,24 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
     paintGL();
 }
 
+std::vector<int> MyOpenGLWidget::getCoordOutOfIndex(int n_cols, int n_rows, int idx)
+{
+    // Mathematical formulas to calculate 3D Coordinte of voxel
+    int sizeLayer = n_cols * n_rows;
+    int z = (int)idx / sizeLayer;
+    
+    int idx2D = idx-z * sizeLayer;
+    int y = (int)idx2D / n_cols;
+    int x = idx2D % n_cols;
+    
+    // Store the calculated coordinates
+    std::vector<int> coord;
+    coord.push_back(x);
+    coord.push_back(y);
+    coord.push_back(z);
+    return coord;
+}
+
 
 void MyOpenGLWidget::drawFace(Face f)
 {
@@ -210,7 +274,7 @@ void MyOpenGLWidget::drawFace(Face f)
         b = .7;
     }
     else if (f.val == VOXEL_SKEL) {
-        a = 1.0;
+        a = (_arcs) ? 0.0 : 0.9;
         r = 1.0;
         g = 1.0;
         b = 1.0;
@@ -237,6 +301,17 @@ void MyOpenGLWidget::drawFace(Face f)
         glVertex3f(f.c.x, f.c.y, f.c.z);
         glVertex3f(f.b.x, f.b.y, f.b.z);
         glEnd();
+    }
+}
+
+void MyOpenGLWidget::drawArcs()
+{
+    for (unsigned int i = 0; i < _edgeCoord.size(); i++)
+    {
+        glBegin(GL_LINES);
+        glColor3f (0.1, 0.9, 0.5);
+        glVertex3f(_edgeCoord[i+0], _edgeCoord[i+1], _edgeCoord[i+2]);
+        glVertex3f(_edgeCoord[i+3], _edgeCoord[i+4], _edgeCoord[i+5]);
     }
 }
 
@@ -286,6 +361,7 @@ void MyOpenGLWidget::draw() {
     
     if (_axes) drawAxes();
     if (_boundingboxes) drawBoundingBox(1, 1, 1);
+    if (_arcs && _isGraph) drawArcs();
     
     for (unsigned int i = 0; i < _faces.size(); i++) {
         drawFace(_faces[i]);

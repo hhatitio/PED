@@ -28,7 +28,7 @@ public:
     int getOppositeNodePos(int id);
     std::vector<int> getAdjacentNodesPos();
     double getAngle(int idEdge);
-
+    
 private:
     int _id;
     ListGraph::Edge edge;

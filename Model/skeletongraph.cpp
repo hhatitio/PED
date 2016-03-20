@@ -632,6 +632,16 @@ void SkeletonGraph::computeAngles(){
     }
 }
 
+std::unordered_map<int, ExtendedNode*> SkeletonGraph::getENodes()
+{
+    return nodes;
+}
+
+std::unordered_map<int, ExtendedEdge*> SkeletonGraph::getEEdges()
+{
+    return edges;
+}
+
 void SkeletonGraph::exportGraph(std::string name){
     
     Palette palette;

@@ -18,13 +18,18 @@
 #include <QKeyEvent>
 #include <vector>
 
+#include "Model/skeletongraph.h"
 #include "Model/mesh.h"
-#include "../deftypes.h"
+#include "deftypes.h"
+
+typedef std::unordered_map<int, ExtendedEdge*> EdgeMap;
 
 class MyOpenGLWidget : public QGLWidget
 {
 public:
-    MyOpenGLWidget(QWidget *parent = 0, Image* im = NULL);
+    MyOpenGLWidget(QWidget *parent = 0,
+                   Image* im = NULL,
+                   EdgeMap edges = EdgeMap());
    // MyOpenGLWidget(QWidget *parent, Image* im);
     ~MyOpenGLWidget();
     
@@ -33,6 +38,7 @@ public:
     void setZRotation(int angle);
     
     void setImageLayer(Image *im);
+    void setGraphLayer(EdgeMap edges, Image* im);
     
 signals:
     
@@ -50,6 +56,9 @@ protected:
     
     void draw();
     void drawFace(Face f);
+    void drawArcs();
+    
+    std::vector<int> getCoordOutOfIndex(int n_cols, int n_rows, int idx);
     
 private:
     float x_R, y_R, z_R;
@@ -62,14 +71,17 @@ private:
     
     bool _boundingboxes;
     bool _axes;
+    bool _arcs;
+    bool _isGraph;
     
-    //unsigned int _trspcMod;
     unsigned int _splitMod;
     
     QPoint _lastPos;
     
     Mesh *_mesh;
-    std::vector<Face> _faces;
+    EdgeMap _edges;
+    std::vector<float> _edgeCoord;
+    std::vector<Face>  _faces;
 };
 
 

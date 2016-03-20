@@ -611,8 +611,8 @@ void MainWindow::getGraph(){
     mergeImages(     image,   gImage, 200, VOXEL_SKEL);
     mergeImages(imageGraph,   gImage, 120, VOXEL_NODE);
     
-    autoAddImageLayer("SkeletonGraph With Volume", gvsImage);
-    autoAddImageLayer("SkeletonGraph Only", gImage);
+    autoAddImageLayer("SkeletonGraph With Volume", gvsImage, skeletonGraph);
+    autoAddImageLayer("SkeletonGraph Only", gImage, skeletonGraph);
     
     // Pour l'affichage par slice
     mergeImages(imageGraph, image, 120, 120);
@@ -624,7 +624,7 @@ void MainWindow::getGraph(){
     drawSlice();
 }
 
-void MainWindow::autoAddImageLayer(const QString &name, Image * imageLayer)
+void MainWindow::autoAddImageLayer(const QString &name, Image * imageLayer, SkeletonGraph* skeletonGraph)
 {
     for (unsigned int i = 0; i < imageLayers->size(); i++) {
         if (imageLayers->at(i).getName() == name) {
@@ -645,7 +645,7 @@ void MainWindow::autoAddImageLayer(const QString &name, Image * imageLayer)
     QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(drawSlice()));
     
     // On ajoute le nouveau calque image et sa vue
-    ImageLayer layer (name, imageLayer);
+    ImageLayer layer (name, imageLayer, skeletonGraph);
     imageLayers->push_back(layer);
     imageLayersWindow.addViewLayer(layer);
     imageLayersToolsWindow.addViewLayer(layer);

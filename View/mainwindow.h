@@ -78,7 +78,7 @@ public slots:
 
     // Gestion des calques Image
     void addImageLayer(const QString &name, const std::vector<Algorithm<Image, Image>*> &algorithmLogfile);
-    void autoAddImageLayer(const QString &name, Image * imageLayer);
+    void autoAddImageLayer(const QString &name, Image * imageLayer, SkeletonGraph *skeletonGraph = NULL);
     void autoAddImageLayer(Image * imageLayer);
     void applyImageLayers();
     void removeActionImageLayer(int indexLayer);

@@ -42,6 +42,8 @@ public:
     int getNodeWeight(ExtendedNode *u);
     bool hasBiggerWeiht(int pos);
     void exportGraph(std::string name);
+    std::unordered_map<int, ExtendedNode*> getENodes();
+    std::unordered_map<int, ExtendedEdge*> getEEdges();
 
 private:
     ListGraph graph;

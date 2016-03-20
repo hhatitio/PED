@@ -2,6 +2,7 @@
 #define IMAGELAYER_H
 
 #include "../../deftypes.h"
+#include "skeletongraph.h"
 
 #include <QString>
 #include <QColor>
@@ -18,7 +19,7 @@ public:
     static const unsigned int Dimension = Image::Dimension;
 
     ImageLayer();
-    ImageLayer(const QString &name, Image *image);
+    ImageLayer(const QString &name, Image *image, SkeletonGraph* skeletonGraph = NULL);
 
     QString getName() const;
     Image * getImage() const;
@@ -31,11 +32,16 @@ public:
 
     static QColor randColor();
     static bool checkSizeComponents(Image *image);
+    
+    bool hasGraph();
+    SkeletonGraph *getGraph();
 
 private:
 
     QString name;
     Image *image;
+    SkeletonGraph *graph;
+    bool hasSkeletonGraph;
     std::map<PixelType, QColor> components;
 
 };

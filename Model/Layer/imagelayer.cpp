@@ -7,12 +7,22 @@ ImageLayer::ImageLayer()
 {
     name = "Pas de nom.";
     image = 0;
+    hasSkeletonGraph = false;
 }
 
-ImageLayer::ImageLayer(const QString &name, Image *layer)
+ImageLayer::ImageLayer(const QString &name, Image *layer,SkeletonGraph* skeletonGraph)
 {
     this->name = name;
     image = layer;
+    
+    if (skeletonGraph == NULL) {
+        hasSkeletonGraph = false;
+        graph = NULL;
+    }
+    else {
+        hasSkeletonGraph = true;
+        graph = skeletonGraph;
+    }
 
     // On construit les composants et leurs couleurs
     int numComponent = 1;
@@ -112,4 +122,15 @@ bool ImageLayer::checkSizeComponents(Image *image)
 
     if (reply == QMessageBox::Yes) return true;
     else return false;
+}
+
+bool ImageLayer::hasGraph()
+{
+    return hasSkeletonGraph;
+}
+
+
+SkeletonGraph * ImageLayer::getGraph()
+{
+    return graph;
 }
