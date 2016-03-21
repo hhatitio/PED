@@ -41,9 +41,19 @@ public:
     std::vector<Face> getFaces();
     int getValmax();
     
+    unsigned int getDim1();
+    unsigned int getDim2();
+    unsigned int getDim3();
+    vec3 getPosMin();
+    vec3 getPosMax();
+    
 private:
     std::vector<Face> _faces;
+    
     unsigned int _dim1, _dim2, _dim3;
+    vec3 _posMin, _posMax;
+    
+    //float delta;
     int _valmax;
 };
 

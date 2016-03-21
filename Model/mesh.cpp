@@ -176,7 +176,7 @@ void Mesh::computeFace(int *** t)
                         _faces.push_back(f1);
                     }
                     if (bool2) {
-                        Face f2 = { p3, p4, p5, p6, valCur};
+                        Face f2 = { p4, p3, p6, p5, valCur};
                         _faces.push_back(f2);
                     }
                     if (bool3) {
@@ -184,11 +184,11 @@ void Mesh::computeFace(int *** t)
                         _faces.push_back(f3);
                     }
                     if (bool4) {
-                        Face f4 = { p7, p8, p1, p2, valCur};
+                        Face f4 = { p8, p7, p2, p1, valCur};
                         _faces.push_back(f4);
                     }
                     if (bool5) {
-                        Face f5 = { p2, p3, p6, p7, valCur};
+                        Face f5 = { p2, p7, p6, p3, valCur};
                         _faces.push_back(f5);
                     }
                     if (bool6) {
@@ -245,28 +245,45 @@ void Mesh::computeFace(Image *im)
                     // uniquement si elle est strictement supérieur au
                     // voisin concerné (du dessus, du dessous etc...).
                     if (x > 0){
-                        pos = (x-1)+(y*_dim2)+(z*_dim1*_dim2);
+                        pos = (x-1)+(y*_dim1)+(z*_dim1*_dim2);
                         bool4 = (valCur > im->at(pos));
+                    } else {
+                        bool4 = true;
                     }
+                    
                     if (x < _dim1 - 1){
-                        pos = (x+1)+(y*_dim2)+(z*_dim1*_dim2);
+                        pos = (x+1)+(y*_dim1)+(z*_dim1*_dim2);
                         bool2 = (valCur > im->at(pos));
+                    } else {
+                        bool2 = true;
                     }
+                    
                     if (y > 0){
-                        pos = x+((y-1)*_dim2)+(z*_dim1*_dim2);
+                        pos = x+((y-1)*_dim1)+(z*_dim1*_dim2);
                         bool6 = (valCur > im->at(pos));
+                    } else {
+                        bool6 = true;
                     }
+                    
                     if (y < _dim2 - 1){
-                        pos = x+((y+1)*_dim2)+(z*_dim1*_dim2);
+                        pos = x+((y+1)*_dim1)+(z*_dim1*_dim2);
                         bool5 = (valCur > im->at(pos));
+                    } else {
+                        bool5 = true;
                     }
+                    
                     if (z > 0){
-                        pos = x+(y*_dim2)+((z-1)*_dim1*_dim2);
+                        pos = x+(y*_dim1)+((z-1)*_dim1*_dim2);
                         bool1 = (valCur > im->at(pos));
+                    }else {
+                        bool1 = true;
                     }
+                    
                     if (z < _dim3 - 1){
-                        pos = x+(y*_dim2)+((z+1)*_dim1*_dim2);
+                        pos = x+(y*_dim1)+((z+1)*_dim1*_dim2);
                         bool3 = (valCur > im->at(pos));
+                    }else {
+                        bool3 = true;
                     }
 
                     if (bool1) {
@@ -274,7 +291,7 @@ void Mesh::computeFace(Image *im)
                         _faces.push_back(f1);
                     }
                     if (bool2) {
-                        Face f2 = { p3, p4, p5, p6, valCur};
+                        Face f2 = { p4, p3, p6, p5, valCur};
                         _faces.push_back(f2);
                     }
                     if (bool3) {
@@ -282,11 +299,11 @@ void Mesh::computeFace(Image *im)
                         _faces.push_back(f3);
                     }
                     if (bool4) {
-                        Face f4 = { p7, p8, p1, p2, valCur};
+                        Face f4 = { p8, p7, p2, p1, valCur};
                         _faces.push_back(f4);
                     }
                     if (bool5) {
-                        Face f5 = { p2, p3, p6, p7, valCur};
+                        Face f5 = { p2, p7, p6, p3, valCur};
                         _faces.push_back(f5);
                     }
                     if (bool6) {
@@ -323,23 +340,23 @@ void Mesh::normalizeMesh()
     
     // On initialise min et max aux positions du premier sommet
     // de la première face.
-    vec3 posMin = {_faces[0].a.x, _faces[0].a.y, _faces[0].a.z,};
-    vec3 posMax = {_faces[0].a.x, _faces[0].a.y, _faces[0].a.z,};
+    _posMin = {_faces[0].a.x, _faces[0].a.y, _faces[0].a.z,};
+    _posMax = {_faces[0].a.x, _faces[0].a.y, _faces[0].a.z,};
     
     std::cout << "Min Max mesh" << std::endl;
-    std::cout << posMin.x << " " << posMin.y << " " << posMin.z << std::endl;
-    std::cout << posMax.x << " " << posMax.y << " " << posMax.z << std::endl;
+    std::cout << _posMin.x << " " << _posMin.y << " " << _posMin.z << std::endl;
+    std::cout << _posMax.x << " " << _posMax.y << " " << _posMax.z << std::endl;
     
     for (unsigned int i = 0; i < _faces.size(); i++)
     {
-        checkMinMax(posMin, posMax, _faces[i].a);
-        checkMinMax(posMin, posMax, _faces[i].b);
-        checkMinMax(posMin, posMax, _faces[i].c);
-        checkMinMax(posMin, posMax, _faces[i].d);
+        checkMinMax(_posMin, _posMax, _faces[i].a);
+        checkMinMax(_posMin, _posMax, _faces[i].b);
+        checkMinMax(_posMin, _posMax, _faces[i].c);
+        checkMinMax(_posMin, _posMax, _faces[i].d);
     }
     
-    std::cout << posMin.x << " " << posMin.y << " " << posMin.z << std::endl;
-    std::cout << posMax.x << " " << posMax.y << " " << posMax.z << std::endl;
+    std::cout << _posMin.x << " " << _posMin.y << " " << _posMin.z << std::endl;
+    std::cout << _posMax.x << " " << _posMax.y << " " << _posMax.z << std::endl;
     
     
     // Pour une séquence de point X = {x0 .. xn} ou xi représente
@@ -347,14 +364,14 @@ void Mesh::normalizeMesh()
     // assurera que la séquence X sera centrée sur 0. Il restera alors
     // plus qu'à diviser toutes les positions par maxScale pour que X
     // soit ramenée entre -1 et 1.
-    float delta_x = (posMax.x + posMin.x) / 2;
-    float delta_y = (posMax.y + posMin.y) / 2;
-    float delta_z = (posMax.z + posMin.z) / 2;
+    float delta_x = (_posMax.x + _posMin.x) / 2;
+    float delta_y = (_posMax.y + _posMin.y) / 2;
+    float delta_z = (_posMax.z + _posMin.z) / 2;
     
     vec3 scale;
-    scale.x = fabs(posMax.x - posMin.x) / 2;
-    scale.y = fabs(posMax.y - posMin.y) / 2;
-    scale.z = fabs(posMax.z - posMin.z) / 2;
+    scale.x = fabs(_posMax.x - _posMin.x) / 2;
+    scale.y = fabs(_posMax.y - _posMin.y) / 2;
+    scale.z = fabs(_posMax.z - _posMin.z) / 2;
     
     // Pour garder le rapport entre les distances sur les
     // 3 dimensions, on divise par le meme coeff qui est
@@ -395,4 +412,32 @@ std::vector<Face> Mesh::getFaces() {
 // ----------------------------------------------------------
 int Mesh::getValmax() {
     return _valmax;
+}
+
+
+unsigned int Mesh::getDim1()
+{
+    return _dim1;
+}
+
+unsigned int Mesh::getDim2()
+{
+    
+    return _dim2;
+}
+
+unsigned int Mesh::getDim3()
+{
+    
+    return _dim3;
+}
+
+vec3 Mesh::getPosMin()
+{
+    return _posMin;
+}
+
+vec3 Mesh::getPosMax()
+{
+    return _posMax;
 }

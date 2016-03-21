@@ -37,7 +37,7 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges, NodeMa
         setImageLayer(im);
     
     if (edges.size() != 0)
-        setGraphLayer(edges, nodes, im);
+        setGraphLayer(edges, nodes);
     
     _splitMod = 0;
     
@@ -53,16 +53,16 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges, NodeMa
 
 MyOpenGLWidget::~MyOpenGLWidget() { }
 
-static void checkMinMax(vec3 &min, vec3 &max, vec3 v)
-{
-    min.x = (v.x < min.x) ? v.x : min.x;
-    min.y = (v.y < min.y) ? v.y : min.y;
-    min.z = (v.z < min.z) ? v.z : min.z;
+//static void checkMinMax(vec3 &min, vec3 &max, vec3 v)
+//{
+    //min.x = (v.x < min.x) ? v.x : min.x;
+    //min.y = (v.y < min.y) ? v.y : min.y;
+    //min.z = (v.z < min.z) ? v.z : min.z;
     
-    max.x = (v.x > max.x) ? v.x : max.x;
-    max.y = (v.y > max.y) ? v.y : max.y;
-    max.z = (v.z > max.z) ? v.z : max.z;
-}
+    //max.x = (v.x > max.x) ? v.x : max.x;
+    //max.y = (v.y > max.y) ? v.y : max.y;
+    //max.z = (v.z > max.z) ? v.z : max.z;
+//}
 
 
 void MyOpenGLWidget::setImageLayer(Image *im)
@@ -71,14 +71,13 @@ void MyOpenGLWidget::setImageLayer(Image *im)
     _faces = _mesh->getFaces();
 }
 
-void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes,Image* im)
+void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes)
 {
+    if (_mesh == NULL) return;
+    
     _edges = edges;
     _isGraph = true;
     _edgeCoord.clear();
-    
-    int n_cols = im->n_cols;
-    int n_rows = im->n_rows;
     
     for (auto it = _edges.begin(); it!= _edges.end(); ++it)
     {
@@ -93,39 +92,10 @@ void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes,Image* im)
         _edgeCoord.push_back(n2->getX());
         _edgeCoord.push_back(n2->getY());
         _edgeCoord.push_back(n2->getZ());
-        
     }
     
-    vec3 posMin, posMax;
-    int pos = 0;
-    int size = im->size();
-    
-    while (pos < size && im->at(pos) == 0){
-        pos++;
-    }
-    
-    std::vector<int> beg = getCoordOutOfIndex(n_cols, n_rows, pos);
-    
-    posMin.x = posMax.x = (float)beg[0];
-    posMin.y = posMax.y = (float)beg[1];
-    posMin.z = posMax.z = (float)beg[2];
-    
-    std::cout << "Min Max mopglwd" << std::endl;
-    std::cout << posMin.x << " " << posMin.y << " " << posMin.z << std::endl;
-    std::cout << posMax.x << " " << posMax.y << " " << posMax.z << std::endl;
-    
-    for (unsigned int i = pos; i < im->size(); i++)
-    {
-        if (im->at(i) != 0)
-        {
-            std::vector<int> id = getCoordOutOfIndex(n_cols, n_rows, i);
-            vec3 val = {(float)id[0], (float)id[1], (float)id[2]};
-            checkMinMax(posMin, posMax, val);
-        }
-    }
-    
-    std::cout << posMin.x << " " << posMin.y << " " << posMin.z << std::endl;
-    std::cout << posMax.x << " " << posMax.y << " " << posMax.z << std::endl;
+    vec3 posMin = _mesh->getPosMin();
+    vec3 posMax = _mesh->getPosMax();
     
     float delta_x = (posMax.x + posMin.x) / 2;
     float delta_y = (posMax.y + posMin.y) / 2;
@@ -145,18 +115,9 @@ void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes,Image* im)
     
     for (unsigned int i = 0; i < _edgeCoord.size(); i += 3)
     {
-        
-        float x = _edgeCoord[i+0];
-        float y = _edgeCoord[i+1];
-        float z = _edgeCoord[i+2];
-        
-        x = (x - delta_x) / maxScale;
-        y = (y - delta_y) / maxScale;
-        z = (z - delta_z) / maxScale;
-        
-        _edgeCoord[i+0] = x;
-        _edgeCoord[i+1] = y;
-        _edgeCoord[i+2] = z;
+        _edgeCoord[i+0] = (_edgeCoord[i+0] - delta_x) / maxScale;
+        _edgeCoord[i+1] = (_edgeCoord[i+1] - delta_y) / maxScale;
+        _edgeCoord[i+2] = (_edgeCoord[i+2] - delta_z) / maxScale;
     }
 }
 
@@ -309,23 +270,23 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
     paintGL();
 }
 
-std::vector<int> MyOpenGLWidget::getCoordOutOfIndex(int n_cols, int n_rows, int idx)
-{
-    // Mathematical formulas to calculate 3D Coordinte of voxel
-    int sizeLayer = n_cols * n_rows;
-    int z = (int)idx / sizeLayer;
+//std::vector<int> MyOpenGLWidget::getCoordOutOfIndex(int n_cols, int n_rows, int idx)
+//{
+    //// Mathematical formulas to calculate 3D Coordinte of voxel
+    //int sizeLayer = n_cols * n_rows;
+    //int z = (int)idx / sizeLayer;
     
-    int idx2D = idx - z*sizeLayer;
-    int y = (int)idx2D / n_cols;
-    int x = idx2D % n_cols;
+    //int idx2D = idx - z*sizeLayer;
+    //int y = (int)idx2D / n_cols;
+    //int x = idx2D % n_cols;
     
-    // Store the calculated coordinates
-    std::vector<int> coord;
-    coord.push_back(x);
-    coord.push_back(y);
-    coord.push_back(z);
-    return coord;
-}
+    //// Store the calculated coordinates
+    //std::vector<int> coord;
+    //coord.push_back(x);
+    //coord.push_back(y);
+    //coord.push_back(z);
+    //return coord;
+//}
 
 
 void MyOpenGLWidget::drawFace(Face f)

@@ -84,7 +84,7 @@ template <typename InputImageType, typename OutputImageType>
 void AlgorithmITKBinaryMorphologicalClosing<InputImageType, OutputImageType>::setKernel(const double *kernel)
 {
     KernelRadiusType kernelRadius;
-    for (int dim=0; dim < Dimension; ++dim) {
+    for (unsigned int dim=0; dim < Dimension; ++dim) {
         kernelRadius[dim] = kernel[dim];
     }
     this->kernel = KernelType::Ball(kernelRadius);

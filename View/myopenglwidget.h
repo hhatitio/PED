@@ -40,7 +40,7 @@ public:
     void setZRotation(int angle);
     
     void setImageLayer(Image *im);
-    void setGraphLayer(EdgeMap edges, NodeMap nodes, Image* im);
+    void setGraphLayer(EdgeMap edges, NodeMap nodes);
     
 signals:
     
@@ -60,7 +60,7 @@ protected:
     void drawFace(Face f);
     void drawArcs();
     
-    std::vector<int> getCoordOutOfIndex(int n_cols, int n_rows, int idx);
+    //std::vector<int> getCoordOutOfIndex(int n_cols, int n_rows, int idx);
     
 private:
     float x_R, y_R, z_R;
