@@ -302,8 +302,9 @@ void MainWindow::openOthersImage3D()
         Image *sImage = new Image(*image);
         
         mergeImages(image, sImage, 255, VOXEL_SKEL);
-        
         autoAddImageLayer("Skeleton Only", sImage);
+        
+        mergeImages(image, image, 255, 200);
     }
 }
 

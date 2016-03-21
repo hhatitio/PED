@@ -75,15 +75,13 @@ void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes,Image* im)
 {
     _edges = edges;
     _isGraph = true;
+    _edgeCoord.clear();
     
     int n_cols = im->n_cols;
     int n_rows = im->n_rows;
     
-    for (auto it = _edges.begin(); it!= _edges.end(); ++it){
-        //std::vector<int> pos1 = getCoordOutOfIndex(n_cols, n_rows,
-        //it->second->getFirstNodePos());
-        //std::vector<int> pos2 = getCoordOutOfIndex(n_cols, n_rows,
-        //it->second->getFirstNodePos());
+    for (auto it = _edges.begin(); it!= _edges.end(); ++it)
+    {
         ExtendedEdge * e = it->second;
         ExtendedNode * n1 = nodes.at(e->getFirstNodePos());
         ExtendedNode * n2 = nodes.at(e->getSecondNodePos());
@@ -293,6 +291,12 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
     if (e->key() == Qt::Key_PageDown)
         if (_splitVal > -0.95)
             _splitVal -= 0.05;
+    
+    
+    if (e->key() == Qt::Key_P)
+        z_R += 8;
+    if (e->key() == Qt::Key_M)
+        z_R -= 8;
     
     if (e->key() == Qt::Key_Down)
         y_T += 0.05;
