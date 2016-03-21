@@ -212,8 +212,8 @@ void Mesh::computeFace(Image *im)
     vec3 p1, p2, p3, p4, p5, p6, p7, p8;
 
     _dim3 = ((unsigned int)im->n_slices);
-    _dim2 = ((unsigned int)im->n_rows);
-    _dim1 = ((unsigned int)im->n_cols);
+    _dim2 = ((unsigned int)im->n_cols);
+    _dim1 = ((unsigned int)im->n_rows);
 
     for (unsigned int z = 0; z < _dim3; z++)
     {
@@ -225,7 +225,7 @@ void Mesh::computeFace(Image *im)
                 // faces du cube englobant le voxel à la position (x,y,z).
                 // Si le booléen est vrai la construction de la face
                 // correspondante s'effectuera, sinon elle sera 'oubliée'.
-                int pos =  x+(y*_dim2)+(z*_dim1*_dim2);
+                int pos =  x+(y*_dim1)+(z*_dim1*_dim2);
                 int valCur = im->at(pos);
                 bool bool1 = true, bool2 = true, bool3 = true,
                      bool4 = true, bool5 = true, bool6 = true;
@@ -326,6 +326,10 @@ void Mesh::normalizeMesh()
     vec3 posMin = {_faces[0].a.x, _faces[0].a.y, _faces[0].a.z,};
     vec3 posMax = {_faces[0].a.x, _faces[0].a.y, _faces[0].a.z,};
     
+    std::cout << "Min Max mesh" << std::endl;
+    std::cout << posMin.x << " " << posMin.y << " " << posMin.z << std::endl;
+    std::cout << posMax.x << " " << posMax.y << " " << posMax.z << std::endl;
+    
     for (unsigned int i = 0; i < _faces.size(); i++)
     {
         checkMinMax(posMin, posMax, _faces[i].a);
@@ -333,6 +337,10 @@ void Mesh::normalizeMesh()
         checkMinMax(posMin, posMax, _faces[i].c);
         checkMinMax(posMin, posMax, _faces[i].d);
     }
+    
+    std::cout << posMin.x << " " << posMin.y << " " << posMin.z << std::endl;
+    std::cout << posMax.x << " " << posMax.y << " " << posMax.z << std::endl;
+    
     
     // Pour une séquence de point X = {x0 .. xn} ou xi représente
     // la position d'un point sur une dimension, la formule xi - delta

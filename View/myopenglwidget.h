@@ -23,13 +23,15 @@
 #include "deftypes.h"
 
 typedef std::unordered_map<int, ExtendedEdge*> EdgeMap;
+typedef std::unordered_map<int, ExtendedNode*> NodeMap;
 
 class MyOpenGLWidget : public QGLWidget
 {
 public:
     MyOpenGLWidget(QWidget *parent = 0,
                    Image* im = NULL,
-                   EdgeMap edges = EdgeMap());
+                   EdgeMap edges = EdgeMap(),
+                   NodeMap nodes = NodeMap());
    // MyOpenGLWidget(QWidget *parent, Image* im);
     ~MyOpenGLWidget();
     
@@ -38,7 +40,7 @@ public:
     void setZRotation(int angle);
     
     void setImageLayer(Image *im);
-    void setGraphLayer(EdgeMap edges, Image* im);
+    void setGraphLayer(EdgeMap edges, NodeMap nodes, Image* im);
     
 signals:
     

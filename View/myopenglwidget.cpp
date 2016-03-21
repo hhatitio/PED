@@ -18,7 +18,7 @@
 std::string path = "/Users/andrearuffino/Downloads/pgm3dViewer/Data/test.pgm3d";
 
 
-MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges)
+MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges, NodeMap nodes)
 : QGLWidget(parent)
 {
     setFocusPolicy(Qt::StrongFocus);
@@ -37,7 +37,7 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges)
         setImageLayer(im);
     
     if (edges.size() != 0)
-        setGraphLayer(edges, im);
+        setGraphLayer(edges, nodes, im);
     
     _splitMod = 0;
     
@@ -53,6 +53,17 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges)
 
 MyOpenGLWidget::~MyOpenGLWidget() { }
 
+static void checkMinMax(vec3 &min, vec3 &max, vec3 v)
+{
+    min.x = (v.x < min.x) ? v.x : min.x;
+    min.y = (v.y < min.y) ? v.y : min.y;
+    min.z = (v.z < min.z) ? v.z : min.z;
+    
+    max.x = (v.x > max.x) ? v.x : max.x;
+    max.y = (v.y > max.y) ? v.y : max.y;
+    max.z = (v.z > max.z) ? v.z : max.z;
+}
+
 
 void MyOpenGLWidget::setImageLayer(Image *im)
 {
@@ -60,39 +71,90 @@ void MyOpenGLWidget::setImageLayer(Image *im)
     _faces = _mesh->getFaces();
 }
 
-void MyOpenGLWidget::setGraphLayer(EdgeMap edges, Image* im)
+void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes,Image* im)
 {
     _edges = edges;
     _isGraph = true;
     
     int n_cols = im->n_cols;
     int n_rows = im->n_rows;
-    int n_slices = im->n_slices;
-    
-    int dy = n_rows / 2;
-    int dx = n_cols / 2;
-    int dz = n_slices / 2;
     
     for (auto it = _edges.begin(); it!= _edges.end(); ++it){
-        std::vector<int> pos1 = getCoordOutOfIndex(n_cols, n_rows,
-                                                   it->second->getFirstNodePos());
-        std::vector<int> pos2 = getCoordOutOfIndex(n_cols, n_rows,
-                                                   it->second->getFirstNodePos());
-        for (unsigned int i = 0; i < pos1.size(); i++)
-            _edgeCoord.push_back((float)pos1[i]);
-        for (unsigned int i = 0; i < pos2.size(); i++)
-            _edgeCoord.push_back((float)pos2[i]);
+        //std::vector<int> pos1 = getCoordOutOfIndex(n_cols, n_rows,
+        //it->second->getFirstNodePos());
+        //std::vector<int> pos2 = getCoordOutOfIndex(n_cols, n_rows,
+        //it->second->getFirstNodePos());
+        ExtendedEdge * e = it->second;
+        ExtendedNode * n1 = nodes.at(e->getFirstNodePos());
+        ExtendedNode * n2 = nodes.at(e->getSecondNodePos());
+        
+        _edgeCoord.push_back(n1->getX());
+        _edgeCoord.push_back(n1->getY());
+        _edgeCoord.push_back(n1->getZ());
+        
+        _edgeCoord.push_back(n2->getX());
+        _edgeCoord.push_back(n2->getY());
+        _edgeCoord.push_back(n2->getZ());
+        
     }
+    
+    vec3 posMin, posMax;
+    int pos = 0;
+    int size = im->size();
+    
+    while (pos < size && im->at(pos) == 0){
+        pos++;
+    }
+    
+    std::vector<int> beg = getCoordOutOfIndex(n_cols, n_rows, pos);
+    
+    posMin.x = posMax.x = (float)beg[0];
+    posMin.y = posMax.y = (float)beg[1];
+    posMin.z = posMax.z = (float)beg[2];
+    
+    std::cout << "Min Max mopglwd" << std::endl;
+    std::cout << posMin.x << " " << posMin.y << " " << posMin.z << std::endl;
+    std::cout << posMax.x << " " << posMax.y << " " << posMax.z << std::endl;
+    
+    for (unsigned int i = pos; i < im->size(); i++)
+    {
+        if (im->at(i) != 0)
+        {
+            std::vector<int> id = getCoordOutOfIndex(n_cols, n_rows, i);
+            vec3 val = {(float)id[0], (float)id[1], (float)id[2]};
+            checkMinMax(posMin, posMax, val);
+        }
+    }
+    
+    std::cout << posMin.x << " " << posMin.y << " " << posMin.z << std::endl;
+    std::cout << posMax.x << " " << posMax.y << " " << posMax.z << std::endl;
+    
+    float delta_x = (posMax.x + posMin.x) / 2;
+    float delta_y = (posMax.y + posMin.y) / 2;
+    float delta_z = (posMax.z + posMin.z) / 2;
+    
+    vec3 scale;
+    scale.x = fabs(posMax.x - posMin.x) / 2;
+    scale.y = fabs(posMax.y - posMin.y) / 2;
+    scale.z = fabs(posMax.z - posMin.z) / 2;
+    
+    // Pour garder le rapport entre les distances sur les
+    // 3 dimensions, on divise par le meme coeff qui est
+    // le max des "max" 3 dimensions.
+    float maxScale =   ( scale.x > scale.y ) ?
+    (( scale.x > scale.z ) ? scale.x : scale.z):
+    (( scale.y > scale.z ) ? scale.y : scale.z);
     
     for (unsigned int i = 0; i < _edgeCoord.size(); i += 3)
     {
+        
         float x = _edgeCoord[i+0];
         float y = _edgeCoord[i+1];
         float z = _edgeCoord[i+2];
         
-        x = (x - dx) / (float)dx;
-        y = (y - dy) / (float)dy;
-        z = (z - dz) / (float)dz;
+        x = (x - delta_x) / maxScale;
+        y = (y - delta_y) / maxScale;
+        z = (z - delta_z) / maxScale;
         
         _edgeCoord[i+0] = x;
         _edgeCoord[i+1] = y;
@@ -249,7 +311,7 @@ std::vector<int> MyOpenGLWidget::getCoordOutOfIndex(int n_cols, int n_rows, int 
     int sizeLayer = n_cols * n_rows;
     int z = (int)idx / sizeLayer;
     
-    int idx2D = idx-z * sizeLayer;
+    int idx2D = idx - z*sizeLayer;
     int y = (int)idx2D / n_cols;
     int x = idx2D % n_cols;
     
@@ -306,12 +368,13 @@ void MyOpenGLWidget::drawFace(Face f)
 
 void MyOpenGLWidget::drawArcs()
 {
-    for (unsigned int i = 0; i < _edgeCoord.size(); i++)
+    for (unsigned int i = 0; i < _edgeCoord.size(); i += 6)
     {
         glBegin(GL_LINES);
         glColor3f (0.1, 0.9, 0.5);
         glVertex3f(_edgeCoord[i+0], _edgeCoord[i+1], _edgeCoord[i+2]);
         glVertex3f(_edgeCoord[i+3], _edgeCoord[i+4], _edgeCoord[i+5]);
+        glEnd();
     }
 }
 

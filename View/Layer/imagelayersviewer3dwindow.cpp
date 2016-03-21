@@ -72,7 +72,9 @@ void ImageLayersViewer3DWindow::openViewer3D()
         myViewer.setWindowTitle(windowTitle);
         myViewer.setImageLayer(imageLayer.getImage());
         if (imageLayer.hasGraph())
-            myViewer.setGraphLayer(imageLayer.getGraph()->getEEdges(), imageLayer.getImage());
+            myViewer.setGraphLayer(imageLayer.getGraph()->getEEdges(),
+                                   imageLayer.getGraph()->getENodes(),
+                                   imageLayer.getImage());
         myViewer.show();
     }
 }
