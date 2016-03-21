@@ -121,7 +121,7 @@ bool ExtendedNode::isIncidentEdge(int id){
     return false;
 }
 
-void ExtendedNode::addIncidentEdges(ExtendedEdge* e){
+void ExtendedNode::addIncidentEdge(ExtendedEdge* e){
     if(!isIncidentEdge(e->getId())){
      _incidentEdges.push_back(e);
     }

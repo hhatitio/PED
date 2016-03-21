@@ -16,26 +16,19 @@ SkeletonGraph::SkeletonGraph(Image* im) {
 SkeletonGraph::~SkeletonGraph() {
 }
 
-void SkeletonGraph::setGraph(Image* im) {
+void SkeletonGraph::setSkeletonIm(Image* im) {
     const Image3D<short int> im_const = *im;
     skeletonIm3D = Image3D<short int>(im_const);
     skeletonImTmp = Image3D<short int>(im_const);
 }
 
-void SkeletonGraph::addVisitedVoxel(int pos){
-    if(visitedVoxel.size()==10){
-        visitedVoxel.pop_back();
-    }
-    visitedVoxel.insert(visitedVoxel.begin(),pos);
-}
-
-bool SkeletonGraph::isVisited(int pos){
-    for(unsigned int i = 0; i < visitedVoxel.size(); i++)
-        if(visitedVoxel[i] == pos)
-            return true;
-    return false;
-}
-
+/**
+ * @brief SkeletonGraph::computeEnhanceMapFromNeighboorMap
+ * initialise the map enhanceNeighboorMap by inserting for each node
+ * in voxels the couple {key,value}
+ * key: the index of the nodes in the skeleton image
+ * value: the sum of the current node neighboor's values in the image neihgboorMap
+ */
 void SkeletonGraph::computeEnhanceMapFromNeighboorMap(){
     int nb_rows = neighboorMap->n_rows;
     int nb_cols = neighboorMap->n_cols;
@@ -72,6 +65,12 @@ void SkeletonGraph::computeEnhanceMapFromNeighboorMap(){
     }
 }
 
+/**
+ * @brief SkeletonGraph::computeNeighboorMap
+ * for each pixel in skeletonIm3D with a value of 255
+ * the number of neighboor pixels with the same value are
+ * store at the current pixel index in neighboorMap
+ */
 void SkeletonGraph::computeNeighboorMap(){
     neighboorMap = new Image3D<short int>(skeletonIm3D);
     int nb_cols = neighboorMap->n_cols;
@@ -109,76 +108,15 @@ void SkeletonGraph::computeNeighboorMap(){
     }
 }
 
-int SkeletonGraph::nextVoxelPosition(int x, int y, int z){
-    int nb_cols = neighboorMap->n_cols;
-    int nb_rows = neighboorMap->n_rows;
-    int nb_slices = neighboorMap->n_slices;
-    int pos = x+(y*nb_rows)+(z*nb_cols*nb_rows);
-    int n_pos = -1;
-    int val_n = 0;
-    for (int i = -1; i <= 1 ; ++i) {
-        for (int j = -1; j <= 1 ; ++j) {
-            for (int k = -1; k <= 1 ; ++k) {
-                if(i!=0 || j!=0 || k!=0){
 
-                    int x1 = x+i;
-                    int y1 = y+j;
-                    int z1 = z+k;
-                    int n_posTmp = x1+(y1*nb_rows)+(z1*nb_cols*nb_rows);
-                    if(x1 >= 0   && y1 >= 0   && z1 >= 0   &&
-                            x1 < nb_rows && y1 < nb_cols && z1 < nb_slices) {
-                        if(!isVisited(n_posTmp)){
-                            int val = neighboorMap->at(n_posTmp);
-                            if(val>val_n){
-                                val_n = val;
-                                n_pos = n_posTmp;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if(n_pos != -1){
-        neighboorMap->at(pos) -= 1;
-    }
-    return n_pos;
-}
-
-std::vector<ExtendedNode*> SkeletonGraph::getNeighboorhoodList(ExtendedNode* n){
-    int nb_rows = ((int)skeletonIm3D.n_rows);
-    int nb_cols = ((int)skeletonIm3D.n_cols);
-    int nb_slices = ((int)skeletonIm3D.n_slices);
-
-    int x = n->getX();
-    int y = n->getY();
-    int z = n->getZ();
-
-    std::vector<ExtendedNode*> neighboorhood;
-
-    for (int i = -1; i <= 1 ; ++i) {
-        for (int j = -1; j <= 1 ; ++j) {
-            for (int k = -1; k <= 1 ; ++k) {
-                if(i!=0 || j!=0 || k!=0){
-                    int x1 = x+i;
-                    int y1 = y+j;
-                    int z1 = z+k;
-                    if((x1>=0 && y1>=0 && z1>=0) &&
-                            (x1<nb_rows && y1<nb_cols && z1<nb_slices)){
-                        int pos = x1+(y1*nb_rows)+(z1*nb_rows*nb_cols);
-
-                        std::unordered_map<int,ExtendedNode*>::const_iterator n = nodes.find(pos);
-
-                        if ( n != nodes.end() )
-                            neighboorhood.push_back(n->second);
-                    }
-                }
-            }
-        }
-    }
-    return neighboorhood;
-}
-
+/**
+ * @brief isSpatialNeighboor
+ * @param u is a ExtendedNode
+ * @param n1 is a ExtendedNode
+ * @return true if the difference between u and n1 coordonates
+ *         is inferior than 2;
+ *         false otherwise
+ */
 bool isSpatialNeighboor(ExtendedNode *u,ExtendedNode *n1){
     int n1x = n1->getX(); int n1y = n1->getY(); int n1z= n1->getZ();
     int dist_ux_n1x = ((n1x - u->getX())*(n1x - u->getX()));
@@ -192,6 +130,12 @@ bool isSpatialNeighboor(ExtendedNode *u,ExtendedNode *n1){
     return false;
 }
 
+/**
+ * @brief SkeletonGraph::getNodeWeight
+ * @param u is a ExtendedNode
+ * @return the sum of the number of adjacent node
+ *         of u adjacent nodes
+ */
 int SkeletonGraph::getNodeWeight(ExtendedNode *u){
     int weight =0;
     std::vector<int> adnodes = u->getAdjacentNodesPos();
@@ -202,6 +146,14 @@ int SkeletonGraph::getNodeWeight(ExtendedNode *u){
     return weight;
 }
 
+/**
+ * @brief SkeletonGraph::processNodeWith2neighboor
+ * @param u is a ExtendedNode
+ * if u adjacent node are direct neighboor, one of them is erease
+ * if u is between his adjacent nodes and they are his direct neighboors
+ * then they are merge to u
+ * otherwise u is erease by the fonction contratNodes
+ */
 void SkeletonGraph::processNodeWith2neighboor(ExtendedNode *u){
     std::vector<int> adnodes = u->getAdjacentNodesPos();
     int pos =u->getIndex(skeletonImTmp.n_cols,skeletonImTmp.n_rows,
@@ -231,17 +183,23 @@ void SkeletonGraph::processNodeWith2neighboor(ExtendedNode *u){
     }
 }
 
+
+/**
+ * @brief SkeletonGraph::processIntersectionNode
+ * @param pos the positon of the current node
+ * this function merge a node's adjacent nodes with himself
+ * if they have more than one neighboor,
+ *    they are not considered as intersection node
+ * or they are direct neighboor of the current node
+ */
 void SkeletonGraph::processIntersectionNode(int pos){
     ExtendedNode *u = nodes.at(pos);
-    //std::cout << "ici" << std::endl;
     std::vector<int> adnodes = u->getAdjacentNodesPos();
     if(adnodes.size() > 2){
         for(int i = 0; i<adnodes.size(); ++i){
             if(nodes.find(adnodes.at(i))!=nodes.end()){
                 ExtendedNode *v = nodes.at(adnodes.at(i));
-                //std::cout << "ici1" << std::endl;
                 if(!isIntersectionNode(adnodes.at(i))){
-                    //std::cout << "ici2" << std::endl;
                     if(v->getAdjacentNodesPos().size()>1){
                         if(mergeNodes(u,v)){
                             skeletonImTmp.at(adnodes.at(i)) = 255;
@@ -256,16 +214,23 @@ void SkeletonGraph::processIntersectionNode(int pos){
                     if(isIntersectionNode(pos) && isSpatialNeighboor(u,v)){
                         if(mergeNodes(u,v)){
                             skeletonImTmp.at(adnodes.at(i)) = 255;
-                            //return;
                         }
                     }
                 }
             }
         }
     }
-    //std::cout << "ici3" << std::endl;
 }
 
+/**
+ * @brief SkeletonGraph::compute
+ * generate the graph from skeletonIm3D.
+ * start by initialising the nodes and the edges with initGraph
+ * then compute the neighboorMap and the enhanceNeighboorMap
+ * finally try to decrease the number of nodes and edges by using
+ * processIntersectionNode() and processNodeWith2neighboor() to delete
+ * in specific configuration
+ */
 void SkeletonGraph::compute() {
     initGraph();
     computeNeighboorMap();
@@ -296,6 +261,12 @@ void SkeletonGraph::compute() {
     delete neighboorMap;
 }
 
+/**
+ * @brief SkeletonGraph::initGraph
+ * initialise the graph such as one node created in the graph
+ * equals one pixels with the value 255 in the skeleton Image.
+ * each node is link by an edge to his direct neighboors in the image.
+ */
 void SkeletonGraph::initGraph(){
 
     int nb_rows = skeletonImTmp.n_rows;
@@ -325,6 +296,7 @@ void SkeletonGraph::initGraph(){
     }
 
 }
+
 ExtendedEdge* SkeletonGraph::addEdge(ListGraph &graph, ExtendedNode* u, ExtendedNode* v,
                                      int pos_u, int pos_v){
     ListGraph::Node u1, v1;
@@ -337,13 +309,19 @@ ExtendedEdge* SkeletonGraph::addEdge(ListGraph &graph, ExtendedNode* u, Extended
 
     u->addAdjacentNode(idv1);
     u->addAdjacentNodePos(pos_v);
-    u->addIncidentEdges(e);
+    u->addIncidentEdge(e);
     v->addAdjacentNode(idu1);
     v->addAdjacentNodePos(pos_u);
-    v->addIncidentEdges(e);
+    v->addIncidentEdge(e);
     return e;
 }
 
+/**
+ * @brief SkeletonGraph::initNodeEdges
+ * @param pos is the position of the current node
+ * create an edge between the node at the position pos and his
+ * direct neighboors in the skeleton image
+ */
 void SkeletonGraph::initNodeEdges(int pos){
     ExtendedNode *u;
     if((nodes.find(pos))==nodes.end()){
@@ -375,15 +353,13 @@ void SkeletonGraph::initNodeEdges(int pos){
                         if (skeletonImTmp.at(n_pos) == 200) {
                             ExtendedNode *n = nodes.at(n_pos);
                             if(!(u->isAdjacentNode(n->getId()))){
-                                /*ExtendedEdge*  e = */addEdge(graph,u,n,pos,n_pos);
-                                //edges.insert({e->getId(),e});
+                                addEdge(graph,u,n,pos,n_pos);
                             }
                         }
                         if (skeletonImTmp.at(n_pos) == 255) {
                             ExtendedNode *v = new ExtendedNode(graph,x1,y1,z1);
                             if(!(u->isAdjacentNode(v->getId()))){
-                                /*ExtendedEdge*  e = */addEdge(graph,u,v,pos,n_pos);
-                                //edges.insert({e->getId(),e});
+                                addEdge(graph,u,v,pos,n_pos);
                             }
                             nodes.insert({n_pos,v});
                             skeletonImTmp.at(n_pos) = 200;
@@ -394,6 +370,7 @@ void SkeletonGraph::initNodeEdges(int pos){
         }
     }
 }
+
 
 bool SkeletonGraph::eraseNodes(ExtendedNode *n){
     std::vector<int> adNodes = n->getAdjacentNodesPos();
@@ -422,6 +399,14 @@ bool SkeletonGraph::eraseNodes(ExtendedNode *n){
     return true;
 }
 
+/**
+ * @brief SkeletonGraph::mergeNodes
+ * @param n1
+ * @param n2
+ * try to merge n2 with n1.
+ * link all n2 adjacent nodes to n1 and erase n2
+ * @return true if succeeded. false otherwise
+ */
 bool SkeletonGraph::mergeNodes(ExtendedNode *n1,ExtendedNode *n2){
 
     int nb_rows = skeletonIm3D.n_rows;
@@ -451,6 +436,12 @@ bool SkeletonGraph::mergeNodes(ExtendedNode *n1,ExtendedNode *n2){
     return eraseNodes(n2);
 }
 
+/**
+ * @brief SkeletonGraph::contractNodes
+ * @param n is a ExtendedNode with only 2 neighboor
+ * erase n and create an edge between the adjacent nodes of n
+ * @return true if succeeded. false otherwise
+ */
 bool SkeletonGraph::contractNodes(ExtendedNode *n){
 
     int nb_rows = skeletonIm3D.n_rows;
@@ -478,6 +469,13 @@ bool SkeletonGraph::contractNodes(ExtendedNode *n){
 }
 
 
+/**
+ * @brief SkeletonGraph::isIntersectionNode
+ * @param pos is the position of the current node
+ * @return true if the node's value in enhanceNeighboorMap is bigger than
+ *         the value of his neighboorhood
+ *         false otherwise
+ */
 bool SkeletonGraph::isIntersectionNode(int pos){
     int nb_rows = skeletonIm3D.n_rows;
     int nb_cols = skeletonIm3D.n_cols;
@@ -520,30 +518,7 @@ bool SkeletonGraph::hasBiggerWeiht(int pos){
     }
     return true;
 }
-void SkeletonGraph::updateNodeMap(){
-    //std::cout << "taille nodeMap : " << nodes.size() << std::endl;
-    int nb_rows = skeletonImTmp.n_rows;
-    int nb_cols = skeletonImTmp.n_cols;
-    int nb_slices = skeletonImTmp.n_slices;
-    for (int x = 0; x < nb_rows ; ++x){
-        for (int y = 0; y < nb_cols ; ++y){
-            for (int z = 0; z < nb_slices ; ++z){
-                int pos = x+(y*nb_rows)+(z*nb_rows*nb_cols);
-                if(skeletonImTmp.at(pos) == 255) {
-                    nodes.erase(pos);
-                }
-            }
-        }
-    }
-    //std::cout << "taille nodeMap : " << nodes.size() << std::endl;
-}
 
-void SkeletonGraph::updateNodeMap(std::unordered_map<int,ExtendedNode*> nodesList){
-    nodes.clear();
-    for(auto it = nodesList.begin(); it!=nodesList.end(); ++it){
-        nodes.insert({it->first,it->second});
-    }
-}
 
 Image* SkeletonGraph::getSkeleton3DIm(){
     return new Image3D<short int>(skeletonImTmp);
@@ -573,30 +548,23 @@ Image* SkeletonGraph::getGraphImage3D(){
     return im;
 }
 
+/**
+ * @brief SkeletonGraph::computeAngles
+ * for each node in the graph, compute the angle
+ * between two consecutive edges around the node
+ */
 void SkeletonGraph::computeAngles(){
     for (auto it = edges.begin(); it!= edges.end(); ++it){
-       // std::cout << "toto"<< std::endl;
         ExtendedEdge *edge = it->second;
         std::vector<int> adjacentNodesPos = edge->getAdjacentNodesPos();
-        //std::cout << "toto2 "<< edge->getId() << std::endl;
-        //if(!adjacentNodesPos.empty()){
         for(int i = 0; i<adjacentNodesPos.size(); i++){
-            //std::cout << "totof "<< i << std::endl;
             ExtendedNode *n1 = nodes.at(adjacentNodesPos.at(i));
             std::vector<ExtendedEdge*> n1_incidentEdges = n1->getIncidentEdges();
-            //      if(!n1_incidentEdges.empty()){
-            //std::cout << "totof1 "<< i << std::endl;
             for(int j = 0; j<n1_incidentEdges.size(); j++){
-                //std::cout << "toto "<< n1_incidentEdges.size() << std::endl;
-                //std::cout << "toto2 "<< j << std::endl;
-                //std::cout << "edge :"<< edge->getId() << std::endl;
                 ExtendedEdge *edge2 = n1_incidentEdges.at(j);
-                //std::cout << "edge 2: "<< edge2->getId() << std::endl;
                 if(edge2->getId() != edge->getId() && !edge->containAngle(edge2->getId())){
-                    //  std::cout << "totoB "<< j << std::endl;
                     ExtendedNode *n2 = nodes.at(edge2->getOppositeNodePos(n1->getId()));
                     ExtendedNode *n3 = nodes.at(edge->getOppositeNodePos(n1->getId()));
-                    //std::cout << "totoB "<< j << std::endl;
                     std::vector<int> vec_n1n2,vec_n1n3;
                     vec_n1n2.push_back(n2->getX()-n1->getX());
                     vec_n1n2.push_back(n2->getY()-n1->getY());
@@ -622,11 +590,8 @@ void SkeletonGraph::computeAngles(){
                     std::cout << "angle edges (" << edge->getId() << ","
                               << edge2->getId() << ") :" << angle << std::endl;
                 }
-                //std::cout << "toto2"<< std::endl;
             }
 
-            //  }
-            //}
         }
 
     }

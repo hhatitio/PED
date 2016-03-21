@@ -26,16 +26,25 @@ public:
     int getSecondNodePos();
     int getOppositeNode(int id);
     int getOppositeNodePos(int id);
-    std::vector<int> getAdjacentNodesPos();
     double getAngle(int idEdge);
+
+    //return the list of adjacent node position
+    std::vector<int> getAdjacentNodesPos();
+
+
     
 private:
     int _id;
     ListGraph::Edge edge;
     int _length;
-    std::vector<int> _adjacentNodes;
-    std::vector<int> _adjacentNodesPos;
     std::unordered_map<int, double> angles;
+
+    //contain the id of adjacent nodes
+    std::vector<int> _adjacentNodes;
+
+    //contain the position of adjacent nodes
+    std::vector<int> _adjacentNodesPos;
+
 };
 
 #endif // EDGEGRAPH

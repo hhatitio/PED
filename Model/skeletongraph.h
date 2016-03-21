@@ -24,26 +24,25 @@ public:
     SkeletonGraph(Image* im);
     ~SkeletonGraph();
 
-    void setGraph(Image* im);
+    void setSkeletonIm(Image* im);
     void compute();
-    int computeNbNode();
-    bool isIntersectionNode(int pos);
     Image* getSkeleton3DIm();
     Image* getGraphImage3D();
+    void exportGraph(std::string name);
+
+    bool isIntersectionNode(int pos);
     void initGraph();
     bool contractNodes(ExtendedNode *n);
     bool mergeNodes(ExtendedNode *n1,ExtendedNode *n2);
     bool eraseNodes(ExtendedNode *n);
     void initNodeEdges(int pos);
-    void updateNodeMap(std::unordered_map<int,ExtendedNode*> nodesList);
-    void updateNodeMap();
     void processIntersectionNode(int pos);
     void processNodeWith2neighboor(ExtendedNode *u);
     int getNodeWeight(ExtendedNode *u);
     bool hasBiggerWeiht(int pos);
-    void exportGraph(std::string name);
     std::unordered_map<int, ExtendedNode*> getENodes();
     std::unordered_map<int, ExtendedEdge*> getEEdges();
+    void computeAngles();
 
 private:
     ListGraph graph;
@@ -55,18 +54,12 @@ private:
     Image *neighboorMap;
     std::unordered_map<int, int> enhanceNeighboorMap;
     std::unordered_map<int, ExtendedNode*> voxels;
-    std::vector<int> visitedVoxel;
 
-
-    void addVisitedVoxel(int pos);
-    bool isVisited(int pos);
     void computeEnhanceMapFromNeighboorMap();
     void computeNeighboorMap();
-    int nextVoxelPosition(int x, int y, int z);
-    std::vector<ExtendedNode*> getNeighboorhoodList(ExtendedNode* n);
     ExtendedEdge* addEdge(ListGraph &graph, ExtendedNode* u, ExtendedNode* v,
                           int pos_u, int pos_v);
-    void computeAngles();
+
 };
 
 

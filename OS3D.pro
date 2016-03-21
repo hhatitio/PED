@@ -114,15 +114,13 @@ HEADERS  += deftypes.h \
 
 # Directives compilateur
 
-QMAKE_CXXFLAGS += -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7
-LIBS += -stdlib=libc++ -mmacosx-version-min=10.7
+QMAKE_CXXFLAGS += -std=c++11
 
 # Librairies externes
 
 INCLUDEPATH += /usr/include/ /usr/local/include/
 DEPENDPATH += /usr/local/include
 QMAKE_LIBDIR += /usr/local/lib/
-QMAKE_LFLAGS += -F/usr/local/lib/
 
 # Armadillo
 

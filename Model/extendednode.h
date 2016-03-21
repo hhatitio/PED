@@ -22,7 +22,7 @@ public:
     int getNbIncidentEdges();
     std::vector<ExtendedEdge*> getIncidentEdges();
     ExtendedEdge* getIncidentEdge(ExtendedNode *v);
-    void addIncidentEdges(ExtendedEdge* e);
+    void addIncidentEdge(ExtendedEdge* e);
     int getX();
     int getY();
     int getZ();

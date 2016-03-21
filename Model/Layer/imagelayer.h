@@ -2,7 +2,7 @@
 #define IMAGELAYER_H
 
 #include "../../deftypes.h"
-#include "skeletongraph.h"
+#include "Model/skeletongraph.h"
 
 #include <QString>
 #include <QColor>
