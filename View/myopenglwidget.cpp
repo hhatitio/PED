@@ -15,7 +15,12 @@
 #include <string>
 #include <cmath>
 
-std::string path = "/Users/andrearuffino/Downloads/pgm3dViewer/Data/test.pgm3d";
+
+vec3 _blue      = {0.22, 0.62, 0.96};
+vec3 _deepblue  = {0.07, 0.20, 0.60};
+vec3 _black     = {0.16, 0.16, 0.16};
+vec3 _green     = {0.16, 0.94, 0.46};
+vec3 _white     = {0.98, 0.98, 0.98};
 
 
 MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges, NodeMap nodes)
@@ -45,24 +50,12 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges, NodeMa
     _alphaVol  = 0.4;
     
     _boundingboxes = true;
-    _axes = true;
+    _axes = false;
     
     std::cout << "NbFaces : " << _faces.size() << std::endl;
 }
 
-
 MyOpenGLWidget::~MyOpenGLWidget() { }
-
-//static void checkMinMax(vec3 &min, vec3 &max, vec3 v)
-//{
-    //min.x = (v.x < min.x) ? v.x : min.x;
-    //min.y = (v.y < min.y) ? v.y : min.y;
-    //min.z = (v.z < min.z) ? v.z : min.z;
-    
-    //max.x = (v.x > max.x) ? v.x : max.x;
-    //max.y = (v.y > max.y) ? v.y : max.y;
-    //max.z = (v.z > max.z) ? v.z : max.z;
-//}
 
 
 void MyOpenGLWidget::setImageLayer(Image *im)
@@ -106,9 +99,6 @@ void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes)
     scale.y = fabs(posMax.y - posMin.y) / 2;
     scale.z = fabs(posMax.z - posMin.z) / 2;
     
-    // Pour garder le rapport entre les distances sur les
-    // 3 dimensions, on divise par le meme coeff qui est
-    // le max des "max" 3 dimensions.
     float maxScale =   ( scale.x > scale.y ) ?
     (( scale.x > scale.z ) ? scale.x : scale.z):
     (( scale.y > scale.z ) ? scale.y : scale.z);
@@ -124,7 +114,7 @@ void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes)
 
 void MyOpenGLWidget::initializeGL()
 {
-    glClearColor(0.2,0.2,0.2,1.);
+    glClearColor(_black.x,_black.y,_black.z,1.);
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -302,15 +292,15 @@ void MyOpenGLWidget::drawFace(Face f)
     }
     else if (f.val == VOXEL_SKEL) {
         a = (_arcs) ? 0.0 : 0.9;
-        r = 1.0;
-        g = 1.0;
-        b = 1.0;
+        r = _white.x;
+        g = _white.y;
+        b = _white.z;
     }
     else if (f.val == VOXEL_NODE) {
         a = 1.0;
-        r = 1.0;
-        g = 0.3;
-        b = 0.0;
+        r = _blue.x;
+        g = _blue.y;
+        b = _blue.z;
     }
     else {
         a = 1.0;
@@ -336,7 +326,7 @@ void MyOpenGLWidget::drawArcs()
     for (unsigned int i = 0; i < _edgeCoord.size(); i += 6)
     {
         glBegin(GL_LINES);
-        glColor3f (0.1, 0.9, 0.5);
+        glColor3f (_green.x, _green.y, _green.z);
         glVertex3f(_edgeCoord[i+0], _edgeCoord[i+1], _edgeCoord[i+2]);
         glVertex3f(_edgeCoord[i+3], _edgeCoord[i+4], _edgeCoord[i+5]);
         glEnd();

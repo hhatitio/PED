@@ -16,190 +16,28 @@
 
 #include "mesh.h"
 #include <cmath>
-#include <stdio.h>
-#include <stdlib.h>
 
 using namespace std;
 
 
 // ----------------------------------------------------------
-Mesh::Mesh(std::string file)
-{
-    loadFromFile(file);
-}
-
 Mesh::Mesh(Image *im)
 {
-    // On construit la liste des faces à partir du tableau mesh.
+    // On construit la liste des faces à partir des voxels de l'image.
     // et on ramène les positions de chaques faces entre -1 et 1.
     _valmax = 255;
-    computeFace(im);
-    normalizeMesh();
+    
+    if(im != NULL)
+    {
+        computeFace(im);
+        normalizeMesh();
+    }
 }
 
 // ----------------------------------------------------------
 Mesh::~Mesh()
 {
 
-}
-
-
-// ----------------------------------------------------------
-int Mesh::loadFromFile(std::string file)
-{
-    vector<int> tab;
-    int *** mesh;
-    
-    // On construit un tableau unidimensionnel des valeurs
-    // contenues dans le fichier.
-    size_t s = readFile(file, tab);
-    mesh = (int***) malloc(_dim1 * sizeof(int**));
-    
-    for (unsigned int x = 0; x < _dim1; x++)
-    {
-        mesh[x] = (int **) malloc(_dim2 * sizeof(int*));
-        // ... x axis here
-        for (unsigned int y = 0; y < _dim2; y++)
-        {
-            mesh[x][y] = (int *) malloc(_dim3 *sizeof(int));
-            // ... y axis here
-            for (unsigned int z = 0; z < _dim3; z++)
-            {
-                int pos = z * _dim3 * _dim2 + y * _dim2 + x;
-                mesh[x][y][z] = tab[pos];
-            }
-        }
-    }
-    
-    // On construit la liste des faces à partir du tableau mesh.
-    // et on ramène les positions de chaques faces entre -1 et 1.
-    computeFace(mesh);
-    normalizeMesh();
-    
-    //On libere le tableau mesh qui n'est plus utile.
-    for (unsigned int x = 0; x < _dim1; x++)
-    {
-        for (unsigned int y = 0; y < _dim2; y++)
-        {
-            free(mesh[x][y]);
-        }
-        free(mesh[x]);
-    }
-    free(mesh);
-    
-    return s;
-}
-
-
-// ----------------------------------------------------------
-size_t Mesh::readFile(string filename, vector<int> &tab)
-{
-    size_t size = 0;
-    string format;
-    int val;
-    
-    ifstream file(filename.data(), ios::in);
-    
-    if (file) {
-        file >> format >> _dim1 >> _dim2 >> _dim3 >> _valmax;
-        size = _dim1 * _dim2 * _dim3;
-        
-        if (format.compare("PGM3D") != 0)
-            cerr << "Warning: Wrong format" << endl;
-        
-        for (unsigned int i = 0; i < size; i++)
-        {
-            file >> val;
-            if (val > _valmax) val = _valmax;
-            tab.push_back(val);
-        }
-        file.close();
-    } else {
-        cerr << "Error: File not read." << endl;
-    }
-    return size;
-}
-
-
-// ----------------------------------------------------------
-void Mesh::computeFace(int *** t)
-{
-    // p1 .. p8 représentent les 8 sommets du cube
-    // englobant un voxel à une position (x,y,z).
-    // Une illustration de la disposition du cube est
-    // disponible dans le pdf joint au code source.
-    vec3 p1, p2, p3, p4, p5, p6, p7, p8;
-    
-    for (unsigned int z = 0; z < _dim3; z++)
-    {
-        for (unsigned int y = 0; y < _dim2; y++)
-        {
-            for (unsigned int x = 0; x < _dim1; x++)
-            {
-                // On crée une variable booléenne pour chacunes des six
-                // faces du cube englobant le voxel à la position (x,y,z).
-                // Si le booléen est vrai la construction de la face
-                // correspondante s'effectuera, sinon elle sera 'oubliée'.
-                int valCur = t[x][y][z];
-                bool bool1 = true, bool2 = true, bool3 = true,
-                     bool4 = true, bool5 = true, bool6 = true;
-                
-                if (valCur != 0)
-                {
-                    p1.x = x - 0.5; p1.y = y - 0.5; p1.z = z - 0.5;
-                    p2.x = x - 0.5; p2.y = y + 0.5; p2.z = z - 0.5;
-                    p3.x = x + 0.5; p3.y = y + 0.5; p3.z = z - 0.5;
-                    p4.x = x + 0.5; p4.y = y - 0.5; p4.z = z - 0.5;
-                    p5.x = x + 0.5; p5.y = y - 0.5; p5.z = z + 0.5;
-                    p6.x = x + 0.5; p6.y = y + 0.5; p6.z = z + 0.5;
-                    p7.x = x - 0.5; p7.y = y + 0.5; p7.z = z + 0.5;
-                    p8.x = x - 0.5; p8.y = y - 0.5; p8.z = z + 0.5;
-                    
-                    // On met à jour les booléens, la face sera dessinée
-                    // uniquement si elle est strictement supérieur au
-                    // voisin concerné (du dessus, du dessous etc...).
-                    if (x > 0)
-                        bool4 = (valCur > t[x - 1][y][z]);
-                    if (x < _dim1 - 1)
-                        bool2 = (valCur > t[x + 1][y][z]);
-                    if (y > 0)
-                        bool6 = (valCur > t[x][y - 1][z]);
-                    if (y < _dim2 - 1)
-                        bool5 = (valCur > t[x][y + 1][z]);
-                    if (z > 0)
-                        bool1 = (valCur > t[x][y][z - 1]);
-                    if (z < _dim3 - 1)
-                        bool3 = (valCur > t[x][y][z + 1]);
-                    
-                    if (bool1) {
-                        Face f1 = { p1, p2, p3, p4, valCur};
-                        _faces.push_back(f1);
-                    }
-                    if (bool2) {
-                        Face f2 = { p4, p3, p6, p5, valCur};
-                        _faces.push_back(f2);
-                    }
-                    if (bool3) {
-                        Face f3 = { p5, p6, p7, p8, valCur};
-                        _faces.push_back(f3);
-                    }
-                    if (bool4) {
-                        Face f4 = { p8, p7, p2, p1, valCur};
-                        _faces.push_back(f4);
-                    }
-                    if (bool5) {
-                        Face f5 = { p2, p7, p6, p3, valCur};
-                        _faces.push_back(f5);
-                    }
-                    if (bool6) {
-                        Face f6 = { p1, p4, p5, p8, valCur};
-                        _faces.push_back(f6);
-                    }
-                    //std::cout << bool1 << bool2 << bool3 << bool4 << bool5 << bool6 << std::endl;
-                }
-            }
-        }
-    }
 }
 
 // ----------------------------------------------------------
@@ -310,7 +148,6 @@ void Mesh::computeFace(Image *im)
                         Face f6 = { p1, p4, p5, p8, valCur};
                         _faces.push_back(f6);
                     }
-                    //std::cout << bool1 << bool2 << bool3 << bool4 << bool5 << bool6 << std::endl;
                 }
             }
         }
@@ -343,10 +180,6 @@ void Mesh::normalizeMesh()
     _posMin = {_faces[0].a.x, _faces[0].a.y, _faces[0].a.z,};
     _posMax = {_faces[0].a.x, _faces[0].a.y, _faces[0].a.z,};
     
-    std::cout << "Min Max mesh" << std::endl;
-    std::cout << _posMin.x << " " << _posMin.y << " " << _posMin.z << std::endl;
-    std::cout << _posMax.x << " " << _posMax.y << " " << _posMax.z << std::endl;
-    
     for (unsigned int i = 0; i < _faces.size(); i++)
     {
         checkMinMax(_posMin, _posMax, _faces[i].a);
@@ -354,10 +187,6 @@ void Mesh::normalizeMesh()
         checkMinMax(_posMin, _posMax, _faces[i].c);
         checkMinMax(_posMin, _posMax, _faces[i].d);
     }
-    
-    std::cout << _posMin.x << " " << _posMin.y << " " << _posMin.z << std::endl;
-    std::cout << _posMax.x << " " << _posMax.y << " " << _posMax.z << std::endl;
-    
     
     // Pour une séquence de point X = {x0 .. xn} ou xi représente
     // la position d'un point sur une dimension, la formule xi - delta
@@ -415,28 +244,37 @@ int Mesh::getValmax() {
 }
 
 
+// ----------------------------------------------------------
 unsigned int Mesh::getDim1()
 {
     return _dim1;
 }
 
+
+// ----------------------------------------------------------
 unsigned int Mesh::getDim2()
 {
     
     return _dim2;
 }
 
+
+// ----------------------------------------------------------
 unsigned int Mesh::getDim3()
 {
     
     return _dim3;
 }
 
+
+// ----------------------------------------------------------
 vec3 Mesh::getPosMin()
 {
     return _posMin;
 }
 
+
+// ----------------------------------------------------------
 vec3 Mesh::getPosMax()
 {
     return _posMax;

@@ -28,13 +28,9 @@
 class Mesh {
     
 public:
-    Mesh(std::string f = "");
-    Mesh(Image *im);
+    Mesh(Image *im = NULL);
     ~Mesh();
     
-    int  loadFromFile(std::string file);
-    size_t readFile(std::string f, std::vector<int> &t);
-    void computeFace(int*** m);
     void computeFace(Image *im);
     void normalizeMesh();
     
@@ -53,7 +49,6 @@ private:
     unsigned int _dim1, _dim2, _dim3;
     vec3 _posMin, _posMax;
     
-    //float delta;
     int _valmax;
 };
 
