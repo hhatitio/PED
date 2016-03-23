@@ -336,7 +336,7 @@ void MyOpenGLWidget::drawArcs()
 static void drawBoundingBox(float x, float y, float z)
 {
     glBegin(GL_LINE_LOOP);
-    glColor3f(0.22, 0.62, 0.96);
+    glColor3f(0.24, 0.24, 0.24);
     glVertex3f(-x,-y,-z);
     glVertex3f(-x, y,-z);
     glVertex3f( x, y,-z);
@@ -348,7 +348,7 @@ static void drawBoundingBox(float x, float y, float z)
     glEnd();
     
     glBegin(GL_LINES);
-    glColor3f(0.22, 0.62, 0.96);
+    glColor3f(0.24, 0.24, 0.24);
     glVertex3f(-x, y,-z); glVertex3f(-x, y, z);
     glVertex3f( x, y,-z); glVertex3f( x, y, z);
     glVertex3f(-x,-y,-z); glVertex3f( x,-y,-z);

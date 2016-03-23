@@ -592,8 +592,10 @@ void MainWindow::skeletonization() {
 void MainWindow::getGraph(){
     delete skeletonGraph;
     
-    if (skeletonImage == NULL)
-        skeletonImage= skeletonModel->getSkeleton3DIm();
+    if (skeletonImage != NULL)
+        delete skeletonImage;
+    
+    skeletonImage = skeletonModel->getSkeleton3DIm();
     
     skeletonGraph = new SkeletonGraph(skeletonImage);
     

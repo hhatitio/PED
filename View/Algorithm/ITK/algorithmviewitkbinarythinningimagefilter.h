@@ -93,7 +93,7 @@ void AlgorithmViewITKBinaryThinningImageFilter::updateParametersWithAlgorithm(Al
     /** TODO : MàJ des widgets en fonction des paramètres de l'algorithme **/
     std::cout << "View - MaJ widgets ..." << std::endl;
 
-    AlgorithmITKBinaryThinningImageFilter<Image, Image> *algorithmSkeleton = (AlgorithmITKBinaryThinningImageFilter<Image, Image> *) algorithm;
+    //AlgorithmITKBinaryThinningImageFilter<Image, Image> *algorithmSkeleton = (AlgorithmITKBinaryThinningImageFilter<Image, Image> *) algorithm;
 
     /*buttonCoordinate.setChecked(true);
     sliderCoordinate.setValue(algorithmSkeleton->getCoordinateTolerance());
@@ -108,7 +108,7 @@ void AlgorithmViewITKBinaryThinningImageFilter::updateAlgorithmParameters(Algori
     /** TODO : MàJ des paramètres de l'algorithme en fonction des widgets **/
     std::cout << "View - MaJ parametres ..." << std::endl;
 
-    AlgorithmITKBinaryThinningImageFilter<Image, Image> *algorithmSkeleton = (AlgorithmITKBinaryThinningImageFilter<Image, Image> *) algorithm;
+    //AlgorithmITKBinaryThinningImageFilter<Image, Image> *algorithmSkeleton = (AlgorithmITKBinaryThinningImageFilter<Image, Image> *) algorithm;
 
     /*if (buttonCoordinate.isChecked())
         algorithmSkeleton->setCoordinateTolerance(spinBoxCoordinate.value());
