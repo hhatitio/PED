@@ -173,6 +173,16 @@ void MainWindow::removeLayers()
 {
     while (!imageLayers->empty())
         imageLayersWindow.removeLayer();
+
+    imageLayerMenu->clear();
+    if (imageLayerMenu->isEmpty())
+    {
+        // S'il n'y a plus d'image calque on le signale
+        QAction *emptyImageLayer = new QAction(ACTION_EMPTY_IMAGE_LAYER, this);
+        emptyImageLayer->setEnabled(false);
+        imageLayerMenu->addAction(emptyImageLayer);
+    }
+
 }
 
 void MainWindow::removeLayer(QString name)
@@ -578,16 +588,6 @@ void MainWindow::skeletonization() {
     drawSlice();
 }
 
-/*void MainWindow::convertImageRawToVol() {
- int x = convertImageView.getX();
- int y = convertImageView.getY();
- int z = convertImageView.getZ();
- QString filename = convertImage.rawToVol(x, y, z);
- image = DGtalTools<PixelType>::loadImage3D(filename.toStdString());
- skeletonModel.setSkeleton3DIm(image);
- updateImageComponents();
- drawSlice();
- }*/
 
 void MainWindow::getGraph(){
     delete skeletonGraph;
@@ -597,9 +597,10 @@ void MainWindow::getGraph(){
     
     skeletonImage = skeletonModel->getSkeleton3DIm();
     
+    if (skeletonGraph != NULL)
+        delete skeletonGraph;
     skeletonGraph = new SkeletonGraph(skeletonImage);
-    
-    //skeletonGraph.setGraph(image);
+
     skeletonGraph->compute();
     Image *imageGraph = skeletonGraph->getGraphImage3D();
     //skeletonGraph->exportGraph("graph.eps");
@@ -648,7 +649,7 @@ void MainWindow::autoAddImageLayer(const QString &name, Image * imageLayer, Skel
     QObject::connect(addImageLayer, SIGNAL(triggered()), this, SLOT(drawSlice()));
     
     // On ajoute le nouveau calque image et sa vue
-    ImageLayer layer (name, imageLayer, skeletonGraph);
+    ImageLayer layer(name, imageLayer, skeletonGraph);
     imageLayers->push_back(layer);
     imageLayersWindow.addViewLayer(layer);
     imageLayersToolsWindow.addViewLayer(layer);

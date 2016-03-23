@@ -9,6 +9,7 @@ using namespace lemon;
 class ExtendedNode{
 public:
     ExtendedNode(ListGraph &g, int x, int y, int z);
+    ~ExtendedNode();
 
     bool isAdjacentNode(int id);
     bool isIncidentEdge(int id);

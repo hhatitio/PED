@@ -4,16 +4,29 @@
 #include <string>
 
 SkeletonGraph::SkeletonGraph() {
-
+        neighboorMap = 0;
 }
 
 SkeletonGraph::SkeletonGraph(Image* im) {
     const Image3D<short int> im_const = *im;
     skeletonIm3D = Image3D<short int>(im_const);
     skeletonImTmp = Image3D<short int>(skeletonIm3D);
+    neighboorMap = new Image3D<short int>(skeletonIm3D);
 }
 
 SkeletonGraph::~SkeletonGraph() {
+    if(!nodes.empty()){
+       nodes.clear();
+    }
+    if(!edges.empty()){
+        edges.clear();
+    }
+    if(!nodesTmp.empty()){
+        nodesTmp.clear();
+    }
+    if(neighboorMap!=0){
+        delete neighboorMap;
+    }
 }
 
 void SkeletonGraph::setSkeletonIm(Image* im) {
@@ -34,7 +47,7 @@ void SkeletonGraph::computeEnhanceMapFromNeighboorMap(){
     int nb_cols = neighboorMap->n_cols;
     int nb_slices = neighboorMap->n_slices;
     enhanceNeighboorMap.clear();
-    for (auto it = voxels.begin(); it!= voxels.end(); ++it){
+    for (auto it = nodesTmp.begin(); it!= nodesTmp.end(); ++it){
         ExtendedNode *n = it->second;
         int x = n->getX();
         int y = n->getY();
@@ -72,11 +85,11 @@ void SkeletonGraph::computeEnhanceMapFromNeighboorMap(){
  * store at the current pixel index in neighboorMap
  */
 void SkeletonGraph::computeNeighboorMap(){
-    neighboorMap = new Image3D<short int>(skeletonIm3D);
+
     int nb_cols = neighboorMap->n_cols;
     int nb_rows = neighboorMap->n_rows;
     int nb_slices = neighboorMap->n_slices;
-    for (auto it = voxels.begin(); it!= voxels.end(); ++it){
+    for (auto it = nodesTmp.begin(); it!= nodesTmp.end(); ++it){
         ExtendedNode *n = it->second;
         int x = n->getX();
         int y = n->getY();
@@ -239,7 +252,7 @@ void SkeletonGraph::compute() {
     int size_graph;
     do{
         size_graph = nodes.size();
-        for (auto it = voxels.begin(); (it!= voxels.end()); ++it){
+        for (auto it = nodesTmp.begin(); (it!= nodesTmp.end()); ++it){
             int pos = it->first;
             ExtendedNode *u = it->second;
 
@@ -251,14 +264,14 @@ void SkeletonGraph::compute() {
             }
 
         }
-        voxels.clear();
+        nodesTmp.clear();
         for (auto it = nodes.begin(); (it!= nodes.end()); ++it){
-            voxels.insert({it->first,it->second});
+            nodesTmp.insert({it->first,it->second});
         }
     }while(size_graph != nodes.size());
     std::cout << "noeuds :" << nodes.size() << std::endl;
     computeAngles();
-    delete neighboorMap;
+    //delete neighboorMap;
 }
 
 /**
@@ -290,9 +303,9 @@ void SkeletonGraph::initGraph(){
             }
         }
     }
-    voxels.clear();
+    nodesTmp.clear();
     for (auto it = nodes.begin(); (it!= nodes.end()); ++it){
-        voxels.insert({it->first,it->second});
+        nodesTmp.insert({it->first,it->second});
     }
 
 }
@@ -530,18 +543,7 @@ Image* SkeletonGraph::getGraphImage3D(){
 
     for (auto it = nodes.begin(); it!= nodes.end(); ++it){
         ExtendedNode *u = it->second;
-        //std::vector<int> adnodes = u->getAdjacentNodes();
-        //std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
         std::vector<ExtendedEdge *> incidentEdge = u->getIncidentEdges();
-        //for(int i= 0; i<incidentEdge.size(); ++i){
-        //ExtendedEdge *e = incidentEdge.at(i);
-        //std::cout << " " << e->getSize() << "/" << e->getOppositeNode(u->getId()) << " -";
-        //}
-        //std::cout << " " << std::endl;
-        //        for(int i= 0; i<adnodes.size(); ++i){
-        //            std::cout << " " << adnodes.at(i);
-        //        }
-        //        std::cout << " " << std::endl;
         im->at(it->first) = 120;
     }
 
@@ -594,6 +596,49 @@ void SkeletonGraph::computeAngles(){
 
         }
 
+    }
+}
+
+void SkeletonGraph::showfeatures(){
+    std::cout << "nb noeuds graph :" << nodes.size() << std::endl;
+    std::cout << "nb edges graph :" << edges.size() << std::endl;
+    std::cout << "=====================Angle edges===================" << std::endl;
+
+    for (auto it = edges.begin(); it!= edges.end(); ++it){
+        ExtendedEdge *edge = it->second;
+        std::vector<int> adjacentNodesPos = edge->getAdjacentNodesPos();
+        for(int i = 0; i<adjacentNodesPos.size(); i++){
+            ExtendedNode *n1 = nodes.at(adjacentNodesPos.at(i));
+            std::vector<ExtendedEdge*> n1_incidentEdges = n1->getIncidentEdges();
+            for(int j = 0; j<n1_incidentEdges.size(); j++){
+                ExtendedEdge *edge2 = n1_incidentEdges.at(j);
+                if(edge2->getId() != edge->getId() && !edge->containAngle(edge2->getId())){
+                    std::cout << "angle edges (" << edge->getId() << ","
+                              << edge2->getId() << ") :" << edge->getAngle(edge2->getId()) << std::endl;
+                }
+            }
+
+        }
+
+    }
+
+    std::cout << "===================================================" << std::endl;
+    std::cout << "=====================Node features===================" << std::endl;
+
+    for (auto it = nodes.begin(); it!= nodes.end(); ++it){
+        ExtendedNode *u = it->second;
+        std::vector<int> adnodes = u->getAdjacentNodes();
+        std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
+        std::vector<ExtendedEdge *> incidentEdge = u->getIncidentEdges();
+        for(int i= 0; i<incidentEdge.size(); ++i){
+            ExtendedEdge *e = incidentEdge.at(i);
+            std::cout << " " << e->getSize() << "/" << e->getOppositeNode(u->getId()) << " -";
+        }
+        std::cout << " " << std::endl;
+        for(int i= 0; i<adnodes.size(); ++i){
+            std::cout << " " << adnodes.at(i);
+        }
+        std::cout << " " << std::endl;
     }
 }
 

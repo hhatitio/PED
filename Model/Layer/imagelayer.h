@@ -20,6 +20,7 @@ public:
 
     ImageLayer();
     ImageLayer(const QString &name, Image *image, SkeletonGraph* skeletonGraph = NULL);
+    //~ImageLayer();
 
     QString getName() const;
     Image * getImage() const;

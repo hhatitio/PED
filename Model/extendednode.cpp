@@ -8,6 +8,10 @@ ExtendedNode::ExtendedNode(ListGraph &g, int x, int y, int z){
     _coord.push_back(z);
 }
 
+ExtendedNode::~ExtendedNode(){
+    _incidentEdges.clear();
+}
+
 bool ExtendedNode::operator ==(ExtendedNode v){
     return (this->node == v.getNode());
 }

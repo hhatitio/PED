@@ -12,6 +12,10 @@ ExtendedEdge::ExtendedEdge(ListGraph &g, ListGraph::Node u,
     _length = 0;
 }
 
+ExtendedEdge::~ExtendedEdge(){
+
+}
+
 bool ExtendedEdge::isAdjacentVertex(int id){
     for(unsigned int i = 0; i < _adjacentNodes.size(); i++)
         if(_adjacentNodes[i] == id)

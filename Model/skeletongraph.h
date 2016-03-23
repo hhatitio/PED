@@ -43,6 +43,7 @@ public:
     std::unordered_map<int, ExtendedNode*> getENodes();
     std::unordered_map<int, ExtendedEdge*> getEEdges();
     void computeAngles();
+    void showfeatures();
 
 private:
     ListGraph graph;
@@ -53,7 +54,7 @@ private:
     Image3D<short int> skeletonImTmp;
     Image *neighboorMap;
     std::unordered_map<int, int> enhanceNeighboorMap;
-    std::unordered_map<int, ExtendedNode*> voxels;
+    std::unordered_map<int, ExtendedNode*> nodesTmp;
 
     void computeEnhanceMapFromNeighboorMap();
     void computeNeighboorMap();

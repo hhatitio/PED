@@ -7,12 +7,15 @@ ImageLayer::ImageLayer()
 {
     name = "Pas de nom.";
     image = 0;
+    graph = 0;
     hasSkeletonGraph = false;
 }
 
 ImageLayer::ImageLayer(const QString &name, Image *layer,SkeletonGraph* skeletonGraph)
 {
     this->name = name;
+    //const Image3D<short int> im_const = *layer;
+    //image = new Image3D<short int>(im_const);
     image = layer;
     
     if (skeletonGraph == NULL) {
@@ -37,6 +40,17 @@ ImageLayer::ImageLayer(const QString &name, Image *layer,SkeletonGraph* skeleton
         }
     }
 }
+
+/*ImageLayer::~ImageLayer()
+{
+    if(graph != 0){
+        delete graph;
+    }
+
+    if(image != 0){
+        delete image;
+    }
+}*/
 
 QString ImageLayer::getName() const
 {

@@ -10,6 +10,7 @@ class ExtendedEdge{
 public:
     ExtendedEdge(ListGraph &g, ListGraph::Node u,
                  ListGraph::Node v, int pos_u, int pos_v);
+    ~ExtendedEdge();
 
     bool isAdjacentVertex(int id);
     void addAdjacentNode(int id);
