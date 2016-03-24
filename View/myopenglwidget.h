@@ -40,7 +40,7 @@ public:
     void setZRotation(int angle);
     
     void setImageLayer(Image *im);
-    void setGraphLayer(EdgeMap edges, NodeMap nodes);
+    void setImageLayer(Image *im, EdgeMap edges, NodeMap nodes);
     
 signals:
     

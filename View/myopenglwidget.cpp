@@ -35,14 +35,19 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges, NodeMa
     _scale = 1.;
     _splitVal = 0.;
     _isGraph = false;
+    _arcs = false;
     
     if (im == NULL)
+    {
         _mesh = NULL;
+    }
     else
-        setImageLayer(im);
-    
-    if (edges.size() != 0)
-        setGraphLayer(edges, nodes);
+    {
+        if (edges.size() > 0)
+            setImageLayer(im, edges, nodes);
+        else
+            setImageLayer(im);
+    }
     
     _splitMod = 0;
     
@@ -51,8 +56,6 @@ MyOpenGLWidget::MyOpenGLWidget(QWidget *parent, Image *im, EdgeMap edges, NodeMa
     
     _boundingboxes = true;
     _axes = false;
-    
-    std::cout << "NbFaces : " << _faces.size() << std::endl;
 }
 
 MyOpenGLWidget::~MyOpenGLWidget() { }
@@ -62,14 +65,18 @@ void MyOpenGLWidget::setImageLayer(Image *im)
 {
     _mesh = new Mesh(im);
     _faces = _mesh->getFaces();
+    _isGraph = false;
+    _arcs = false;
 }
 
-void MyOpenGLWidget::setGraphLayer(EdgeMap edges, NodeMap nodes)
+void MyOpenGLWidget::setImageLayer(Image *im, EdgeMap edges, NodeMap nodes)
 {
-    if (_mesh == NULL) return;
+    bool prevArcsDisp = _arcs;
+    setImageLayer(im);
     
     _edges = edges;
     _isGraph = true;
+    _arcs = prevArcsDisp;
     _edgeCoord.clear();
     
     for (auto it = _edges.begin(); it!= _edges.end(); ++it)
@@ -222,7 +229,7 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
         _boundingboxes = !_boundingboxes;
     
     if (e->key() == Qt::Key_E)
-        _arcs = !_arcs;
+        _arcs = _isGraph && !_arcs;
     
     if (e->key() == Qt::Key_A)
         _axes = !_axes;
@@ -259,25 +266,6 @@ void MyOpenGLWidget::keyPressEvent(QKeyEvent* e)
         x_T -= 0.05;
     paintGL();
 }
-
-//std::vector<int> MyOpenGLWidget::getCoordOutOfIndex(int n_cols, int n_rows, int idx)
-//{
-    //// Mathematical formulas to calculate 3D Coordinte of voxel
-    //int sizeLayer = n_cols * n_rows;
-    //int z = (int)idx / sizeLayer;
-    
-    //int idx2D = idx - z*sizeLayer;
-    //int y = (int)idx2D / n_cols;
-    //int x = idx2D % n_cols;
-    
-    //// Store the calculated coordinates
-    //std::vector<int> coord;
-    //coord.push_back(x);
-    //coord.push_back(y);
-    //coord.push_back(z);
-    //return coord;
-//}
-
 
 void MyOpenGLWidget::drawFace(Face f)
 {

@@ -70,10 +70,12 @@ void ImageLayersViewer3DWindow::openViewer3D()
         //std::cout << "without DGTAL" << std::endl;
         QString windowTitle = "0S3D - Visualistion 3D - Calque : "+imageLayer.getName();
         myViewer.setWindowTitle(windowTitle);
-        myViewer.setImageLayer(imageLayer.getImage());
         if (imageLayer.hasGraph())
-            myViewer.setGraphLayer(imageLayer.getGraph()->getEEdges(),
+            myViewer.setImageLayer(imageLayer.getImage(),
+                                   imageLayer.getGraph()->getEEdges(),
                                    imageLayer.getGraph()->getENodes());
+        else
+            myViewer.setImageLayer(imageLayer.getImage());
         myViewer.show();
     }
 }
