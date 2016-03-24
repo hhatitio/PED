@@ -590,7 +590,7 @@ void MainWindow::skeletonization() {
 
 
 void MainWindow::getGraph(){
-    delete skeletonGraph;
+    //delete skeletonGraph;
     
     if (skeletonImage != NULL)
         delete skeletonImage;
