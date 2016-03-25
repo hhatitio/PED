@@ -5,7 +5,7 @@ SkeletonModel::SkeletonModel() {
 }
 
 SkeletonModel::~SkeletonModel() {
-    delete skeletonIm3D;
+    if (skeletonIm3D != NULL) delete skeletonIm3D;
 }
 
 void SkeletonModel::setFilename(QString filename) {
@@ -890,7 +890,7 @@ void SkeletonModel::loadTIFFFile() {
     TIFFClose(file);
 
     file = TIFFOpen(filename.toStdString().c_str(), "r");
-    delete skeletonIm3D;
+    if (skeletonIm3D != NULL) delete skeletonIm3D;
     skeletonIm3D = new Image3D<short int>((int)width, (int)height, slices);
 
     int j = 0;
@@ -993,7 +993,7 @@ void SkeletonModel::generate3DImFromData() {
     int row, col, slice;
     row = col = slice = size;
 
-    delete skeletonIm3D;
+    if(skeletonIm3D != NULL) delete skeletonIm3D;
     skeletonIm3D = new Image3D<short int>(row,col,slice);
 
     for(int x = 0; x < row; x++){
@@ -1027,6 +1027,6 @@ Image3D<short int>* SkeletonModel::getSkeleton3DIm(){
 }
 
 void SkeletonModel::setSkeleton3DIm(Image *image) {
-    delete skeletonIm3D;
-    this->skeletonIm3D = image;
+    if (skeletonIm3D != NULL) delete skeletonIm3D;
+    this->skeletonIm3D = new Image3D<short int>(*image);
 }

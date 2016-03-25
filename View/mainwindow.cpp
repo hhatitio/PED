@@ -272,7 +272,7 @@ void MainWindow::openImage3D()
     // Mise à jour de l'image et de la fenêtre principale
     image = DGtalTools<PixelType>::loadImage3D(filename.toStdString());
     currentImageType = ImageType::Image3D;
-    delete skeletonModel;
+    if (skeletonModel != NULL) delete skeletonModel;
     skeletonModel = new SkeletonModel();
     skeletonModel->setSkeleton3DIm(image);
     updateImageComponents();
@@ -290,7 +290,7 @@ void MainWindow::openOthersImage3D()
     // Suppression des calques
     removeLayers();
     currentImageType = ImageType::Image3D;
-    delete skeletonModel;
+    if (skeletonModel != NULL) delete skeletonModel;
     skeletonModel = new SkeletonModel();
     skeletonModel->setFilename(filename);
     //convertImage.setFilename(filename);
