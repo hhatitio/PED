@@ -255,6 +255,9 @@ void MainWindow::openDicom(const std::vector<std::string> &serieFileNames)
     // Mise à jour de l'image et de la fenêtre principale
     image = ITKTools<PixelType>::loadDicomImage(serieFileNames);
     currentImageType = ImageType::Dicom;
+    if (skeletonModel != NULL) delete skeletonModel;
+    skeletonModel = new SkeletonModel();
+    skeletonModel->setSkeleton3DIm(image);
     updateImageComponents();
     drawSlice();
 }
