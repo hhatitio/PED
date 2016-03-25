@@ -248,7 +248,7 @@ void SkeletonGraph::compute() {
     initGraph();
     computeNeighboorMap();
     computeEnhanceMapFromNeighboorMap();
-    std::cout << "noeuds :" << nodes.size() << std::endl;
+    std::cout << "nb_noeuds_before :" << nodes.size() << std::endl;
     int size_graph;
     do{
         size_graph = nodes.size();
@@ -269,7 +269,7 @@ void SkeletonGraph::compute() {
             nodesTmp.insert({it->first,it->second});
         }
     }while(size_graph != nodes.size());
-    std::cout << "noeuds :" << nodes.size() << std::endl;
+    std::cout << "nb_noeuds_after :" << nodes.size() << std::endl;
     computeAngles();
     //delete neighboorMap;
 }
@@ -589,8 +589,8 @@ void SkeletonGraph::computeAngles(){
                     double angle = acos(val)*180/PI;
                     edge->addAngle(edge2->getId(),angle);
                     edge2->addAngle(edge->getId(),angle);
-                    std::cout << "angle edges (" << edge->getId() << ","
-                              << edge2->getId() << ") :" << angle << std::endl;
+//                   std::cout << "angle edges (" << edge->getId() << ","
+//                              << edge2->getId() << ") :" << angle << std::endl;
                 }
             }
 
@@ -600,6 +600,7 @@ void SkeletonGraph::computeAngles(){
 }
 
 void SkeletonGraph::showfeatures(){
+    std::cout << std::endl;
     std::cout << "nb noeuds graph :" << nodes.size() << std::endl;
     std::cout << "nb edges graph :" << edges.size() << std::endl;
     std::cout << "=====================Angle edges===================" << std::endl;
@@ -612,9 +613,9 @@ void SkeletonGraph::showfeatures(){
             std::vector<ExtendedEdge*> n1_incidentEdges = n1->getIncidentEdges();
             for(int j = 0; j<n1_incidentEdges.size(); j++){
                 ExtendedEdge *edge2 = n1_incidentEdges.at(j);
-                if(edge2->getId() != edge->getId() && !edge->containAngle(edge2->getId())){
-                    std::cout << "angle edges (" << edge->getId() << ","
-                              << edge2->getId() << ") :" << edge->getAngle(edge2->getId()) << std::endl;
+                if(edge2->getId() != edge->getId()){
+                    std::cout << "edgesId(" << edge->getId() << ","
+                              << edge2->getId() << ") angle: " << edge->getAngle(edge2->getId()) << std::endl;
                 }
             }
 
@@ -623,23 +624,31 @@ void SkeletonGraph::showfeatures(){
     }
 
     std::cout << "===================================================" << std::endl;
+    std::cout << std::endl;
     std::cout << "=====================Node features===================" << std::endl;
 
     for (auto it = nodes.begin(); it!= nodes.end(); ++it){
         ExtendedNode *u = it->second;
         std::vector<int> adnodes = u->getAdjacentNodes();
-        std::cout << "node( " << u->getX() << "," << u->getY() << "," << u->getZ() << ") "<< u->getId() << " :";
+        std::cout << "Current_nodeId(" << u->getId() << ") / Current_nodeCoord("
+                  << u->getX() << "," << u->getY() << "," << u->getZ() << ") nb_adjacent_node("
+                  << adnodes.size() << ") :";
         std::vector<ExtendedEdge *> incidentEdge = u->getIncidentEdges();
         for(int i= 0; i<incidentEdge.size(); ++i){
+            std::cout << std::endl;
+            std::cout << "\t";
             ExtendedEdge *e = incidentEdge.at(i);
-            std::cout << " " << e->getSize() << "/" << e->getOppositeNode(u->getId()) << " -";
+            std::cout << " edgeId(" << e->getId() << ")-edgeSize(" << e->getSize()
+                      << ") / Opposite_nodeId(" << e->getOppositeNode(u->getId()) << ") ";
         }
-        std::cout << " " << std::endl;
-        for(int i= 0; i<adnodes.size(); ++i){
-            std::cout << " " << adnodes.at(i);
-        }
-        std::cout << " " << std::endl;
+        std::cout << std::endl;
+//        std::cout << " " << std::endl;
+//        for(int i= 0; i<adnodes.size(); ++i){
+//            std::cout << " " << adnodes.at(i);
+//        }
+//        std::cout << " " << std::endl;
     }
+    std::cout << "=====================================================" << std::endl;
 }
 
 std::unordered_map<int, ExtendedNode*> SkeletonGraph::getENodes()

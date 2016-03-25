@@ -605,6 +605,7 @@ void MainWindow::getGraph(){
     skeletonGraph = new SkeletonGraph(skeletonImage);
 
     skeletonGraph->compute();
+    skeletonGraph->showfeatures();
     Image *imageGraph = skeletonGraph->getGraphImage3D();
     //skeletonGraph->exportGraph("graph.eps");
     
